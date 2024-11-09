@@ -31,6 +31,11 @@
     },
     "options_ui": {
       "page": "options/index.html"
+    },
+    "applications": {
+      "gecko": {
+        "id": "pdsls@dreary.dev"
+      }
     }
   }
   

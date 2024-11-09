@@ -1,3 +1,26 @@
+let settings = {};
+async function loadSettings() {
+  try {
+    // Remember to update this if you add more settings
+    const data = await browser.storage.sync.get(['alwaysOpen', 'openInNewTab', 'jsonMode', 'keybinding']);
+    console.log('Current settings:', data);
+    settings = data || {}
+  } catch (error) {
+    console.error('Error retrieving settings:', error);
+    return null;
+  }
+}
+loadSettings();
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area != 'sync') return
+  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+    if (['alwaysOpen', 'openInNewTab', 'jsonMode', 'keybinding'].includes(key)) {
+      console.log(`Storage key "${key}" changed from`, oldValue, 'to', newValue);
+      settings[key] = newValue;
+    }
+  }
+});
+
 // Create context menu
 browser.contextMenus.create({
     id: "PDSls",
@@ -50,14 +73,22 @@ async function validateUrl(url) {
 async function openNewTab(url) {
   console.log("Reached: openNewTab")
   const ROOT = "https://pdsls.dev"
+
   if (!url) {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true });
     url = tabs[0]?.url;
   }
-  if (!url) return;
+  if (!url) { console.log("Error: No URL"); return; }
+
   let suffix = await validateUrl(url);
-  if (!suffix) return;
-  browser.tabs.create({ url: `${ROOT}/${suffix}` });
+  if (!suffix && !settings.alwaysOpen) return;
+  if (settings.openInNewTab) {
+    await browser.tabs.create({ url: `${ROOT}/${suffix || ""}` });
+  } else {
+    await browser.tabs.update({ url: `${ROOT}/${suffix || ""}` });
+  }
+     
+  console.log(`URL opened: ${ROOT}/${suffix || ""}`);
 }
 
 // Extension Icon
