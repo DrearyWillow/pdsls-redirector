@@ -1,0 +1,11 @@
+#main {
+    display: flex;
+    flex-direction: column;
+}
+
+/* .forms {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    border-left: chocolate solid 1em;
+} */

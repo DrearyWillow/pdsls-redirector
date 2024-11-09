@@ -28,6 +28,9 @@
         },
         "description": "Open a new PDSls tab"
       }
+    },
+    "options_ui": {
+      "page": "options/index.html"
     }
   }
   

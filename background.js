@@ -11,18 +11,24 @@ const resolveHandle = async (handle) => {
     `https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=` +
       handle,
   );
-
   return res.json().then((json) => json.did);
 };
 
+// getPostThread
+// const url = `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${uri}/app.bsky.feed.post/${rkey}&depth=0&parent-height=0`
+
+// Validate and format URL
 async function validateUrl(url) {
     if (!url) return "";
+
+    // PDS
     if (
       !url.startsWith("https://bsky.app/") &&
       !url.startsWith("https://main.bsky.dev/") &&
       url.startsWith("https://")
     ) return `/${url.replace("https://", "").replace("/", "")}`;
 
+    // URI
     const uri = url
       .replace("at://", "")
       .replace("https://bsky.app/profile/", "")
@@ -37,7 +43,7 @@ async function validateUrl(url) {
       return "";
     }
 
-    return `/at/${did}${uri.split("/").length > 1 ? "/" + uri.split("/").slice(1).join("/") : ""}`
+    return `at/${did}${uri.split("/").length > 1 ? "/" + uri.split("/").slice(1).join("/") : ""}`
 }
 
 // Function to open a new tab with the current page URL
@@ -52,42 +58,30 @@ async function openNewTab(url) {
   let suffix = await validateUrl(url);
   if (!suffix) return;
   browser.tabs.create({ url: `${ROOT}/${suffix}` });
-  
 }
 
+// Extension Icon
 browser.browserAction.onClicked.addListener(() => {
   console.log("Reached: extension icon click")
   openNewTab()
 })
 
+// Context Menu
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
   console.log("Reached: contextMenuListener")
   if (info.menuItemId != "PDSls") { return true }
   console.log("Reached: contextMenu after itemId")
   const [commandId, type] = info.menuItemId.split('-')
   let url;
-  const CONTEXT_ATTRS = {
-    "audio": "srcUrl",
-    "image": "srcUrl",
-    "page": "pageUrl",
-    "video": "srcUrl",
-  };
-  // Media and page
-  if (type) {
-      console.log("URL type: CONTEXT_ATTRS")
-      url = info[CONTEXT_ATTRS[type]]
+  if (info.bookmarkId) {
+    console.log("url type is bookmark")
+    const bookmarks = await browser.bookmarks.get(info.bookmarkId)
+    if (bookmarks.length > 0) {
+        url = bookmarks[0].url
+    }
   } else {
-      // Bookmark, link, tab
-      console.log("url type is bookmark, link, tab")
-      if (info.bookmarkId) {
-          const bookmarks = await browser.bookmarks.get(info.bookmarkId)
-          if (bookmarks.length > 0) {
-              url = bookmarks[0].url
-          }
-      } else {
-          console.log("Defaulting url type to link or page")
-          url = info.linkUrl ? info.linkUrl : info.pageUrl
-      }
+      console.log("url type is link or page")
+      url = info.linkUrl ? info.linkUrl : info.pageUrl
   }
   if (!url) {
       return
@@ -95,7 +89,7 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
   openNewTab(url)
 })
 
-// Handle keybinding
+// Keybinding
 browser.commands.onCommand.addListener((command) => {
   console.log("Reached: keybinding")
   if (command === "pdsls-tab") {openNewTab()}
