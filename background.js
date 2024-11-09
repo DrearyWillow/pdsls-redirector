@@ -76,8 +76,9 @@ async function validateUrl(url) {
       url.startsWith("https://")
     ) return `/${url.replace("https://", "").replace("/", "")}`;
 
+    let uri
     if (url.startsWith("https://whtwnd.com/")) {
-      let uri = url.replace("https://whtwnd.com/", "")
+      uri = url.replace("https://whtwnd.com/", "")
       if (uri.includes("/entries/")) {
         uri = uri.replace("/entries/", "/com.whtwnd.blog.entry/");
         [handle = "", lexicon = "", title = ""] = uri.split("/");
@@ -96,7 +97,7 @@ async function validateUrl(url) {
       return `https://pdsls.dev/at/${did}/${lexicon}`
 
     } else {
-      let uri = url
+      uri = url
         .replace("https://bsky.app/profile/", "")
         .replace("https://main.bsky.dev/profile/", "")
         .replace("/post/", "/app.bsky.feed.post/")
@@ -106,9 +107,9 @@ async function validateUrl(url) {
       if (!did) return ""
 
       uri = `${did}${parts.length > 1 ? "/" + parts.slice(1).join("/") : ""}`
-      if ((parts[2] === "app.bsky.feed.post") && settings.jsonMode) {
+      if ((parts[1] === "app.bsky.feed.post") && settings.jsonMode) {
         // TODO: depth and parent-height settings
-        return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${uri}&depth=0&parent-height=0`
+        return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=0&parent-height=0`
       }
     }
 
