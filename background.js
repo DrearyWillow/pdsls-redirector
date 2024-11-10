@@ -1,3 +1,5 @@
+
+// settings
 let settings = {};
 async function loadSettings() {
   try {
@@ -19,7 +21,7 @@ browser.storage.onChanged.addListener((changes, area) => {
   }
 });
 
-// Create context menu
+// create context menu
 browser.contextMenus.create({
     id: "PDSls",
     title: "PDSls",
@@ -64,56 +66,100 @@ const getWhiteWindUri = async (did, title) => {
   return res.json().then((json) => json.entryUri)
 }
 
-// Validate and format URL
+// const regex = /^(https:\/\/(?:bsky\.app|main\.bsky\.dev|whtwnd\.com))(\/profile\/([^\/]+))?(\/post\/([^\/]+))?/;
+
+// const match = url.match(regex);
+// if (!match) {
+//   return ""; // No match found
+// }
+
+// const baseUrl = match[1]; // The full domain part (e.g., "https://bsky.app")
+// const profilePart = match[2]; // "/profile/handle" if it exists
+// const handle = match[3]; // The handle captured from the URL, e.g., "user_handle"
+// const postPart = match[4]; // "/post/post_id" if it exists
+// const postId = match[5]; // The post ID captured from the URL, e.g., "post123"
+
+
+
+// validate and format URL
 async function validateUrl(url) {
-    if (!url) return "";
+  if (!url) return "";
 
-    // PDS
-    if (
-      !url.startsWith("https://bsky.app/") &&
-      !url.startsWith("https://main.bsky.dev/") &&
-      !url.startsWith("https://whtwnd.com/") &&
-      url.startsWith("https://")
-    ) return `/${url.replace("https://", "").replace("/", "")}`;
+  const bsky = /^https:\/\/(?:bsky\.app|main\.bsky\.dev)\/profile\/(?<handle>[^\/]+)(?:\/post\/(?<rkey>[^\/]+))?/;
+  const whtwnd = /^https:\/\/whtwnd\.com\/(?<handle>[^\/]+)\/(?:entries\/(?<title>[^?]+)(?:\?rkey=(?<rkey>[^\/]+))?|(?<postId>[^\/]+))$/;
+  const atBrowser = /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[^\/]+)\/(?<rest>.+)/
+  const smokeSignal = /^https:\/\/smokesignal.events(?<handle>[^\/]+)/ // WIP
+  const camp = /^https:\/\/atproto.camp\/@(?<handle>[^\/]+)$/;
+  const blueBadge = /^https:\/\/badge\.blue\/verify\?uri=at:\/\/(?<uri>.+)/
+  const linkAt = /^https:\/\/linkat\.blue\/(?<handle>[^\/]+)$/;
+  const internect = /^https:\/\/internect\.info\/did\/(?<did>[^\/]+)$/;
+  //TODO: smoke signal, starterpacks, lists, feeds
+  //TODO: neodb
+  const pds = /^https:\/\/.+/
 
-    let uri
-    if (url.startsWith("https://whtwnd.com/")) {
-      uri = url.replace("https://whtwnd.com/", "")
-      if (uri.includes("/entries/")) {
-        uri = uri.replace("/entries/", "/com.whtwnd.blog.entry/");
-        [handle = "", lexicon = "", title = ""] = uri.split("/");
-      } else {
-        [handle = "", title = ""] = uri.split("/");
-        lexicon = `com.whtwnd.blog.entry`
-      }
-      
-      let did = await getDid(handle)
-      
-      if (!title) return `https://pdsls.dev/at/${did}`
-      // if title is rkey
-      if (!title.includes("%20")) return `https://pdsls.dev/at/${did}/${lexicon}/${title}`;
-      // uri = (await getWhiteWindUri(did, title)).replace("at://", "")
-      // hard return whtwnd entry collection for now, because their api is mean :(
-      return `https://pdsls.dev/at/${did}/${lexicon}`
+  let match;
+  let uri;
 
-    } else {
-      uri = url
-        .replace("https://bsky.app/profile/", "")
-        .replace("https://main.bsky.dev/profile/", "")
-        .replace("/post/", "/app.bsky.feed.post/")
-      let parts = uri.split("/")
-      let did = await getDid(parts[0])
-
-      if (!did) return ""
-
-      uri = `${did}${parts.length > 1 ? "/" + parts.slice(1).join("/") : ""}`
-      if ((parts[1] === "app.bsky.feed.post") && settings.jsonMode) {
+  if ((match = url.match(bsky))) {
+    const { handle, rkey } = match.groups;
+    let did = await getDid(handle)
+    if (!did) return ""
+    if (rkey) {
+      uri = `${did}/app.bsky.feed.post/${rkey}`
+      if (settings.jsonMode) {
         // TODO: depth and parent-height settings
-        return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=0&parent-height=0`
+        return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=0&parentHeight=0`
       }
+    } else uri = did
+
+  } else if ((match = url.match(whtwnd))) {
+    const { handle, title, rkey, postId } = match.groups;
+    let lexicon = `com.whtwnd.blog.entry`
+    let did = await getDid(handle)
+    if (!did) return ""
+    if (!title && !postId && !rkey) {
+      // return `https://pdsls.dev/at/${did}`
+      uri = did
+    } else if (rkey || postId) {
+      uri = `${did}/${lexicon}/${rkey || postId}`
+    // } else if (title) {
+    //   uri = (await getWhiteWindUri(did, title)).replace("at://", "")
+    } else {
+      uri = `${did}/${lexicon}`
     }
 
-    return `https://pdsls.dev/at/${uri}`
+  } else if ((match = url.match(atBrowser))) {
+    const { handle, rest } = match.groups
+    did = getDid(handle);
+    if (!did) return ""
+    uri = `${did}/${rest}`
+
+  } else if ((match = url.match(linkAt))) {
+    const { handle } = match.groups;
+    did = getDid(handle);
+    if (!did) return "";
+    uri = `${did}/blue.linkat.board/self`
+
+  } else if ((match = url.match(camp))) {
+    const { handle } = match.groups;
+    let did = await getDid(handle)
+    if (!did) return ""
+    uri = `${did}/blue.badge.collection`
+
+  } else if ((match == url.match(blueBadge))) {
+    const { temp } = match.groups;
+    uri = temp;
+
+  } else if ((match == url.match(internect))) {
+    const { did } = match.groups;
+    uri = did
+
+  } else if ((url.match(pds))) {
+    uri = `${url.replace("https://", "").replace("/", "")}`;
+
+  } else return ""
+
+  return `https://pdsls.dev/at/${uri}`
 }
 
 // Function to open a new tab with the current page URL
