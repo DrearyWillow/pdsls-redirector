@@ -1,25 +1,55 @@
-document.addEventListener('DOMContentLoaded', async () => {
+// document.addEventListener('DOMContentLoaded', async () => {
+window.onload = async () => {
   const alwaysOpenCheckbox = document.getElementById('always-open');
   const redirectCheckbox = document.getElementById('redirect-or-new');
   const jsonModeCheckbox = document.getElementById('json-mode');
+  const replyCountSpinner = document.getElementById('reply-count');
+  const parentCountSpinner = document.getElementById('parent-count');
+  const jsonAdvanced = document.querySelector('.json-advanced');
   const keybindingInput = document.querySelector('.keybinding');
   const saveButton = document.querySelector('.save-settings');
   const resetButton = document.querySelector('.reset-defaults');
 
+  jsonModeCheckbox.addEventListener('change', (event) => {
+    jsonAdvanced.style.display = event.target.checked ? 'block' : 'none';
+  });
+
+  replyCountSpinner.addEventListener('input', () => {
+    const max = replyCountSpinner.max;
+    if (parseInt(replyCountSpinner.value, 10) > max) {
+      replyCountSpinner.value = max;
+    } else {
+      replyCountSpinner.value = parseInt(replyCountSpinner.value, 10)
+    }
+  });
+  
+  parentCountSpinner.addEventListener('input', () => {
+    const max = parentCountSpinner.max;
+    if (parseInt(parentCountSpinner.value, 10) > max) {
+      parentCountSpinner.value = max;
+    } else {
+      parentCountSpinner.value = parseInt(parentCountSpinner.value, 10)
+    }
+  });
+
   // Define default values
   const defaults = {
-    alwaysOpen: false,
+    alwaysOpen: true,
     openInNewTab: true,
     jsonMode: false,
-    keybinding: 'Ctrl+Alt+1'
+    keybinding: 'Ctrl+Alt+1',
+    replyCount: 0,
+    parentCount: 0,
   };
   // Load settings from storage and apply them to the form
   try {
     const data = await browser.storage.sync.get(Object.keys(defaults));
-    console.log('Retrieved data:', data);
+    console.log('Storage data:', data);
     alwaysOpenCheckbox.checked = data.alwaysOpen ?? defaults.alwaysOpen;
     redirectCheckbox.checked = data.openInNewTab ?? defaults.openInNewTab;
     jsonModeCheckbox.checked = data.jsonMode ?? defaults.jsonMode;
+    replyCountSpinner.value = data.replyCount ?? defaults.replyCount;
+    parentCountSpinner.value = data.parentCount ?? defaults.parentCount;
     keybindingInput.value = data.keybinding ?? defaults.keybinding;
   } catch (error) {
     console.error('Error retrieving settings:', error);
@@ -27,16 +57,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Save settings to storage when Save button is clicked
   saveButton.addEventListener('click', () => {
-    let keybinding = defaults.keybinding;
-    if (keybindingInput.value) {
-      keybinding = keybindingInput.value
-    }
-    
     browser.storage.sync.set({
-      jsonMode: jsonModeCheckbox.checked,
       alwaysOpen: alwaysOpenCheckbox.checked,
       openInNewTab: redirectCheckbox.checked,
-      keybinding: keybinding
+      jsonMode: jsonModeCheckbox.checked,
+      replyCount: replyCountSpinner.value,
+      parentCount: parentCountSpinner.value,
+      keybinding: keybindingInput.value
     }, () => {
       console.log('Settings saved');
     });
@@ -48,8 +75,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       alwaysOpenCheckbox.checked = defaults.alwaysOpen;
       redirectCheckbox.checked = defaults.openInNewTab;
       jsonModeCheckbox.checked = defaults.jsonMode;
+      replyCountSpinner.value = defaults.replyCount;
+      parentCountSpinner.value = defaults.parentCount;
       keybindingInput.value = defaults.keybinding;
+      jsonAdvanced.style.display = jsonModeCheckbox.checked ? 'block' : 'none';
       console.log('Settings reset to defaults');
     });
   });
-});
+
+  jsonAdvanced.style.display = jsonModeCheckbox.checked ? 'block' : 'none';
+}
