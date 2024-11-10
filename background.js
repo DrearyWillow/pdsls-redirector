@@ -131,6 +131,7 @@ async function validateUrl(url) {
   const bsky = /^https:\/\/(?:bsky\.app|main\.bsky\.dev)\/(?<prefix>profile|starter-pack)\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>post|lists|feed))?\/?(?<rkey>[\w.:%-]+)?$/
   const whtwnd = /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)\/(?:entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?<postId>[\w.:%-]+))$/;
   const atBrowser = /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>.*))?$/;
+  const clearSky = /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?/
   const smokeSignal = /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?/
   const camp = /^https:\/\/atproto.camp\/@(?<handle>[\w.:%-]+)$/;
   const blueBadge = /^https:\/\/badge\.blue\/verify\?uri=at:\/\/(?<uri>.+)/
@@ -188,6 +189,19 @@ async function validateUrl(url) {
     did = await getDid(handle);
     if (!did) return ""
     uri = `${did}/${rest || ''}`
+
+  } else if ((match = url.match(clearSky))) {
+    console.log("Match: ClearSky")
+    const { handle, type } = match.groups
+    if (!handle) return "";
+    did = await getDid(handle);
+    if (!did) return ""
+    uri = did
+    if (type === "history") {
+      uri += "/app.bsky.feed.post"
+    } else if (type === "blocking") {
+      uri += "/app.bsky.graph.block"
+    }
 
   } else if ((match = url.match(smokeSignal))) {
     console.log("Match: Smoke Signal")
