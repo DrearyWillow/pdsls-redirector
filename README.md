@@ -1,7 +1,7 @@
 Basically ready if you use Manifest V2 on Firefox. I haven't tested Chrome at all.
 
 ### Entry points:
-* Right click context menus (page, selections, and bookmarks)
+* Right click context menus (page, links, and bookmarks)
 * Clicking the extension icon
 * Configurable keybinding (defaults to Ctrl+Alt+1)
 
@@ -25,6 +25,4 @@ Basically ready if you use Manifest V2 on Firefox. I haven't tested Chrome at al
 * Override keybinding
 
 ### TODO:
-* oops i broke context menus for links. is "selection" not good enough?
-* manifest v3
-* white wind title lookup
+* Chrome/Manifest V3

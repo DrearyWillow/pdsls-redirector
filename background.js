@@ -50,7 +50,7 @@ function updateKeybinding() {
 browser.contextMenus.create({
   id: "PDSls",
   title: "PDSls",
-  contexts: ["page", "selection", "bookmark"]
+  contexts: ["page", "selection", "bookmark", "link"]
 })
 
 // Extension Icon
@@ -86,47 +86,136 @@ browser.commands.onCommand.addListener((command) => {
   if (command === "pdsls-tab") { openNewTab() }
 })
 
-const getDid = async (handle) => {
+async function getDid(handle) {
   if (handle.startsWith("did:")) return handle
   if (handle.startsWith("@")) handle = handle.slice(1)
-  if (!handle) return ""
+  if (!handle) {
+    console.error(`Error: invalid handle '${handle}'`)
+    return null
+  }
   try {
     did = await resolveHandle(handle)
+    if (!did) {
+      console.error(`Error retrieving DID '${did}':`)
+      return null
+    }
   } catch (err) {
-    return ""
+    console.error(`Error retrieving DID '${did}':`, err)
+    return null
   }
   return did
 }
 
-const resolveHandle = async (handle) => {
-  const res = await fetch(
-    `https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=` +
-    handle,
-  )
-  return res.json().then((json) => json.did)
-}
-// TODO: implement ww_title2uri from python
-const getWhiteWindServiceEndpoint = async () => {
-  if ("WORKAROUND") {
-    return `https://b481a144-23e5-4fa9-83ae-e448d3593655.whtwnd.com`
+async function resolveHandle(handle) {
+  try {
+    const res = await fetch(
+      `https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=` +
+      handle,
+    )
+    return res.json().then((json) => json.did)
+  } catch (err) {
+    console.error(`Error resolving handle '${handle}':`, err)
+    return null
   }
-  const res = await fetch(
-    `https://whtwnd.com/.well-known/did.json`
-  )
-  return res.json().then((json) => json.service[0].serviceEndpoint)
 }
 
-const getWhiteWindUri = async (did, title) => {
-  let se = await getWhiteWindServiceEndpoint()
-  const res = await fetch(
-    `${se}/xrpc/com.whtwnd.blog.getEntryMetadataByName?author=${did}&entryTitle=${title}`
-  )
-  return res.json().then((json) => json.entryUri)
+async function getDidDoc(did) {
+  let res
+  try {
+    if (did.startsWith("did:web:")) {
+      console.log("Fetching did:web DID doc")
+      res = await fetch(`https://${did.slice(8)}/.well-known/did.json`)
+    } else {
+      console.log("Fetching did:plc DID doc")
+      res = await fetch(`https://plc.directory/${did}`)
+    }
+
+    if (!res.ok) {
+      console.error(`Failed to fetch DID doc for '${did}'. Status: ${res.status}`)
+      return null
+    }
+
+    return await res.json()
+  } catch (err) {
+    console.error("Error fetching DID doc:", err)
+    return null
+  }
+}
+
+
+async function getServiceEndpoint(did) {
+  try {
+    didDoc = await getDidDoc(did)
+    if (didDoc && didDoc.service) {
+      for (let service of didDoc.service) {
+        if (service.type === 'AtprotoPersonalDataServer') {
+          let endpoint = service.serviceEndpoint
+          console.log(`Endpoint found: ${endpoint}`)
+          return endpoint
+        }
+      }
+    }
+    console.error("No service endpoint found.")
+    return null
+  } catch (err) {
+    console.error("Error fetching service endpoint:", err)
+    return null
+  }
+}
+
+async function listRecords(did, service, nsid, limit, cursor) {
+  try {
+    const params = new URLSearchParams({
+      repo: did,
+      collection: nsid,
+      limit: limit,
+      cursor: cursor,
+    })
+
+    const response = await fetch(`${service}/xrpc/com.atproto.repo.listRecords?${params.toString()}`, {
+      method: 'GET'
+    })
+    return response.json()
+  }
+  catch {
+    console.error("Error listing records:", err)
+    return null
+  }
+}
+
+async function getWhiteWindUri(did, service, title) {
+  const nsid = "com.whtwnd.blog.entry"
+  const limit = 100
+  let cursor = null
+  const decodedTitle = decodeURIComponent(title)
+
+  while (true) {
+    const data = await listRecords(did, service, nsid, limit, cursor)
+    if (!data) break
+    const records = data.records
+
+    if (records && records.length > 0) {
+      for (let record of records) {
+        if (record.value && record.value.title === decodedTitle) {
+          return record.uri
+        }
+      }
+    } else {
+      break
+    }
+
+    cursor = data.cursor
+    if (!cursor) {
+      break
+    }
+  }
+  console.error(`No whtwnd blog URI found for title '${decodedTitle}'`)
+  return null
 }
 
 // Validate and format URL
 async function validateUrl(url) {
-  if (!url) return ""
+  if (!url) return null
 
   const bsky = /^https:\/\/(?:bsky\.app|main\.bsky\.dev)\/(?<prefix>profile|starter-pack)\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>post|lists|feed))?\/?(?<rkey>[\w.:%-]+)?$/
   const whtwnd = /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)\/(?:entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?<postId>[\w.:%-]+))$/
@@ -147,11 +236,11 @@ async function validateUrl(url) {
     const { prefix, handle, suffix, rkey } = match.groups
     console.log("Capture groups: " + prefix, handle, suffix, rkey)
     let did = await getDid(handle)
-    if (!did) return ""
+    if (!did) return null
     if ((prefix === "starter-pack") && rkey) {
       uri = `${did}/app.bsky.graph.starterpack/${rkey}`
     } else if (rkey) {
-      if (prefix != "profile") return ""
+      if (prefix != "profile") return null
       if (suffix === "post") {
         uri = `${did}/app.bsky.feed.post/${rkey}`
         if (settings.jsonMode) {
@@ -163,7 +252,7 @@ async function validateUrl(url) {
         uri = `${did}/app.bsky.feed.generator/${rkey}`
       } else if (suffix === "lists") {
         uri = `${did}/app.bsky.graph.list/${rkey}`
-      } else return ""
+      } else return null
     } else uri = did
 
   } else if ((match = url.match(whtwnd))) {
@@ -171,11 +260,16 @@ async function validateUrl(url) {
     const { handle, title, rkey, postId } = match.groups
     let lexicon = `com.whtwnd.blog.entry`
     let did = await getDid(handle)
-    if (!did) return ""
+    if (!did) return null
     if (rkey || postId) {
       uri = `${did}/${lexicon}/${rkey || postId}`
-      // } else if (title) {
-      //   uri = (await getWhiteWindUri(did, title)).replace("at://", "")
+    } else if (title) {
+      const service = await getServiceEndpoint(did)
+      if (service) {
+        uri = await getWhiteWindUri(did, service, title)
+        if (uri) uri = uri.replace("at://", "")
+      }
+      if (!uri) uri = `${did}/${lexicon}`
     } else {
       uri = `${did}/${lexicon}`
     }
@@ -183,17 +277,17 @@ async function validateUrl(url) {
   } else if ((match = url.match(atBrowser))) {
     console.log("Match: AT-Browser")
     const { handle, rest } = match.groups
-    if (!handle) return ""
+    if (!handle) return null
     did = await getDid(handle)
-    if (!did) return ""
+    if (!did) return null
     uri = `${did}/${rest || ''}`
 
   } else if ((match = url.match(clearSky))) {
     console.log("Match: ClearSky")
     const { handle, type } = match.groups
-    if (!handle) return ""
+    if (!handle) return null
     did = await getDid(handle)
-    if (!did) return ""
+    if (!did) return null
     uri = did
     if (type === "history") {
       uri += "/app.bsky.feed.post"
@@ -205,21 +299,21 @@ async function validateUrl(url) {
     console.log("Match: Smoke Signal")
     const { handle, rkey } = match.groups
     did = await getDid(handle)
-    if (!did) return ""
+    if (!did) return null
     uri = `${did}${rkey ? `/events.smokesignal.calendar.event/${rkey}` : "/events.smokesignal.app.profile/self"}`
 
   } else if ((match = url.match(linkAt))) {
     console.log("Match: Link AT")
     const { handle } = match.groups
     did = await getDid(handle)
-    if (!did) return ""
+    if (!did) return null
     uri = `${did}/blue.linkat.board/self`
 
   } else if ((match = url.match(camp))) {
     console.log("Match: At Proto Camp")
     const { handle } = match.groups
     let did = await getDid(handle)
-    if (!did) return ""
+    if (!did) return null
     uri = `${did}/blue.badge.collection`
 
   } else if ((match = url.match(blueBadge))) {
@@ -237,8 +331,8 @@ async function validateUrl(url) {
     uri = `${url.replace("https://", "").replace("/", "")}`
 
   } else {
-    console.log("No match found: Invalid website")
-    return ""
+    console.error("No match found: Invalid website")
+    return null
   }
 
   return `https://pdsls.dev/at/${uri}`
@@ -252,7 +346,7 @@ async function openNewTab(url) {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true })
     url = tabs[0]?.url
   }
-  if (!url) { console.log("Error: No URL"); return }
+  if (!url) { console.error("Error: No URL"); return }
 
   let newUrl = await validateUrl(url)
   if (!newUrl) {
