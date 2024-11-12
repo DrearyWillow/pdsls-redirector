@@ -23,3 +23,8 @@ Basically ready if you use Manifest V2 on Firefox. I haven't tested Chrome at al
 * Directly open getPostThread JSON for Blusky Posts
   * Reply count and parent height configurable, up to 1000
 * Override keybinding
+
+### TODO:
+* oops i broke context menus for links. is "selection" not good enough?
+* manifest v3
+* white wind title lookup
