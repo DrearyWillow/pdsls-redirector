@@ -186,7 +186,7 @@ async function listRecords(did, service, nsid, limit, cursor) {
 async function getWhiteWindUri(did, service, title) {
   const nsid = "com.whtwnd.blog.entry"
   const limit = 100
-  let cursor = null
+  let cursor = undefined
   const decodedTitle = decodeURIComponent(title)
 
   while (true) {
@@ -209,7 +209,7 @@ async function getWhiteWindUri(did, service, title) {
       break
     }
   }
-  console.error(`No whtwnd blog URI found for title '${decodedTitle}'`)
+  console.error(`No WhiteWind blog URI found for title '${decodedTitle}'`)
   return null
 }
 
@@ -256,7 +256,7 @@ async function validateUrl(url) {
     } else uri = did
 
   } else if ((match = url.match(whtwnd))) {
-    console.log("Match: White Wind")
+    console.log("Match: WhiteWind")
     const { handle, title, rkey, postId } = match.groups
     let lexicon = `com.whtwnd.blog.entry`
     let did = await getDid(handle)

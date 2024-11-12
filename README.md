@@ -7,7 +7,7 @@ Basically ready if you use Manifest V2 on Firefox. I haven't tested Chrome at al
 
 ### Supports:
 * [Bluesky](https://bsky.app/) (profiles, posts, starter packs, lists, and feeds)
-* [White Wind](https://whtwnd.com/)
+* [WhiteWind](https://whtwnd.com/)
 * [AT Browser](https://atproto-browser.vercel.app/)
 * [ClearSky](https://clearsky.app)
 * [Smoke Signal](https://docs.smokesignal.events/)
