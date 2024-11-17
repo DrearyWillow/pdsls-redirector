@@ -1,10 +1,7 @@
-// settings
-
+// Settings
 // browser.storage.sync.clear();
 // console.log('Storage cleared.');
-
 let settings = {}
-
 const defaults = {
   alwaysOpen: true,
   openInNewTab: true,
@@ -86,6 +83,7 @@ browser.commands.onCommand.addListener((command) => {
   if (command === "pdsls-tab") { openNewTab() }
 })
 
+// API functions
 async function getDid(handle) {
   if (handle.startsWith("did:")) return handle
   if (handle.startsWith("@")) handle = handle.slice(1)
@@ -96,7 +94,7 @@ async function getDid(handle) {
   try {
     did = await resolveHandle(handle)
     if (!did) {
-      console.error(`Error retrieving DID '${did}':`)
+      console.error(`Error retrieving DID '${did}'`)
       return null
     }
   } catch (err) {
@@ -123,25 +121,24 @@ async function getDidDoc(did) {
   let res
   try {
     if (did.startsWith("did:web:")) {
-      console.log("Fetching did:web DID doc")
+      console.log("Fetching did:web did doc")
       res = await fetch(`https://${did.slice(8)}/.well-known/did.json`)
     } else {
-      console.log("Fetching did:plc DID doc")
+      console.log("Fetching did:plc did doc")
       res = await fetch(`https://plc.directory/${did}`)
     }
 
     if (!res.ok) {
-      console.error(`Failed to fetch DID doc for '${did}'. Status: ${res.status}`)
+      console.error(`Failed to fetch did doc for '${did}'. Status: ${res.status}`)
       return null
     }
 
     return await res.json()
   } catch (err) {
-    console.error("Error fetching DID doc:", err)
+    console.error("Error fetching did doc:", err)
     return null
   }
 }
-
 
 async function getServiceEndpoint(did) {
   try {
@@ -217,131 +214,159 @@ async function getWhiteWindUri(did, service, title) {
 async function validateUrl(url) {
   if (!url) return null
 
-  const bsky = /^https:\/\/(?:bsky\.app|main\.bsky\.dev)\/(?<prefix>profile|starter-pack)\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>post|lists|feed))?\/?(?<rkey>[\w.:%-]+)?$/
-  const whtwnd = /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)\/(?:entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?<postId>[\w.:%-]+))$/
-  const atBrowser = /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>.*))?$/
-  const clearSky = /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?/
-  const smokeSignal = /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?/
-  const camp = /^https:\/\/atproto.camp\/@(?<handle>[\w.:%-]+)$/
-  const blueBadge = /^https:\/\/badge\.blue\/verify\?uri=at:\/\/(?<uri>.+)/
-  const linkAt = /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)$/
-  const internect = /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)$/
-  const pds = /^https:\/\/.+/
+  const bskyClients = [
+    'bsky.app',
+    'main.bsky.dev',
+    'langit.pages.dev/u/[\\w.:%-]+',
+    'tokimekibluesky.vercel.app',
+  ]
 
-  let match
-  let uri
-
-  if ((match = url.match(bsky))) {
-    console.log("Match: Bluesky")
-    const { prefix, handle, suffix, rkey } = match.groups
-    console.log("Capture groups: " + prefix, handle, suffix, rkey)
-    let did = await getDid(handle)
-    if (!did) return null
-    if ((prefix === "starter-pack") && rkey) {
-      uri = `${did}/app.bsky.graph.starterpack/${rkey}`
-    } else if (rkey) {
-      if (prefix != "profile") return null
-      if (suffix === "post") {
-        uri = `${did}/app.bsky.feed.post/${rkey}`
-        if (settings.jsonMode) {
-          let depth = settings.replyCount
-          let parents = settings.parentCount
-          return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=${depth}&parentHeight=${parents}`
-        }
-      } else if (suffix === "feed") {
-        uri = `${did}/app.bsky.feed.generator/${rkey}`
-      } else if (suffix === "lists") {
-        uri = `${did}/app.bsky.graph.list/${rkey}`
-      } else return null
-    } else uri = did
-
-  } else if ((match = url.match(whtwnd))) {
-    console.log("Match: WhiteWind")
-    const { handle, title, rkey, postId } = match.groups
-    let lexicon = `com.whtwnd.blog.entry`
-    let did = await getDid(handle)
-    if (!did) return null
-    if (rkey || postId) {
-      uri = `${did}/${lexicon}/${rkey || postId}`
-    } else if (title) {
-      const service = await getServiceEndpoint(did)
-      if (service) {
-        uri = await getWhiteWindUri(did, service, title)
-        if (uri) uri = uri.replace("at://", "")
-      }
-      if (!uri) uri = `${did}/${lexicon}`
-    } else {
-      uri = `${did}/${lexicon}`
-    }
-
-  } else if ((match = url.match(atBrowser))) {
-    console.log("Match: AT-Browser")
-    const { handle, rest } = match.groups
-    if (!handle) return null
-    did = await getDid(handle)
-    if (!did) return null
-    uri = `${did}/${rest || ''}`
-
-  } else if ((match = url.match(clearSky))) {
-    console.log("Match: ClearSky")
-    const { handle, type } = match.groups
-    if (!handle) return null
-    did = await getDid(handle)
-    if (!did) return null
-    uri = did
-    if (type === "history") {
-      uri += "/app.bsky.feed.post"
-    } else if (type === "blocking") {
-      uri += "/app.bsky.graph.block"
-    }
-
-  } else if ((match = url.match(smokeSignal))) {
-    console.log("Match: Smoke Signal")
-    const { handle, rkey } = match.groups
-    did = await getDid(handle)
-    if (!did) return null
-    uri = `${did}${rkey ? `/events.smokesignal.calendar.event/${rkey}` : "/events.smokesignal.app.profile/self"}`
-
-  } else if ((match = url.match(linkAt))) {
-    console.log("Match: Link AT")
-    const { handle } = match.groups
-    did = await getDid(handle)
-    if (!did) return null
-    uri = `${did}/blue.linkat.board/self`
-
-  } else if ((match = url.match(camp))) {
-    console.log("Match: At Proto Camp")
-    const { handle } = match.groups
-    let did = await getDid(handle)
-    if (!did) return null
-    uri = `${did}/blue.badge.collection`
-
-  } else if ((match = url.match(blueBadge))) {
-    console.log("Match: Blue Badge")
-    const { temp } = match.groups
-    uri = temp
-
-  } else if ((match = url.match(internect))) {
-    console.log("Match: Internect")
-    const { did } = match.groups
-    uri = did
-
-  } else if ((url.match(pds))) {
-    console.log("No match found: Defaulting to PDS")
-    uri = `${url.replace("https://", "").replace("/", "")}`
-
-  } else {
-    console.error("No match found: Invalid website")
-    return null
+  const patterns = {
+    bsky: new RegExp(`^https://(?:${bskyClients.join('|')})/(?<prefix>profile|starter-pack)/(?<handle>[\\w.:%-]+)(?:/(?<suffix>post|lists|feed))?/?(?<rkey>[\\w.:%-]+)?$`),
+    whtwnd: /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)\/(?:entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?<postId>[\w.:%-]+))$/,
+    atBrowser: /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>.*))?$/,
+    clearSky: /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?$/,
+    blueViewer: /^https:\/\/blueviewer\.pages\.dev\/view\?actor=(?<handle>[\w.:%-]+)&rkey=(?<rkey>[\w.:%-]+)$/,
+    skythread: /^https:\/\/blue\.mackuba\.eu\/skythread\/\?author=(?<handle>[\w.:%-]+)&post=(?<rkey>[\w.:%-]+)$/,
+    skyview: /https:\/\/skyview\.social\/\?url=(?<url>[^&]+)/,
+    smokeSignal: /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?$/,
+    camp: /^https:\/\/atproto.camp\/@(?<handle>[\w.:%-]+)$/,
+    blueBadge: /^https:\/\/badge\.blue\/verify\?uri=at:\/\/(?<uri>.+)$/,
+    linkAt: /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)$/,
+    internect: /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)$/,
+    pds: /^https:\/\/.+/,
   }
 
-  return `https://pdsls.dev/at/${uri}`
+  const handlers = {
+    bsky: async ({ groups }) => {
+      const { prefix, handle, suffix, rkey } = groups
+      const did = await getDid(handle)
+      if (!did) return null
+
+      if (prefix === "starter-pack" && rkey) {
+        return `https://pdsls.dev/at/${did}/app.bsky.graph.starterpack/${rkey}`
+      }
+
+      if (!rkey) return `https://pdsls.dev/at/${did}`
+      if (prefix !== "profile") return null
+
+      switch (suffix) {
+        case "post":
+          const postUri = `${did}/app.bsky.feed.post/${rkey}`
+          if (settings.jsonMode) {
+            const depth = settings.replyCount
+            const parents = settings.parentCount
+            return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
+          }
+          return `https://pdsls.dev/at/${postUri}`
+        case "feed":
+          return `https://pdsls.dev/at/${did}/app.bsky.feed.generator/${rkey}`
+        case "lists":
+          return `https://pdsls.dev/at/${did}/app.bsky.graph.list/${rkey}`
+        default:
+          return null
+      }
+    },
+    whtwnd: async ({ groups }) => {
+      const { handle, title, rkey, postId } = groups
+      const did = await getDid(handle)
+      if (!did) return null
+
+      if (rkey || postId) {
+        return `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry/${rkey || postId}`
+      }
+
+      if (title) {
+        const service = await getServiceEndpoint(did)
+        let uri = service ? await getWhiteWindUri(did, service, title) : null
+        return uri
+          ? `https://pdsls.dev/at/${uri.replace("at://", "")}`
+          : `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry`
+      }
+
+      return `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry`
+    },
+    atBrowser: async ({ groups }) => {
+      const { handle, rest } = groups
+      const did = await getDid(handle)
+      return did ? `https://pdsls.dev/at/${did}/${rest || ""}` : null
+    },
+    clearSky: async ({ groups }) => {
+      const { handle, type } = groups
+      const did = await getDid(handle)
+      if (!did) return null
+
+      const typeSuffix =
+        type === "history" ? "app.bsky.feed.post" : type === "blocking" ? "app.bsky.graph.block" : ""
+      return `https://pdsls.dev/at/${did}/${typeSuffix}`
+    },
+    blueViewer: async ({ groups }) => {
+      const { handle, rkey } = groups
+      const did = await getDid(handle)
+      if (!(did && rkey)) return null
+      return `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}`
+    },
+    skythread: async ({ groups }) => {
+      const { handle, rkey } = groups
+      const did = await getDid(handle)
+      if (!(did && rkey)) return null
+      return `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}`
+    },
+    skyview: async ({ groups }) => {
+      const { url } = groups
+      if (match = decodeURIComponent(url).match(patterns.bsky)) {
+        console.log(`Passing to bsky handler`)
+        return await handlers['bsky'](match)
+      }
+      return null
+    },
+    smokeSignal: async ({ groups }) => {
+      const { handle, rkey } = groups
+      const did = await getDid(handle)
+      return did
+        ? `https://pdsls.dev/at/${did}${rkey ? `/events.smokesignal.calendar.event/${rkey}` : "/events.smokesignal.app.profile/self"}`
+        : null
+    },
+    camp: async ({ groups }) => {
+      const { handle } = groups
+      const did = await getDid(handle)
+      return did ? `https://pdsls.dev/at/${did}/blue.badge.collection` : null
+    },
+    blueBadge: async ({ groups }) => {
+      const { uri } = groups
+      return `https://pdsls.dev/at/${uri}`
+    },
+    linkAt: async ({ groups }) => {
+      const { handle } = groups
+      const did = await getDid(handle)
+      return did ? `https://pdsls.dev/at/${did}/blue.linkat.board/self` : null
+    },
+    internect: async ({ groups }) => {
+      const { did } = groups
+      return `https://pdsls.dev/at/${did}`
+    },
+    pds: async () => {
+      return `https://pdsls.dev/at/${url.replace("https://", "").replace("/", "")}`
+    },
+  }
+
+  for (const [key, regex] of Object.entries(patterns)) {
+    const match = url.match(regex)
+    if (match) {
+      console.log(`Match: ${key}`)
+      const handler = handlers[key]
+      if (handler) {
+        return await handler(match)
+      }
+    }
+  }
+
+  console.error("No match found: Invalid website")
+  return null
 }
 
 // Open a provided url or the current page url, after validation 
 async function openNewTab(url) {
-  console.log("Entered: openNewTab")
-
   if (!url) {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true })
     url = tabs[0]?.url
