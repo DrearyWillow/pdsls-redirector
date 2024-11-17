@@ -238,8 +238,7 @@ async function validateUrl(url) {
   }
 
   const handlers = {
-    bsky: async ({ groups }) => {
-      const { prefix, handle, suffix, rkey } = groups
+    bsky: async ({ prefix, handle, suffix, rkey }) => {
       const did = await getDid(handle)
       if (!did) return null
 
@@ -267,8 +266,7 @@ async function validateUrl(url) {
           return null
       }
     },
-    whtwnd: async ({ groups }) => {
-      const { handle, title, rkey, postId } = groups
+    whtwnd: async ({ handle, title, rkey, postId }) => {
       const did = await getDid(handle)
       if (!did) return null
 
@@ -286,13 +284,11 @@ async function validateUrl(url) {
 
       return `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry`
     },
-    atBrowser: async ({ groups }) => {
-      const { handle, rest } = groups
+    atBrowser: async ({ handle, rest }) => {
       const did = await getDid(handle)
       return did ? `https://pdsls.dev/at/${did}/${rest || ""}` : null
     },
-    clearSky: async ({ groups }) => {
-      const { handle, type } = groups
+    clearSky: async ({ handle, type }) => {
       const did = await getDid(handle)
       if (!did) return null
 
@@ -300,53 +296,47 @@ async function validateUrl(url) {
         type === "history" ? "app.bsky.feed.post" : type === "blocking" ? "app.bsky.graph.block" : ""
       return `https://pdsls.dev/at/${did}/${typeSuffix}`
     },
-    blueViewer: async ({ groups }) => {
-      const { handle, rkey } = groups
+    blueViewer: async ({ handle, rkey }) => {
       const did = await getDid(handle)
       if (!(did && rkey)) return null
       return `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}`
     },
-    skythread: async ({ groups }) => {
-      const { handle, rkey } = groups
+    skythread: async ({ handle, rkey }) => {
       const did = await getDid(handle)
       if (!(did && rkey)) return null
       return `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}`
     },
-    skyview: async ({ groups }) => {
-      const { url } = groups
+    skyview: async ({ url }) => {
       if (match = decodeURIComponent(url).match(patterns.bsky)) {
         console.log(`Passing to bsky handler`)
-        return await handlers['bsky'](match)
+        return await handlers['bsky'](match.groups)
       }
       return null
     },
-    smokeSignal: async ({ groups }) => {
-      const { handle, rkey } = groups
+    smokeSignal: async ({ handle, rkey }) => {
       const did = await getDid(handle)
       return did
-        ? `https://pdsls.dev/at/${did}${rkey ? `/events.smokesignal.calendar.event/${rkey}` : "/events.smokesignal.app.profile/self"}`
+        ? `https://pdsls.dev/at/${did}${rkey
+          ? `/events.smokesignal.calendar.event/${rkey}`
+          : "/events.smokesignal.app.profile/self"}`
         : null
     },
-    camp: async ({ groups }) => {
-      const { handle } = groups
+    camp: async ({ handle }) => {
       const did = await getDid(handle)
       return did ? `https://pdsls.dev/at/${did}/blue.badge.collection` : null
     },
-    blueBadge: async ({ groups }) => {
-      const { uri } = groups
+    blueBadge: async ({ uri }) => {
       return `https://pdsls.dev/at/${uri}`
     },
-    linkAt: async ({ groups }) => {
-      const { handle } = groups
+    linkAt: async ({ handle }) => {
       const did = await getDid(handle)
       return did ? `https://pdsls.dev/at/${did}/blue.linkat.board/self` : null
     },
-    internect: async ({ groups }) => {
-      const { did } = groups
+    internect: async ({ did }) => {
       return `https://pdsls.dev/at/${did}`
     },
     pds: async () => {
-      return `https://pdsls.dev/at/${url.replace("https://", "").replace("/", "")}`
+      return `https://pdsls.dev/${url.replace("https://", "").replace("/", "")}`
     },
   }
 
@@ -356,7 +346,7 @@ async function validateUrl(url) {
       console.log(`Match: ${key}`)
       const handler = handlers[key]
       if (handler) {
-        return await handler(match)
+        return await handler(match.groups)
       }
     }
   }
