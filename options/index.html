@@ -6,10 +6,13 @@
 </head>
 
 <div id="main">
-    <b>PDSls Redirector Settings</b>
     <div class="always-open">
         <input type="checkbox" id="always-open" name="always-open" value="no">
         <label for="always-open">Always open PDSls, even if no valid URL found</label>
+    </div>
+    <div class="pds-fallback">
+        <input type="checkbox" id="pds-fallback" name="pds-fallback" value="yes">
+        <label for="pds-fallback">If no URL pattern found, fallback to PDS matching</label>
     </div>
     <div class="redirect-group">
         <input type="checkbox" id="redirect-or-new" name="redirect-or-new" value="yes">
@@ -31,7 +34,7 @@
     </div>
     <div class="keybinding-group">
         <span>Keybinding: </span>
-        <input type="text" class="keybinding" placeholder="Ctrl+Alt+1">
+        <input type="text" class="keybinding" placeholder="Ctrl+Shift+1">
     </div>
     <div class="buttons">
         <button class="save-settings">Save</button>

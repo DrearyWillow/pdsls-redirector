@@ -1,25 +1,17 @@
-#main {
+html {
     display: flex;
     flex-direction: column;
     background-color: #2C2C2C;
+    padding: 20px;
+}
+
+#main {
     color: white;
 }
 
-/* .forms {
+.buttons {
     display: flex;
-    flex-direction: column;
-    padding: 1em;
-    border-left: chocolate solid 1em;
-} */
-
-/* :root {
-    --theme-purple: #b19cd9;
-    --light-purple: #c7b6e6;
-    --theme-pink: #e54980; 
-    --light-pink: #f891c1;
-    --darkish-pink: #5C0048;
-    --dark-pink: #24001F;
-    --background-color: #0B0C0D;
-    --bg-grey: #2C2C2C;
-    --off-white: #fff4fb;
-} */
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "PDSls Redirector",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Open the PDSls page corresponding to an atproto compatible website.",
   "permissions": [
     "tabs",
@@ -26,7 +26,7 @@
   "commands": {
     "pdsls-tab": {
       "suggested_key": {
-        "default": "Ctrl+Alt+1"
+        "default": "Ctrl+Shift+1"
       },
       "description": "Open a new PDSls tab"
     }

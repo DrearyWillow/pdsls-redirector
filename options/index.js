@@ -1,7 +1,7 @@
-// document.addEventListener('DOMContentLoaded', async () => {
 window.onload = async () => {
   const alwaysOpenCheckbox = document.getElementById('always-open')
   const redirectCheckbox = document.getElementById('redirect-or-new')
+  const pdsFallbackCheckbox = document.getElementById('pds-fallback')
   const jsonModeCheckbox = document.getElementById('json-mode')
   const replyCountSpinner = document.getElementById('reply-count')
   const parentCountSpinner = document.getElementById('parent-count')
@@ -36,8 +36,9 @@ window.onload = async () => {
   const defaults = {
     alwaysOpen: true,
     openInNewTab: true,
+    pdsFallback: true,
     jsonMode: false,
-    keybinding: 'Ctrl+Alt+1',
+    keybinding: 'Ctrl+Shift+1',
     replyCount: 0,
     parentCount: 0,
   }
@@ -47,6 +48,7 @@ window.onload = async () => {
     console.log('Storage data:', data)
     alwaysOpenCheckbox.checked = data.alwaysOpen ?? defaults.alwaysOpen
     redirectCheckbox.checked = data.openInNewTab ?? defaults.openInNewTab
+    pdsFallbackCheckbox.checked = data.pdsFallback ?? defaults.pdsFallback
     jsonModeCheckbox.checked = data.jsonMode ?? defaults.jsonMode
     replyCountSpinner.value = data.replyCount ?? defaults.replyCount
     parentCountSpinner.value = data.parentCount ?? defaults.parentCount
@@ -60,6 +62,7 @@ window.onload = async () => {
     browser.storage.sync.set({
       alwaysOpen: alwaysOpenCheckbox.checked,
       openInNewTab: redirectCheckbox.checked,
+      pdsFallback: pdsFallbackCheckbox.checked,
       jsonMode: jsonModeCheckbox.checked,
       replyCount: replyCountSpinner.value,
       parentCount: parentCountSpinner.value,
@@ -74,6 +77,7 @@ window.onload = async () => {
     browser.storage.sync.set(defaults, () => {
       alwaysOpenCheckbox.checked = defaults.alwaysOpen
       redirectCheckbox.checked = defaults.openInNewTab
+      pdsFallbackCheckbox.checked = defaults.pdsFallback
       jsonModeCheckbox.checked = defaults.jsonMode
       replyCountSpinner.value = defaults.replyCount
       parentCountSpinner.value = defaults.parentCount

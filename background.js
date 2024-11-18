@@ -5,8 +5,9 @@ let settings = {}
 const defaults = {
   alwaysOpen: true,
   openInNewTab: true,
+  pdsFallback: true,
   jsonMode: false,
-  keybinding: "Ctrl+Alt+1"
+  keybinding: "Ctrl+Shift+1"
 }
 
 async function loadSettings() {
@@ -336,6 +337,10 @@ async function validateUrl(url) {
       return `https://pdsls.dev/at/${did}`
     },
     pds: async () => {
+      if (!settings.pdsFallback) {
+        console.warn("PDS fallback matching is set to false. No match found.")
+        return null
+      }
       return `https://pdsls.dev/${url.replace("https://", "").replace("/", "")}`
     },
   }
