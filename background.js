@@ -223,19 +223,20 @@ async function validateUrl(url) {
   ]
 
   const patterns = {
-    bsky: new RegExp(`^https://(?:${bskyClients.join('|')})/(?<prefix>profile|starter-pack)/(?<handle>[\\w.:%-]+)(?:/(?<suffix>post|lists|feed))?/?(?<rkey>[\\w.:%-]+)?$`),
+    bsky: new RegExp(`^https://(?:${bskyClients.join('|')})/(?<prefix>profile|starter-pack)/(?<handle>[\\w.:%-]+)(?:/(?<suffix>post|lists|feed))?/?(?<rkey>[\\w.:%-]+)?(?:\\?.*)?$`),
+    klearsky: /^https:\/\/klearsky\.pages\.dev\/#\/(?:([^/?]+)\/)?(?<type>[^/?]+)?(?:\?(?:[\w.-]+=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)|account=(?<account>[\w.:/-]+)))?(?:&.*)?$/,
     whtwnd: /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)\/(?:entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?<postId>[\w.:%-]+))$/,
-    atBrowser: /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>.*))?$/,
-    clearSky: /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?$/,
+    atBrowser: /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>[^?]*))?(?:\?.*)?$/,
+    clearSky: /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?(?:\?.*)?$/,
     blueViewer: /^https:\/\/blueviewer\.pages\.dev\/view\?actor=(?<handle>[\w.:%-]+)&rkey=(?<rkey>[\w.:%-]+)$/,
     skythread: /^https:\/\/blue\.mackuba\.eu\/skythread\/\?author=(?<handle>[\w.:%-]+)&post=(?<rkey>[\w.:%-]+)$/,
     skyview: /https:\/\/skyview\.social\/\?url=(?<url>[^&]+)/,
-    smokeSignal: /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?$/,
-    camp: /^https:\/\/atproto.camp\/@(?<handle>[\w.:%-]+)$/,
-    blueBadge: /^https:\/\/badge\.blue\/verify\?uri=at:\/\/(?<uri>.+)$/,
-    linkAt: /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)$/,
-    internect: /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)$/,
-    pds: /^https:\/\/.+/,
+    smokeSignal: /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
+    camp: /^https:\/\/atproto.camp\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
+    blueBadge: /^https:\/\/badge\.blue\/verify\?uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>.+)$/,
+    linkAt: /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)(?:\?.*)?$/,
+    internect: /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)(?:\?.*)?$/,
+    pds: /^https:\/\/(?<domain>.+)(?:\?.*)?$/,
   }
 
   const handlers = {
@@ -267,6 +268,23 @@ async function validateUrl(url) {
           return null
       }
     },
+    klearsky: async ({ type, uri, account }) => {
+      console.log(type, uri, account)
+      if (uri) {
+        if (settings.jsonMode && type == "post") {
+          const depth = settings.replyCount
+          const parents = settings.parentCount
+          return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=${depth}&parentHeight=${parents}`
+        }
+        return `https://pdsls.dev/at/${uri}`
+      }
+      const did = await getDid(account)
+      if (!did) return null
+      if (type == "starterPacks") return `https://pdsls.dev/at/${did}/app.bsky.graph.starterpack`
+      else if (type == "feed-generators") return `https://pdsls.dev/at/${did}/app.bsky.feed.generator`
+      else if (type == "list") return `https://pdsls.dev/at/${did}/app.bsky.graph.list`
+      else return `https://pdsls.dev/at/${did}`
+    },
     whtwnd: async ({ handle, title, rkey, postId }) => {
       const did = await getDid(handle)
       if (!did) return null
@@ -292,7 +310,6 @@ async function validateUrl(url) {
     clearSky: async ({ handle, type }) => {
       const did = await getDid(handle)
       if (!did) return null
-
       const typeSuffix =
         type === "history" ? "app.bsky.feed.post" : type === "blocking" ? "app.bsky.graph.block" : ""
       return `https://pdsls.dev/at/${did}/${typeSuffix}`
@@ -322,11 +339,12 @@ async function validateUrl(url) {
           : "/events.smokesignal.app.profile/self"}`
         : null
     },
-    camp: async ({ handle }) => {
+    camp: async ({ handle, rkey }) => {
       const did = await getDid(handle)
-      return did ? `https://pdsls.dev/at/${did}/blue.badge.collection` : null
+      return did ? `https://pdsls.dev/at/${did}/blue.badge.collection/${rkey || ""}` : null
     },
     blueBadge: async ({ uri }) => {
+      uri = decodeURIComponent(uri)
       return `https://pdsls.dev/at/${uri}`
     },
     linkAt: async ({ handle }) => {
@@ -336,12 +354,12 @@ async function validateUrl(url) {
     internect: async ({ did }) => {
       return `https://pdsls.dev/at/${did}`
     },
-    pds: async () => {
+    pds: async ({ domain }) => {
       if (!settings.pdsFallback) {
         console.warn("PDS fallback matching is set to false. No match found.")
         return null
       }
-      return `https://pdsls.dev/${url.replace("https://", "").replace("/", "")}`
+      return `https://pdsls.dev/${domain}`
     },
   }
 

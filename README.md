@@ -7,6 +7,9 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 
 ### Supports:
 * [Bluesky](https://bsky.app/) (profiles, posts, starter packs, lists, and feeds)
+* [TOKIMEKI](https://tokimekibluesky.vercel.app)
+* [Langit](https://langit.pages.dev)
+* [Klearsky](https://klearsky.pages.dev)
 * [WhiteWind](https://whtwnd.com/)
 * [AT Browser](https://atproto-browser.vercel.app/)
 * [ClearSky](https://clearsky.app)
@@ -14,7 +17,7 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 * [Skythread](https://blue.mackuba.eu/skythread/)
 * [Skyview](https://skyview.social/)
 * [Smoke Signal](https://docs.smokesignal.events/)
-* [Atproto Camp](https://atproto.camp/)
+* [AtProto Camp](https://atproto.camp/)
 * [Blue Badge](https://badge.blue/)
 * [Link AT](https://linkat.blue/?lng=en)
 * [Internect](https://internect.info/)
