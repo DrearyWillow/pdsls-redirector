@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "PDSls Redirector",
   "version": "1.0.2",
-  "description": "Open the PDSls page corresponding to an atproto compatible website.",
+  "description": "Open the PDSls page corresponding to an ATProto compatible website.",
   "permissions": [
     "tabs",
     "contextMenus",
