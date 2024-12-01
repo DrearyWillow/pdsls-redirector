@@ -223,19 +223,26 @@ async function validateUrl(url) {
   ]
 
   const patterns = {
-    bsky: new RegExp(`^https://(?:${bskyClients.join('|')})/(?<prefix>profile|starter-pack)/(?<handle>[\\w.:%-]+)(?:/(?<suffix>post|lists|feed))?/?(?<rkey>[\\w.:%-]+)?(?:\\?.*)?$`),
+    bsky: new RegExp(`^https://(?:${bskyClients.join('|')})/(?<prefix>profile|starter-pack)/(?<handle>[\\w.:%-]+)(?:/(?<suffix>post|lists|feed))?/?(?<rkey>[\\w.:%-]+)?(?:/[\\w.:%-]+)?(?:\\?.*)?$`),
+    aglais: /^https:\/\/aglais\.pages\.dev\/(?<handle>[\w.:%-]+)(?:\/(?<seg2>[\w.:%-]+))?(?:\/(?<seg3>[\w.:%-]+))?(?:\?.*)?$/,
+    ouranos: /^https:\/\/useouranos\.app\/dashboard\/(?:user|feeds)\/(?<handle>[\w.:%-]+)(?:\/(?:[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\?(?:uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)))?$/,
     klearsky: /^https:\/\/klearsky\.pages\.dev\/#\/(?:([^/?]+)\/)?(?<type>[^/?]+)?(?:\?(?:[\w.-]+=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)|account=(?<account>[\w.:/-]+)))?(?:&.*)?$/,
     whtwnd: /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)\/(?:entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?<postId>[\w.:%-]+))$/,
+    frontpage: /^https:\/\/frontpage\.fyi\/(?<prefix>profile|post)\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\/(?<handle2>[\w.:%-]+))?(?:\/(?<rkey2>[\w.:%-]+))?(?:\?.*)?$/,
+    skylights: /^https:\/\/skylights\.my\/profile\/(?<handle>[\w.:%-]+)(?:\?.*)?$/,
+    pinksea: /^https:\/\/pinksea\.art\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
     atBrowser: /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>[^?]*))?(?:\?.*)?$/,
     clearSky: /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?(?:\?.*)?$/,
     blueViewer: /^https:\/\/blueviewer\.pages\.dev\/view\?actor=(?<handle>[\w.:%-]+)&rkey=(?<rkey>[\w.:%-]+)$/,
     skythread: /^https:\/\/blue\.mackuba\.eu\/skythread\/\?author=(?<handle>[\w.:%-]+)&post=(?<rkey>[\w.:%-]+)$/,
     skyview: /https:\/\/skyview\.social\/\?url=(?<url>[^&]+)/,
     smokeSignal: /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
-    camp: /^https:\/\/atproto.camp\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
+    camp: /^https:\/\/atproto\.camp\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
     blueBadge: /^https:\/\/badge\.blue\/verify\?uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>.+)$/,
     linkAt: /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)(?:\?.*)?$/,
     internect: /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)(?:\?.*)?$/,
+    bskyCDN: /^https:\/\/cdn\.bsky\.app\/(?:[\w.:%-]+\/){3}(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/,
+    bskyVidCDN: /^https:\/\/video\.bsky\.app\/[\w.:%-]+\/(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/,
     pds: /^https:\/\/(?<domain>.+)(?:\?.*)?$/,
   }
 
@@ -268,8 +275,30 @@ async function validateUrl(url) {
           return null
       }
     },
+    aglais: async ({ handle, seg2, seg3 }) => {
+      const did = await getDid(handle)
+      if (!did) return null
+      if (seg2 === 'curation-lists') return seg3 ? `https://pdsls.dev/at/${did}/app.bsky.graph.list/${seg3}` : `https://pdsls.dev/at/${did}`
+      const rkey = seg2 || null
+      if (!rkey) return `https://pdsls.dev/at/${did}`
+      const postUri = `${did}/app.bsky.feed.post/${rkey}`
+      if (settings.jsonMode) {
+        const depth = settings.replyCount
+        const parents = settings.parentCount
+        return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
+      }
+      return `https://pdsls.dev/at/${postUri}`
+    },
+    ouranos: async ({ handle, rkey, uri }) => {
+      if (uri) {
+        uri = decodeURIComponent(uri)
+        return `https://pdsls.dev/at/${uri}`
+      }
+      const did = await getDid(handle)
+      if (!did) return null
+      return rkey ? `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}` : `https://pdsls.dev/at/${did}`
+    },
     klearsky: async ({ type, uri, account }) => {
-      console.log(type, uri, account)
       if (uri) {
         if (settings.jsonMode && type == "post") {
           const depth = settings.replyCount
@@ -302,6 +331,34 @@ async function validateUrl(url) {
       }
 
       return `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry`
+    },
+    frontpage: async ({ prefix, handle, rkey, handle2, rkey2 }) => {
+      let did
+      switch (prefix) {
+        case 'post':
+          if (handle2 && rkey2) {
+            const did2 = await getDid(handle2)
+            if (did2) return `https://pdsls.dev/at/${did2}/fyi.unravel.frontpage.comment/${rkey2}`
+          }
+          did = await getDid(handle)
+          if (!did) return null
+          return rkey ? `https://pdsls.dev/at/${did}/fyi.unravel.frontpage.post/${rkey}` : null
+        case 'profile':
+          did = await getDid(handle)
+          if (!did) return null
+          return `https://pdsls.dev/at/${did}/fyi.unravel.frontpage.post`
+        default:
+          return null
+      }
+    },
+    skylights: async ({ handle }) => {
+      const did = await getDid(handle)
+      return did ? `https://pdsls.dev/at/${did}/my.skylights.rel` : null
+    },
+    pinksea: async ({ handle, suffix, rkey }) => {
+      const did = await getDid(handle)
+      if (!did) return null
+      return rkey ? `https://pdsls.dev/at/${did}/com.shinolabs.pinksea.oekaki/${rkey}` : `https://pdsls.dev/at/${did}/com.shinolabs.pinksea.oekaki`
     },
     atBrowser: async ({ handle, rest }) => {
       const did = await getDid(handle)
@@ -352,6 +409,13 @@ async function validateUrl(url) {
       return did ? `https://pdsls.dev/at/${did}/blue.linkat.board/self` : null
     },
     internect: async ({ did }) => {
+      return `https://pdsls.dev/at/${did}`
+    },
+    bskyCDN: async ({ did }) => {
+      return `https://pdsls.dev/at/${did}`
+    },
+    bskyVidCDN: async ({ did }) => {
+      did = decodeURIComponent(did)
       return `https://pdsls.dev/at/${did}`
     },
     pds: async ({ domain }) => {
