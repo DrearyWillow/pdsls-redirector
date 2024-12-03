@@ -29,7 +29,7 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 * [Bsky Video CDN](https://video.bsky.app)
 * If the above fail, attempt to load the link as a PDS
 
-### Configure settings in about:
+### Configure settings in about:addons
 * Always open PDSls, even if no valid URL found
 * Open new tab or redirect the current page
 * Directly open getPostThread JSON for Bluesky posts
