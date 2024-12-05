@@ -27,7 +27,7 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 * [Internect](https://internect.info/)
 * [Bsky CDN](https://cdn.bsky.app)
 * [Bsky Video CDN](https://video.bsky.app)
-* [Raw API Urls](https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=did:plc:hx53snho72xoj7zqt5uice4u&collection=app.bsky.actor.profile&rkey=self)
+* [Raw API URLs](https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=did:plc:hx53snho72xoj7zqt5uice4u&collection=app.bsky.actor.profile&rkey=self)
 * [PDSls](https://pdsls.dev/) (opens the API response directly)
 * If the above fail, attempt to load the link as a PDS
 
