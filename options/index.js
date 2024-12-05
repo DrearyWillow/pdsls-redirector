@@ -2,6 +2,7 @@ window.onload = async () => {
   const alwaysOpenCheckbox = document.getElementById('always-open')
   const redirectCheckbox = document.getElementById('redirect-or-new')
   const pdsFallbackCheckbox = document.getElementById('pds-fallback')
+  const pdslsOpensJSONCheckbox = document.getElementById('pdsls-xrpc')
   const jsonModeCheckbox = document.getElementById('json-mode')
   const replyCountSpinner = document.getElementById('reply-count')
   const parentCountSpinner = document.getElementById('parent-count')
@@ -37,6 +38,7 @@ window.onload = async () => {
     alwaysOpen: true,
     openInNewTab: true,
     pdsFallback: true,
+    pdslsOpensJSON: true,
     jsonMode: false,
     keybinding: 'Ctrl+Shift+1',
     replyCount: 0,
@@ -49,6 +51,7 @@ window.onload = async () => {
     alwaysOpenCheckbox.checked = data.alwaysOpen ?? defaults.alwaysOpen
     redirectCheckbox.checked = data.openInNewTab ?? defaults.openInNewTab
     pdsFallbackCheckbox.checked = data.pdsFallback ?? defaults.pdsFallback
+    pdslsOpensJSONCheckbox.checked = data.pdslsOpensJSON ?? defaults.pdslsOpensJSON
     jsonModeCheckbox.checked = data.jsonMode ?? defaults.jsonMode
     replyCountSpinner.value = data.replyCount ?? defaults.replyCount
     parentCountSpinner.value = data.parentCount ?? defaults.parentCount
@@ -63,6 +66,7 @@ window.onload = async () => {
       alwaysOpen: alwaysOpenCheckbox.checked,
       openInNewTab: redirectCheckbox.checked,
       pdsFallback: pdsFallbackCheckbox.checked,
+      pdslsOpensJSON: pdslsOpensJSONCheckbox.checked,
       jsonMode: jsonModeCheckbox.checked,
       replyCount: replyCountSpinner.value,
       parentCount: parentCountSpinner.value,
@@ -78,6 +82,7 @@ window.onload = async () => {
       alwaysOpenCheckbox.checked = defaults.alwaysOpen
       redirectCheckbox.checked = defaults.openInNewTab
       pdsFallbackCheckbox.checked = defaults.pdsFallback
+      pdslsOpensJSONCheckbox.checked = defaults.pdslsOpensJSON
       jsonModeCheckbox.checked = defaults.jsonMode
       replyCountSpinner.value = defaults.replyCount
       parentCountSpinner.value = defaults.parentCount

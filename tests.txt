@@ -1,5 +1,5 @@
 Bluesky: https://bsky.app/profile/danabra.mov
-Bluesky: https://bsky.app/profile/did:plc:b3pn34agqqchkaf75v7h43dk/post/3lb67avsbik25
+Bluesky: https://bsky.app/profile/pfrazee.com/post/3l6isaepchr2a
 Bluesky: https://main.bsky.dev/profile/samuel.bsky.team/feed/aaaatt5lbsrbq
 Bluesky: https://bsky.app/starter-pack/samuel.bsky.team/3kztso5fnic24
 Bluesky: https://bsky.app/profile/did:plc:hx53snho72xoj7zqt5uice4u/post/3lbpz2lyeic2g/liked-by
@@ -17,6 +17,8 @@ Klearsky: https://klearsky.pages.dev/#/home/starter-pack?uri=at://did:plc:p2cp5g
 Klearsky: https://klearsky.pages.dev/#/home/feeds?feed=at://did:plc:p2cp5gopk7mgjegy6wadk3ep/app.bsky.feed.generator/aaaatt5lbsrbq&displayName=Numbers+station
 WhiteWind: https://whtwnd.com/hailey.at/entries/Hello%20Atproto
 WhiteWind: https://whtwnd.com/hailey.at/entries/Why%20post%20anywhere%20else%20when%20the%20engagement%20is%20on%20Bluesky%3F?rkey=3laq5rt7era2x
+WhiteWind: https://whtwnd.com/dreary.dev/3lche4zpqex27#user-content-fnref-8
+WhiteWind: https://whtwnd.com/dreary.dev/entries/Reply%20to%20Dave#user-content-fn-1
 FrontPage: https://frontpage.fyi/post/did:plc:iwpxnj7rzdynjkkr7rxaa5is/3lcb56fba6d2k
 FrontPage: https://frontpage.fyi/post/did:plc:ngokl2gnmpbvuvrfckja3g7p/3l7tegzuuim2x/fei.chicory.blue/3l7tusoznm22n
 Skylights: https://skylights.my/profile/watwa.re
@@ -34,4 +36,5 @@ LinkAt: https://linkat.blue/yukouduki.bsky.social
 Internect: https://internect.info/did/did:plc:znmktqkgqhm2twxcbqiszvx4
 bskyCDN: https://cdn.bsky.app/img/avatar/plain/did:plc:hx53snho72xoj7zqt5uice4u/bafkreiblp6bxadz42kevdcqcq3qofzxnoej5nhmwdqwcgjdg26ir2offdi@jpeg
 bskyVidCDN: https://video.bsky.app/watch/did%3Aplc%3Ahx53snho72xoj7zqt5uice4u/bafkreicf5nvgomy2kh3f6da7fcwghwrecm6ljcp4najy6vy5hvdn7tvec4/thumbnail.jpg
+XRPC: https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=did:plc:hx53snho72xoj7zqt5uice4u&collection=app.bsky.actor.profile&rkey=self
 PDS: https://porcini.us-east.host.bsky.network/

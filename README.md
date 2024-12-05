@@ -27,11 +27,14 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 * [Internect](https://internect.info/)
 * [Bsky CDN](https://cdn.bsky.app)
 * [Bsky Video CDN](https://video.bsky.app)
+* [Raw API Urls](https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=did:plc:hx53snho72xoj7zqt5uice4u&collection=app.bsky.actor.profile&rkey=self)
+* [PDSls](https://pdsls.dev/) (opens the API response directly)
 * If the above fail, attempt to load the link as a PDS
 
 ### Configure settings in about:addons
 * Always open PDSls, even if no valid URL found
 * Open new tab or redirect the current page
+* Open raw API response when activated on PDSls pages
 * Directly open getPostThread JSON for Bluesky posts
   * Reply count and parent height configurable, up to 1000
 * Override keybinding

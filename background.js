@@ -6,6 +6,7 @@ const defaults = {
   alwaysOpen: true,
   openInNewTab: true,
   pdsFallback: true,
+  pdslsOpensJSON: true,
   jsonMode: false,
   keybinding: "Ctrl+Shift+1"
 }
@@ -223,30 +224,49 @@ async function validateUrl(url) {
   ]
 
   const patterns = {
-    bsky: new RegExp(`^https://(?:${bskyClients.join('|')})/(?<prefix>profile|starter-pack)/(?<handle>[\\w.:%-]+)(?:/(?<suffix>post|lists|feed))?/?(?<rkey>[\\w.:%-]+)?(?:/[\\w.:%-]+)?(?:\\?.*)?$`),
-    aglais: /^https:\/\/aglais\.pages\.dev\/(?<handle>[\w.:%-]+)(?:\/(?<seg2>[\w.:%-]+))?(?:\/(?<seg3>[\w.:%-]+))?(?:\?.*)?$/,
+    pdsls: /^https:\/\/pdsls\.dev\/(?<pds>[\w.:%-]+)(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<nsid>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/,
+    bsky: new RegExp(`^https://(?:${bskyClients.join('|')})/(?<prefix>profile|starter-pack)/(?<handle>[\\w.:%-]+)(?:/(?<suffix>post|lists|feed))?/?(?<rkey>[\\w.:%-]+)?(?:/[\\w.:%-]+)?(?:[?#].*)?$`),
+    aglais: /^https:\/\/aglais\.pages\.dev\/(?<handle>[\w.:%-]+)(?:\/(?<seg2>[\w.:%-]+))?(?:\/(?<seg3>[\w.:%-]+))?(?:[?#].*)?$/,
     ouranos: /^https:\/\/useouranos\.app\/dashboard\/(?:user|feeds)\/(?<handle>[\w.:%-]+)(?:\/(?:[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\?(?:uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)))?$/,
     klearsky: /^https:\/\/klearsky\.pages\.dev\/#\/(?:([^/?]+)\/)?(?<type>[^/?]+)?(?:\?(?:[\w.-]+=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)|account=(?<account>[\w.:/-]+)))?(?:&.*)?$/,
-    whtwnd: /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)\/(?:entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?<postId>[\w.:%-]+))$/,
-    frontpage: /^https:\/\/frontpage\.fyi\/(?<prefix>profile|post)\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\/(?<handle2>[\w.:%-]+))?(?:\/(?<rkey2>[\w.:%-]+))?(?:\?.*)?$/,
-    skylights: /^https:\/\/skylights\.my\/profile\/(?<handle>[\w.:%-]+)(?:\?.*)?$/,
-    pinksea: /^https:\/\/pinksea\.art\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
-    atBrowser: /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>[^?]*))?(?:\?.*)?$/,
-    clearSky: /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?(?:\?.*)?$/,
+    whtwnd: /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)(?:\/entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?:\/(?<postId>[\w.:%-]+)))?(?:[?#][\w.:%-]+)?$/,
+    frontpage: /^https:\/\/frontpage\.fyi\/(?<prefix>profile|post)\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\/(?<handle2>[\w.:%-]+))?(?:\/(?<rkey2>[\w.:%-]+))?(?:[?#].*)?$/,
+    skylights: /^https:\/\/skylights\.my\/profile\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/,
+    pinksea: /^https:\/\/pinksea\.art\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/,
+    atBrowser: /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>[^?]*))?(?:[?#].*)?$/,
+    clearSky: /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?(?:[?#].*)?$/,
     blueViewer: /^https:\/\/blueviewer\.pages\.dev\/view\?actor=(?<handle>[\w.:%-]+)&rkey=(?<rkey>[\w.:%-]+)$/,
     skythread: /^https:\/\/blue\.mackuba\.eu\/skythread\/\?author=(?<handle>[\w.:%-]+)&post=(?<rkey>[\w.:%-]+)$/,
     skyview: /https:\/\/skyview\.social\/\?url=(?<url>[^&]+)/,
-    smokeSignal: /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
-    camp: /^https:\/\/atproto\.camp\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\?.*)?$/,
+    smokeSignal: /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/,
+    camp: /^https:\/\/atproto\.camp\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/,
     blueBadge: /^https:\/\/badge\.blue\/verify\?uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>.+)$/,
-    linkAt: /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)(?:\?.*)?$/,
-    internect: /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)(?:\?.*)?$/,
+    linkAt: /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/,
+    internect: /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)(?:[?#].*)?$/,
     bskyCDN: /^https:\/\/cdn\.bsky\.app\/(?:[\w.:%-]+\/){3}(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/,
     bskyVidCDN: /^https:\/\/video\.bsky\.app\/[\w.:%-]+\/(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/,
-    pds: /^https:\/\/(?<domain>.+)(?:\?.*)?$/,
+    xrpc: /^https:\/\/(?<domain>[^\/]+)\/xrpc\/(?<api>[\w.:%-]+)(?<params>\?.*)?$/,
+    pds: /^https:\/\/(?<domain>[^\/]+)/,
   }
 
   const handlers = {
+    pdsls: async ({ pds, handle, nsid, rkey }) => {
+      if (!settings.pdslsOpensJSON) return null
+      if (pds != "at") return `https://${pds}/xrpc/com.atproto.sync.listRepos?limit=1000`
+      const did = await getDid(handle)
+      if (!did) return null
+      const service = await getServiceEndpoint(did)
+      if (!service) return null
+      if (!nsid) {
+        return `${service}/xrpc/com.atproto.repo.describeRepo?repo=${did}`
+      } else if (nsid === "blobs") {
+        return `${service}/xrpc/com.atproto.sync.listBlobs?did=${did}&limit=1000`
+      } else if (!rkey) {
+        return `${service}/xrpc/com.atproto.repo.listRecords?repo=${did}&collection=${nsid}&limit=100`
+      } else {
+        return `${service}/xrpc/com.atproto.repo.getRecord?repo=${did}&collection=${nsid}&rkey=${rkey}`
+      }
+    },
     bsky: async ({ prefix, handle, suffix, rkey }) => {
       const did = await getDid(handle)
       if (!did) return null
@@ -412,11 +432,20 @@ async function validateUrl(url) {
       return `https://pdsls.dev/at/${did}`
     },
     bskyCDN: async ({ did }) => {
-      return `https://pdsls.dev/at/${did}`
+      return `https://pdsls.dev/at/${did}/blobs`
     },
     bskyVidCDN: async ({ did }) => {
       did = decodeURIComponent(did)
-      return `https://pdsls.dev/at/${did}`
+      return `https://pdsls.dev/at/${did}/blobs`
+    },
+    xrpc: async ({ domain, api, params }) => {
+      params = Object.fromEntries(new URLSearchParams(params))
+      const did = await getDid(params.repo || params.did)
+      const nsid = params.collection
+      const rkey = params.rkey
+      if (!did) return domain ? `https://pdsls.dev/${domain}` : null
+      if (api === "com.atproto.sync.listBlobs") return `https://pdsls.dev/at/${did}/blobs`
+      return `https://pdsls.dev/at/${did}${nsid ? '/' + nsid : ''}${(nsid && rkey) ? '/' + rkey : ''}`
     },
     pds: async ({ domain }) => {
       if (!settings.pdsFallback) {
