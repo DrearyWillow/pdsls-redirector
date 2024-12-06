@@ -1,22 +1,25 @@
 // Settings
-// browser.storage.sync.clear();
-// console.log('Storage cleared.');
+// browser.storage.sync.clear()
+// console.log('Storage cleared.')
 let settings = {}
 const defaults = {
   alwaysOpen: true,
   openInNewTab: true,
   pdsFallback: true,
-  pdslsOpensJSON: true,
-  jsonMode: false,
-  keybinding: "Ctrl+Shift+1"
+  pdslsOpensApi: true,
+  alwaysApi: false,
+  getPostThread: false,
+  keybinding: "Ctrl+Shift+1",
+  replyCount: 0,
+  parentCount: 0
 }
 
 async function loadSettings() {
   try {
     const data = await browser.storage.sync.get()
-    console.log('Data retrieved:', data)
+    console.log('Data retrieved from storage:', data)
     settings = { ...defaults, ...data }
-    console.log('Current settings:', settings)
+    console.log('Loaded settings:', settings)
     updateKeybinding()
   } catch (error) {
     console.error('Error retrieving settings:', error)
@@ -27,7 +30,7 @@ loadSettings()
 
 // Listen for settings changes
 browser.storage.onChanged.addListener((changes, area) => {
-  if (area != 'sync') return
+  if (area !== 'sync') return
   for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
     console.log(`Storage key "${key}" changed from`, oldValue, 'to', newValue)
     settings[key] = newValue
@@ -61,7 +64,7 @@ browser.browserAction.onClicked.addListener(() => {
 // Context Menu
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
   console.log("Entry point: contextMenuListener")
-  if (info.menuItemId != "PDSls") { return true }
+  if (info.menuItemId !== "PDSls") { return true }
   let url
   if (info.bookmarkId) {
     console.log("URL type: bookmark")
@@ -212,266 +215,288 @@ async function getWhiteWindUri(did, service, title) {
   return null
 }
 
-// Validate and format URL
-async function validateUrl(url) {
-  if (!url) return null
+// Supported site classes
+class Patterns {
+  static pdsls = /^https:\/\/pdsls\.dev\/(?<pds>[\w.:%-]+)(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<nsid>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/
+  static bsky = new RegExp(
+    '^https://' +
+    '(?:bsky\\.app|main\\.bsky\\.dev|langit\\.pages\\.dev/u/[\\w.:%-]+|tokimekibluesky\\.vercel\\.app)' +
+    '/(?<prefix>profile|starter-pack)' +
+    '/(?<handle>[\\w.:%-]+)' +
+    '(?:/(?<suffix>post|lists|feed))?' +
+    '/?(?<rkey>[\\w.:%-]+)?' +
+    '(?:/[\\w.:%-]+)?' +
+    '(?:[?#].*)?$'
+  );
+  static aglais = /^https:\/\/aglais\.pages\.dev\/(?<handle>[\w.:%-]+)(?:\/(?<seg2>[\w.:%-]+))?(?:\/(?<seg3>[\w.:%-]+))?(?:[?#].*)?$/
+  static ouranos = /^https:\/\/useouranos\.app\/dashboard\/(?:user|feeds)\/(?<handle>[\w.:%-]+)(?:\/(?:[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\?(?:uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)))?$/
+  static klearsky = /^https:\/\/klearsky\.pages\.dev\/#\/(?:([^/?]+)\/)?(?<type>[^/?]+)?(?:\?(?:[\w.-]+=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)|account=(?<account>[\w.:/-]+)))?(?:&.*)?$/
+  static whtwnd = /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)(?:\/entries\/(?<title>[\w.,':%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?:\/(?<postId>[\w.:%-]+)))?(?:[?#][\w.:%-]+)?$/
+  static frontpage = /^https:\/\/frontpage\.fyi\/(?<prefix>profile|post)\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\/(?<handle2>[\w.:%-]+))?(?:\/(?<rkey2>[\w.:%-]+))?(?:[?#].*)?$/
+  static skylights = /^https:\/\/skylights\.my\/profile\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/
+  static pinksea = /^https:\/\/pinksea\.art\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/
+  static atBrowser = /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>[^?]*))?(?:[?#].*)?$/
+  static clearSky = /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?(?:[?#].*)?$/
+  static blueViewer = /^https:\/\/blueviewer\.pages\.dev\/view\?actor=(?<handle>[\w.:%-]+)&rkey=(?<rkey>[\w.:%-]+)$/
+  static skythread = /^https:\/\/blue\.mackuba\.eu\/skythread\/\?author=(?<handle>[\w.:%-]+)&post=(?<rkey>[\w.:%-]+)$/
+  static skyview = /https:\/\/skyview\.social\/\?url=(?<url>[^&]+)/
+  static smokeSignal = /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/
+  static camp = /^https:\/\/atproto\.camp\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/
+  static blueBadge = /^https:\/\/badge\.blue\/verify\?uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>.+)$/
+  static linkAt = /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/
+  static internect = /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)(?:[?#].*)?$/
+  static bskyCDN = /^https:\/\/cdn\.bsky\.app\/(?:[\w.:%-]+\/){3}(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/
+  static bskyVidCDN = /^https:\/\/video\.bsky\.app\/[\w.:%-]+\/(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/
+  static xrpc = /^https:\/\/(?<domain>[^\/]+)\/xrpc\/(?<api>[\w.:%-]+)(?<params>\?.*)?$/
+  static pds = /^https:\/\/(?<domain>[^\/]+)/
+}
 
-  const bskyClients = [
-    'bsky.app',
-    'main.bsky.dev',
-    'langit.pages.dev/u/[\\w.:%-]+',
-    'tokimekibluesky.vercel.app',
-  ]
-
-  const patterns = {
-    pdsls: /^https:\/\/pdsls\.dev\/(?<pds>[\w.:%-]+)(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<nsid>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/,
-    bsky: new RegExp(`^https://(?:${bskyClients.join('|')})/(?<prefix>profile|starter-pack)/(?<handle>[\\w.:%-]+)(?:/(?<suffix>post|lists|feed))?/?(?<rkey>[\\w.:%-]+)?(?:/[\\w.:%-]+)?(?:[?#].*)?$`),
-    aglais: /^https:\/\/aglais\.pages\.dev\/(?<handle>[\w.:%-]+)(?:\/(?<seg2>[\w.:%-]+))?(?:\/(?<seg3>[\w.:%-]+))?(?:[?#].*)?$/,
-    ouranos: /^https:\/\/useouranos\.app\/dashboard\/(?:user|feeds)\/(?<handle>[\w.:%-]+)(?:\/(?:[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\?(?:uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)))?$/,
-    klearsky: /^https:\/\/klearsky\.pages\.dev\/#\/(?:([^/?]+)\/)?(?<type>[^/?]+)?(?:\?(?:[\w.-]+=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)|account=(?<account>[\w.:/-]+)))?(?:&.*)?$/,
-    whtwnd: /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)(?:\/entries\/(?<title>[\w.:%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?:\/(?<postId>[\w.:%-]+)))?(?:[?#][\w.:%-]+)?$/,
-    frontpage: /^https:\/\/frontpage\.fyi\/(?<prefix>profile|post)\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\/(?<handle2>[\w.:%-]+))?(?:\/(?<rkey2>[\w.:%-]+))?(?:[?#].*)?$/,
-    skylights: /^https:\/\/skylights\.my\/profile\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/,
-    pinksea: /^https:\/\/pinksea\.art\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/,
-    atBrowser: /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>[^?]*))?(?:[?#].*)?$/,
-    clearSky: /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?(?:[?#].*)?$/,
-    blueViewer: /^https:\/\/blueviewer\.pages\.dev\/view\?actor=(?<handle>[\w.:%-]+)&rkey=(?<rkey>[\w.:%-]+)$/,
-    skythread: /^https:\/\/blue\.mackuba\.eu\/skythread\/\?author=(?<handle>[\w.:%-]+)&post=(?<rkey>[\w.:%-]+)$/,
-    skyview: /https:\/\/skyview\.social\/\?url=(?<url>[^&]+)/,
-    smokeSignal: /^https:\/\/smokesignal\.events\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/,
-    camp: /^https:\/\/atproto\.camp\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/,
-    blueBadge: /^https:\/\/badge\.blue\/verify\?uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>.+)$/,
-    linkAt: /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/,
-    internect: /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)(?:[?#].*)?$/,
-    bskyCDN: /^https:\/\/cdn\.bsky\.app\/(?:[\w.:%-]+\/){3}(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/,
-    bskyVidCDN: /^https:\/\/video\.bsky\.app\/[\w.:%-]+\/(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/,
-    xrpc: /^https:\/\/(?<domain>[^\/]+)\/xrpc\/(?<api>[\w.:%-]+)(?<params>\?.*)?$/,
-    pds: /^https:\/\/(?<domain>[^\/]+)/,
+class Handlers {
+  static pdsls = async ({ pds, handle, nsid, rkey }, noEarlyQuit = false) => {
+    console.log(`PDSls handler recieved: ` + pds, handle, nsid, rkey, noEarlyQuit)
+    if (!settings.pdslsOpensApi && !noEarlyQuit) return null
+    if (pds !== "at") return `https://${pds}/xrpc/com.atproto.sync.listRepos?limit=1000`
+    const did = await getDid(handle)
+    if (!did) return null
+    const service = await getServiceEndpoint(did)
+    if (!service) return null
+    if (!nsid) {
+      return `${service}/xrpc/com.atproto.repo.describeRepo?repo=${did}`
+    } else if (nsid === "blobs") {
+      return `${service}/xrpc/com.atproto.sync.listBlobs?did=${did}&limit=1000`
+    } else if (!rkey) {
+      return `${service}/xrpc/com.atproto.repo.listRecords?repo=${did}&collection=${nsid}&limit=100`
+    } else {
+      return `${service}/xrpc/com.atproto.repo.getRecord?repo=${did}&collection=${nsid}&rkey=${rkey}`
+    }
   }
+  static bsky = async ({ prefix, handle, suffix, rkey }) => {
+    const did = await getDid(handle)
+    if (!did) return null
 
-  const handlers = {
-    pdsls: async ({ pds, handle, nsid, rkey }) => {
-      if (!settings.pdslsOpensJSON) return null
-      if (pds != "at") return `https://${pds}/xrpc/com.atproto.sync.listRepos?limit=1000`
-      const did = await getDid(handle)
-      if (!did) return null
-      const service = await getServiceEndpoint(did)
-      if (!service) return null
-      if (!nsid) {
-        return `${service}/xrpc/com.atproto.repo.describeRepo?repo=${did}`
-      } else if (nsid === "blobs") {
-        return `${service}/xrpc/com.atproto.sync.listBlobs?did=${did}&limit=1000`
-      } else if (!rkey) {
-        return `${service}/xrpc/com.atproto.repo.listRecords?repo=${did}&collection=${nsid}&limit=100`
-      } else {
-        return `${service}/xrpc/com.atproto.repo.getRecord?repo=${did}&collection=${nsid}&rkey=${rkey}`
-      }
-    },
-    bsky: async ({ prefix, handle, suffix, rkey }) => {
-      const did = await getDid(handle)
-      if (!did) return null
+    if (prefix === "starter-pack" && rkey) {
+      return `https://pdsls.dev/at/${did}/app.bsky.graph.starterpack/${rkey}`
+    }
 
-      if (prefix === "starter-pack" && rkey) {
-        return `https://pdsls.dev/at/${did}/app.bsky.graph.starterpack/${rkey}`
-      }
+    if (!rkey) return `https://pdsls.dev/at/${did}`
+    if (prefix !== "profile") return null
 
-      if (!rkey) return `https://pdsls.dev/at/${did}`
-      if (prefix !== "profile") return null
-
-      switch (suffix) {
-        case "post":
-          const postUri = `${did}/app.bsky.feed.post/${rkey}`
-          if (settings.jsonMode) {
-            const depth = settings.replyCount
-            const parents = settings.parentCount
-            return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
-          }
-          return `https://pdsls.dev/at/${postUri}`
-        case "feed":
-          return `https://pdsls.dev/at/${did}/app.bsky.feed.generator/${rkey}`
-        case "lists":
-          return `https://pdsls.dev/at/${did}/app.bsky.graph.list/${rkey}`
-        default:
-          return null
-      }
-    },
-    aglais: async ({ handle, seg2, seg3 }) => {
-      const did = await getDid(handle)
-      if (!did) return null
-      if (seg2 === 'curation-lists') return seg3 ? `https://pdsls.dev/at/${did}/app.bsky.graph.list/${seg3}` : `https://pdsls.dev/at/${did}`
-      const rkey = seg2 || null
-      if (!rkey) return `https://pdsls.dev/at/${did}`
-      const postUri = `${did}/app.bsky.feed.post/${rkey}`
-      if (settings.jsonMode) {
-        const depth = settings.replyCount
-        const parents = settings.parentCount
-        return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
-      }
-      return `https://pdsls.dev/at/${postUri}`
-    },
-    ouranos: async ({ handle, rkey, uri }) => {
-      if (uri) {
-        uri = decodeURIComponent(uri)
-        return `https://pdsls.dev/at/${uri}`
-      }
-      const did = await getDid(handle)
-      if (!did) return null
-      return rkey ? `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}` : `https://pdsls.dev/at/${did}`
-    },
-    klearsky: async ({ type, uri, account }) => {
-      if (uri) {
-        if (settings.jsonMode && type == "post") {
+    switch (suffix) {
+      case "post":
+        const postUri = `${did}/app.bsky.feed.post/${rkey}`
+        if (settings.getPostThread) {
           const depth = settings.replyCount
           const parents = settings.parentCount
-          return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=${depth}&parentHeight=${parents}`
+          return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
         }
-        return `https://pdsls.dev/at/${uri}`
-      }
-      const did = await getDid(account)
-      if (!did) return null
-      if (type == "starterPacks") return `https://pdsls.dev/at/${did}/app.bsky.graph.starterpack`
-      else if (type == "feed-generators") return `https://pdsls.dev/at/${did}/app.bsky.feed.generator`
-      else if (type == "list") return `https://pdsls.dev/at/${did}/app.bsky.graph.list`
-      else return `https://pdsls.dev/at/${did}`
-    },
-    whtwnd: async ({ handle, title, rkey, postId }) => {
-      const did = await getDid(handle)
-      if (!did) return null
-
-      if (rkey || postId) {
-        return `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry/${rkey || postId}`
-      }
-
-      if (title) {
-        const service = await getServiceEndpoint(did)
-        let uri = service ? await getWhiteWindUri(did, service, title) : null
-        return uri
-          ? `https://pdsls.dev/at/${uri.replace("at://", "")}`
-          : `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry`
-      }
-
-      return `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry`
-    },
-    frontpage: async ({ prefix, handle, rkey, handle2, rkey2 }) => {
-      let did
-      switch (prefix) {
-        case 'post':
-          if (handle2 && rkey2) {
-            const did2 = await getDid(handle2)
-            if (did2) return `https://pdsls.dev/at/${did2}/fyi.unravel.frontpage.comment/${rkey2}`
-          }
-          did = await getDid(handle)
-          if (!did) return null
-          return rkey ? `https://pdsls.dev/at/${did}/fyi.unravel.frontpage.post/${rkey}` : null
-        case 'profile':
-          did = await getDid(handle)
-          if (!did) return null
-          return `https://pdsls.dev/at/${did}/fyi.unravel.frontpage.post`
-        default:
-          return null
-      }
-    },
-    skylights: async ({ handle }) => {
-      const did = await getDid(handle)
-      return did ? `https://pdsls.dev/at/${did}/my.skylights.rel` : null
-    },
-    pinksea: async ({ handle, suffix, rkey }) => {
-      const did = await getDid(handle)
-      if (!did) return null
-      return rkey ? `https://pdsls.dev/at/${did}/com.shinolabs.pinksea.oekaki/${rkey}` : `https://pdsls.dev/at/${did}/com.shinolabs.pinksea.oekaki`
-    },
-    atBrowser: async ({ handle, rest }) => {
-      const did = await getDid(handle)
-      return did ? `https://pdsls.dev/at/${did}/${rest || ""}` : null
-    },
-    clearSky: async ({ handle, type }) => {
-      const did = await getDid(handle)
-      if (!did) return null
-      const typeSuffix =
-        type === "history" ? "app.bsky.feed.post" : type === "blocking" ? "app.bsky.graph.block" : ""
-      return `https://pdsls.dev/at/${did}/${typeSuffix}`
-    },
-    blueViewer: async ({ handle, rkey }) => {
-      const did = await getDid(handle)
-      if (!(did && rkey)) return null
-      return `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}`
-    },
-    skythread: async ({ handle, rkey }) => {
-      const did = await getDid(handle)
-      if (!(did && rkey)) return null
-      return `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}`
-    },
-    skyview: async ({ url }) => {
-      if (match = decodeURIComponent(url).match(patterns.bsky)) {
-        console.log(`Passing to bsky handler`)
-        return await handlers['bsky'](match.groups)
-      }
-      return null
-    },
-    smokeSignal: async ({ handle, rkey }) => {
-      const did = await getDid(handle)
-      return did
-        ? `https://pdsls.dev/at/${did}${rkey
-          ? `/events.smokesignal.calendar.event/${rkey}`
-          : "/events.smokesignal.app.profile/self"}`
-        : null
-    },
-    camp: async ({ handle, rkey }) => {
-      const did = await getDid(handle)
-      return did ? `https://pdsls.dev/at/${did}/blue.badge.collection/${rkey || ""}` : null
-    },
-    blueBadge: async ({ uri }) => {
+        return `https://pdsls.dev/at/${postUri}`
+      case "feed":
+        return `https://pdsls.dev/at/${did}/app.bsky.feed.generator/${rkey}`
+      case "lists":
+        return `https://pdsls.dev/at/${did}/app.bsky.graph.list/${rkey}`
+      default:
+        return null
+    }
+  }
+  static aglais = async ({ handle, seg2, seg3 }) => {
+    const did = await getDid(handle)
+    if (!did) return null
+    if (seg2 === 'curation-lists') return seg3 ? `https://pdsls.dev/at/${did}/app.bsky.graph.list/${seg3}` : `https://pdsls.dev/at/${did}`
+    const rkey = seg2 || null
+    if (!rkey) return `https://pdsls.dev/at/${did}`
+    const postUri = `${did}/app.bsky.feed.post/${rkey}`
+    if (settings.getPostThread) {
+      const depth = settings.replyCount
+      const parents = settings.parentCount
+      return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
+    }
+    return `https://pdsls.dev/at/${postUri}`
+  }
+  static ouranos = async ({ handle, rkey, uri }) => {
+    if (uri) {
       uri = decodeURIComponent(uri)
       return `https://pdsls.dev/at/${uri}`
-    },
-    linkAt: async ({ handle }) => {
-      const did = await getDid(handle)
-      return did ? `https://pdsls.dev/at/${did}/blue.linkat.board/self` : null
-    },
-    internect: async ({ did }) => {
-      return `https://pdsls.dev/at/${did}`
-    },
-    bskyCDN: async ({ did }) => {
-      return `https://pdsls.dev/at/${did}/blobs`
-    },
-    bskyVidCDN: async ({ did }) => {
-      did = decodeURIComponent(did)
-      return `https://pdsls.dev/at/${did}/blobs`
-    },
-    xrpc: async ({ domain, api, params }) => {
-      params = Object.fromEntries(new URLSearchParams(params))
-      const did = await getDid(params.repo || params.did)
-      const nsid = params.collection
-      const rkey = params.rkey
-      if (!did) return domain ? `https://pdsls.dev/${domain}` : null
-      if (api === "com.atproto.sync.listBlobs") return `https://pdsls.dev/at/${did}/blobs`
-      return `https://pdsls.dev/at/${did}${nsid ? '/' + nsid : ''}${(nsid && rkey) ? '/' + rkey : ''}`
-    },
-    pds: async ({ domain }) => {
-      if (!settings.pdsFallback) {
-        console.warn("PDS fallback matching is set to false. No match found.")
-        return null
-      }
-      return `https://pdsls.dev/${domain}`
-    },
+    }
+    const did = await getDid(handle)
+    if (!did) return null
+    return rkey ? `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}` : `https://pdsls.dev/at/${did}`
   }
+  static klearsky = async ({ type, uri, account }) => {
+    if (uri) {
+      if (settings.getPostThread && type === "post") {
+        const depth = settings.replyCount
+        const parents = settings.parentCount
+        return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=${depth}&parentHeight=${parents}`
+      }
+      return `https://pdsls.dev/at/${uri}`
+    }
+    const did = await getDid(account)
+    if (!did) return null
+    if (type === "starterPacks") return `https://pdsls.dev/at/${did}/app.bsky.graph.starterpack`
+    else if (type === "feed-generators") return `https://pdsls.dev/at/${did}/app.bsky.feed.generator`
+    else if (type === "list") return `https://pdsls.dev/at/${did}/app.bsky.graph.list`
+    else return `https://pdsls.dev/at/${did}`
+  }
+  static whtwnd = async ({ handle, title, rkey, postId }) => {
+    console.log(`whtwnd handler recieved: ` + handle, title, rkey, postId)
+    const did = await getDid(handle)
+    if (!did) return null
 
-  for (const [key, regex] of Object.entries(patterns)) {
+    if (rkey || postId) {
+      return `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry/${rkey || postId}`
+    }
+
+    if (title) {
+      const service = await getServiceEndpoint(did)
+      let uri = service ? await getWhiteWindUri(did, service, title) : null
+      return uri
+        ? `https://pdsls.dev/at/${uri.replace("at://", "")}`
+        : `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry`
+    }
+
+    return `https://pdsls.dev/at/${did}/com.whtwnd.blog.entry`
+  }
+  static frontpage = async ({ prefix, handle, rkey, handle2, rkey2 }) => {
+    let did
+    switch (prefix) {
+      case 'post':
+        if (handle2 && rkey2) {
+          const did2 = await getDid(handle2)
+          if (did2) return `https://pdsls.dev/at/${did2}/fyi.unravel.frontpage.comment/${rkey2}`
+        }
+        did = await getDid(handle)
+        if (!did) return null
+        return rkey ? `https://pdsls.dev/at/${did}/fyi.unravel.frontpage.post/${rkey}` : null
+      case 'profile':
+        did = await getDid(handle)
+        if (!did) return null
+        return `https://pdsls.dev/at/${did}/fyi.unravel.frontpage.post`
+      default:
+        return null
+    }
+  }
+  static skylights = async ({ handle }) => {
+    const did = await getDid(handle)
+    return did ? `https://pdsls.dev/at/${did}/my.skylights.rel` : null
+  }
+  static pinksea = async ({ handle, suffix, rkey }) => {
+    const did = await getDid(handle)
+    if (!did) return null
+    return rkey ? `https://pdsls.dev/at/${did}/com.shinolabs.pinksea.oekaki/${rkey}` : `https://pdsls.dev/at/${did}/com.shinolabs.pinksea.oekaki`
+  }
+  static atBrowser = async ({ handle, rest }) => {
+    const did = await getDid(handle)
+    return did ? `https://pdsls.dev/at/${did}/${rest || ""}` : null
+  }
+  static clearSky = async ({ handle, type }) => {
+    const did = await getDid(handle)
+    if (!did) return null
+    const typeSuffix =
+      type === "history"
+        ? "app.bsky.feed.post"
+        : type === "blocking"
+          ? "app.bsky.graph.block"
+          : ""
+    return `https://pdsls.dev/at/${did}/${typeSuffix}`
+  }
+  static blueViewer = async ({ handle, rkey }) => {
+    const did = await getDid(handle)
+    if (!(did && rkey)) return null
+    return `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}`
+  }
+  static skythread = async ({ handle, rkey }) => {
+    const did = await getDid(handle)
+    if (!(did && rkey)) return null
+    return `https://pdsls.dev/at/${did}/app.bsky.feed.post/${rkey}`
+  }
+  static skyview = async ({ url }) => {
+    const match = decodeURIComponent(url).match(Patterns.bsky)
+    if (!match) return null
+    console.log(`Passing to bsky handler`)
+    return await Handlers.bsky(match.groups)
+  }
+  static smokeSignal = async ({ handle, rkey }) => {
+    const did = await getDid(handle)
+    return did
+      ? `https://pdsls.dev/at/${did}${rkey
+        ? `/events.smokesignal.calendar.event/${rkey}`
+        : "/events.smokesignal.app.profile/self"}`
+      : null
+  }
+  static camp = async ({ handle, rkey }) => {
+    const did = await getDid(handle)
+    return did ? `https://pdsls.dev/at/${did}/blue.badge.collection/${rkey || ""}` : null
+  }
+  static blueBadge = async ({ uri }) => {
+    return `https://pdsls.dev/at/${decodeURIComponent(uri)}`
+  }
+  static linkAt = async ({ handle }) => {
+    const did = await getDid(handle)
+    return did ? `https://pdsls.dev/at/${did}/blue.linkat.board/self` : null
+  }
+  static internect = async ({ did }) => {
+    return `https://pdsls.dev/at/${did}`
+  }
+  static bskyCDN = async ({ did }) => {
+    return `https://pdsls.dev/at/${did}/blobs`
+  }
+  static bskyVidCDN = async ({ did }) => {
+    return `https://pdsls.dev/at/${decodeURIComponent(did)}/blobs`
+  }
+  static xrpc = async ({ domain, api, params }) => {
+    params = Object.fromEntries(new URLSearchParams(params))
+    const did = await getDid(params.repo || params.did)
+    const nsid = params.collection
+    const rkey = params.rkey
+    if (!did) return domain ? `https://pdsls.dev/${domain}` : null
+    if (api === "com.atproto.sync.listBlobs") return `https://pdsls.dev/at/${did}/blobs`
+    return `https://pdsls.dev/at/${did}${nsid ? '/' + nsid : ''}${(nsid && rkey) ? '/' + rkey : ''}`
+  }
+  static pds = async ({ domain }) => {
+    if (!settings.pdsFallback) {
+      console.warn("PDS fallback matching is set to false. No match found.")
+      return null
+    }
+    return `https://pdsls.dev/${domain}`
+  }
+}
+
+// Loop over supported patterns and return processed URL
+async function checkPatterns(url) {
+  if (!url) return null
+  for (const [key, regex] of Object.entries(Patterns)) {
     const match = url.match(regex)
     if (match) {
       console.log(`Match: ${key}`)
-      const handler = handlers[key]
-      if (handler) {
-        return await handler(match.groups)
-      }
+      return await Handlers[key](match.groups)
     }
   }
-
   console.error("No match found: Invalid website")
   return null
 }
 
-// Open a provided url or the current page url, after validation 
+// Validate a returned pattern
+async function validateUrl(url) {
+  console.log(`Validate URL received: ${url}`)
+  if (settings.alwaysApi && url) {
+    const match = decodeURIComponent(url).match(Patterns.pdsls)
+    if (match) {
+      console.log(`Converting to raw API request...`)
+      url = await Handlers.pdsls(match.groups, noEarlyQuit = true)
+    }
+  }
+  if (!url) {
+    if (!settings.alwaysOpen) {
+      console.warn(`Unsupported input. Not redirecting due to user preferences.`)
+    } else {
+      console.log(`Unsupported input. Defaulting to pdsls.dev`)
+      url = `https://pdsls.dev`
+    }
+  }
+  return url
+}
+
+// Open a provided URL or the current page URL, after processing
 async function openNewTab(url) {
   if (!url) {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true })
@@ -479,17 +504,12 @@ async function openNewTab(url) {
   }
   if (!url) { console.error("Error: No URL"); return }
 
-  let newUrl = await validateUrl(url)
-  if (!newUrl) {
-    if (settings.alwaysOpen) {
-      newUrl = `https://pdsls.dev`
-    } else return
-  }
-  if (settings.openInNewTab) {
-    await browser.tabs.create({ url: newUrl })
-  } else {
-    await browser.tabs.update({ url: newUrl })
-  }
+  let newUrl = await validateUrl(await checkPatterns(url))
 
-  console.log(`URL opened: ${newUrl}`)
+  if (newUrl) {
+    await settings.openInNewTab
+      ? browser.tabs.create({ url: newUrl })
+      : browser.tabs.update({ url: newUrl })
+    console.log(`URL opened: ${newUrl}`)
+  }
 }

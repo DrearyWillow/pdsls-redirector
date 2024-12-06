@@ -33,8 +33,13 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 
 ### Configure settings in about:addons
 * Always open PDSls, even if no valid URL found
+* If no URL pattern matched, fallback to PDS matching
 * Open new tab or redirect the current page
 * Open raw API response when activated on PDSls pages
+* Ignore PDSls. Opens raw API responses directly.
 * Directly open getPostThread JSON for Bluesky posts
   * Reply count and parent height configurable, up to 1000
 * Override keybinding
+
+### Performance
+Sometimes the extension has to make API calls (for instance, resolving a handle to a DID). These requests can take variable lengths of time to yield responses. This can lead to delays in redirection.
