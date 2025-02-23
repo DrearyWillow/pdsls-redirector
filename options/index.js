@@ -8,12 +8,18 @@ window.onload = async () => {
   const replyCountSpinner = document.getElementById('reply-count')
   const parentCountSpinner = document.getElementById('parent-count')
   const getPostThreadParams = document.querySelector('.get-post-thread-params')
-  const keybindingInput = document.querySelector('.keybinding')
+  const keybindingInput = document.getElementById('keybinding')
+  const enableCopyUriCheckbox = document.getElementById('enable-copy-uri')
+  const copyUriKeybindManager = document.querySelector('.copy-uri-keybind-manager')
+  const copyUriKeybindInput = document.getElementById('copy-uri-keybind')
   const saveButton = document.querySelector('.save-button')
   const resetButton = document.querySelector('.reset-button')
 
   getPostThreadCheckbox.addEventListener('change', (event) => {
     getPostThreadParams.style.display = event.target.checked ? 'block' : 'none'
+  })
+  enableCopyUriCheckbox.addEventListener('change', (event) => {
+    copyUriKeybindManager.style.display = event.target.checked ? 'block' : 'none'
   })
 
   replyCountSpinner.addEventListener('input', () => {
@@ -43,6 +49,8 @@ window.onload = async () => {
     alwaysApi: false,
     getPostThread: false,
     keybinding: 'Ctrl+Shift+1',
+    copyUriEnabled: false,
+    copyUriKeybind: "Ctrl+Shift+2",
     replyCount: 0,
     parentCount: 0,
   }
@@ -60,6 +68,8 @@ window.onload = async () => {
     replyCountSpinner.value = data.replyCount ?? defaults.replyCount
     parentCountSpinner.value = data.parentCount ?? defaults.parentCount
     keybindingInput.value = data.keybinding ?? defaults.keybinding
+    enableCopyUriCheckbox.checked = data.copyUriEnabled ?? defaults.copyUriEnabled
+    copyUriKeybindInput.value = data.copyUriKeybind ?? defaults.copyUriKeybind
   } catch (error) {
     console.error('Error retrieving settings:', error)
   }
@@ -75,7 +85,9 @@ window.onload = async () => {
       getPostThread: getPostThreadCheckbox.checked,
       replyCount: replyCountSpinner.value,
       parentCount: parentCountSpinner.value,
-      keybinding: keybindingInput.value
+      keybinding: keybindingInput.value,
+      copyUriEnabled: enableCopyUriCheckbox.checked,
+      copyUriKeybind: copyUriKeybindInput.value
     }, () => {
       console.log('Settings saved')
     })
@@ -93,10 +105,14 @@ window.onload = async () => {
       replyCountSpinner.value = defaults.replyCount
       parentCountSpinner.value = defaults.parentCount
       keybindingInput.value = defaults.keybinding
+      enableCopyUriCheckbox.checked = defaults.copyUriEnabled
+      copyUriKeybindInput.value = defaults.copyUriKeybind
       getPostThreadParams.style.display = getPostThreadCheckbox.checked ? 'block' : 'none'
+      copyUriKeybindManager.style.display = enableCopyUriCheckbox.checked ? 'block' : 'none'
       console.log('Settings reset to defaults')
     })
   })
 
   getPostThreadParams.style.display = getPostThreadCheckbox.checked ? 'block' : 'none'
+  copyUriKeybindManager.style.display = enableCopyUriCheckbox.checked ? 'block' : 'none'
 }

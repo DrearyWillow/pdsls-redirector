@@ -10,6 +10,8 @@ const defaults = {
   alwaysApi: false,
   getPostThread: false,
   keybinding: "Ctrl+Shift+1",
+  copyUriEnabled: false,
+  copyUriKeybind: "Ctrl+Shift+2",
   replyCount: 0,
   parentCount: 0
 }
@@ -20,7 +22,7 @@ async function loadSettings() {
     console.log('Data retrieved from storage:', data)
     settings = { ...defaults, ...data }
     console.log('Loaded settings:', settings)
-    updateKeybinding()
+    updateKeybindings()
   } catch (error) {
     console.error('Error retrieving settings:', error)
     return null
@@ -31,29 +33,48 @@ loadSettings()
 // Listen for settings changes
 browser.storage.onChanged.addListener((changes, area) => {
   if (area !== 'sync') return
+  buildMenus()
   for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
     console.log(`Storage key "${key}" changed from`, oldValue, 'to', newValue)
     settings[key] = newValue
-    if (key === "keybinding") {
-      updateKeybinding()
-    }
   }
+  updateKeybindings()
 })
 
-function updateKeybinding() {
+function updateKeybindings() {
   const keybinding = settings.keybinding || defaults.keybinding
+  console.log(`Keybinding for "pdsls-tab" is now`, keybinding)
   browser.commands.update({
     name: "pdsls-tab",
     shortcut: keybinding
   })
+  const copyUriKeybind = (settings.copyUriEnabled || defaults.copyUriEnabled)
+    ? (settings.copyUriKeybind || defaults.copyUriKeybind)
+    : ""
+  console.log(`Keybinding for "at-uri-copy" is now`, copyUriKeybind)
+  browser.commands.update({
+    name: "at-uri-copy",
+    shortcut: copyUriKeybind
+  })
 }
 
 // Create context menu
-browser.contextMenus.create({
-  id: "PDSls",
-  title: "PDSls",
-  contexts: ["page", "selection", "bookmark", "link"]
-})
+async function buildMenus() {
+  await browser.contextMenus.removeAll()
+  await browser.contextMenus.create({
+    id: "PDSls",
+    title: "PDSls",
+    contexts: ["page", "selection", "bookmark", "link"]
+  })
+  if (settings.copyUriEnabled) {
+    await browser.contextMenus.create({
+      id: "copyATUri",
+      title: "Copy AT-URI",
+      contexts: ["page", "selection", "bookmark", "link"]
+    })
+  }
+}
+buildMenus()
 
 // Extension Icon
 browser.browserAction.onClicked.addListener(() => {
@@ -63,8 +84,8 @@ browser.browserAction.onClicked.addListener(() => {
 
 // Context Menu
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
-  console.log("Entry point: contextMenuListener")
-  if (info.menuItemId !== "PDSls") { return true }
+  console.log(`Entry point: ${info.menuItemId} contextMenuListener`)
+  if (info.menuItemId !== "PDSls" && info.menuItemId !== "copyATUri") { return true }
   let url
   if (info.bookmarkId) {
     console.log("URL type: bookmark")
@@ -79,13 +100,24 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!url) {
     return
   }
-  openNewTab(url)
+  if (info.menuItemId === "PDSls") {
+    openNewTab(url)
+  } else if (info.menuItemId === "copyATUri") {
+    copyAtUri(url)
+  }
 })
 
 // Keybinding
 browser.commands.onCommand.addListener((command) => {
-  console.log("Entry point: keybinding")
+  console.log(`Entry point: ${command} keybinding`)
   if (command === "pdsls-tab") { openNewTab() }
+  if (command === "at-uri-copy") {
+    if (settings.copyUriEnabled || defaults.copyUriEnabled) {
+      copyAtUri()
+    } else {
+      console.log(`Copying AT-URI disabled - configure in settings.`)
+    }
+  }
 })
 
 // API functions
@@ -261,7 +293,7 @@ class Lexicons {
 class Resolvers {
   static bsky = async ({ did, nsid, rkey }) => {
     console.log(`bsky resolver received: ` + did, nsid, rkey)
-    if (!did) return null
+    if (!did) return settings.alwaysOpen ? `https://bsky.app` : null
     if (!rkey) return `https://bsky.app/profile/${did}`
     switch (nsid) {
       case "app.bsky.feed.post":
@@ -280,8 +312,8 @@ class Resolvers {
   }
   static pinboards = async ({ did, nsid, rkey }) => {
     console.log(`pinboards resolver received: ` + did, nsid, rkey)
-    if (!did) return null
-    if (!rkey) return null // no profile page for now
+    if (!did) return settings.alwaysOpen ? `https://pinboards.jeroba.xyz` : null
+    if (!rkey) return settings.alwaysOpen ? `https://pinboards.jeroba.xyz` : null // no profile page for now
     if (nsid === `xyz.jeroba.tags.tag`) {
       return `https://pinboards.jeroba.xyz/profile/${did}/board/${rkey}` 
     }
@@ -290,7 +322,7 @@ class Resolvers {
   static whtwnd = async ({ did, nsid, rkey }) => {
     console.log(`whtwnd resolver received: ` + did, nsid, rkey)
     // there is only collection for now, but i do this to stay safe
-    if (!did) return null
+    if (!did) return settings.alwaysOpen ? `https://whtwnd.com` : null
     if (rkey && nsid === "com.whtwnd.blog.entry") {
       return `https://whtwnd.com/${did}/entries/${rkey}`
     }
@@ -298,7 +330,7 @@ class Resolvers {
   }
   static frontpage = async ({ did, nsid, rkey, parentDid, parentRkey }) => {
     console.log(`frontpage resolver received: ` + did, nsid, rkey, parentDid, parentRkey)
-    if (!did) return null
+    if (!did) return settings.alwaysOpen ? `https://frontpage.fyi` : null
     if (!rkey) return `https://frontpage.fyi/profile/${did}`
     switch (nsid) {
       case "fyi.unravel.frontpage.post":
@@ -308,7 +340,7 @@ class Resolvers {
           return `https://frontpage.fyi/post/${parentDid}/${parentRkey}/${did}/${rkey}`
         }
         const service = await getServiceEndpoint(did)
-        if (!service) return null
+        if (!service) return settings.alwaysOpen ? `https://frontpage.fyi` : null
   
         const uri = (await getRecord(did, nsid, rkey, service)).value?.post?.uri
         if (!uri) return `https://frontpage.fyi/profile/${did}` // return null?
@@ -322,13 +354,13 @@ class Resolvers {
   }
   static skylights = async ({ did, nsid, rkey }) => {
     console.log(`skylights resolver received: ` + did, nsid, rkey)
-    if (!did) return null
+    if (!did) return settings.alwaysOpen ? `https://skylights.my` : null
     // there is currently no skylights record page, only the profile
     return `https://skylights.my/profile/${did}`
   }
   static pinksea = async ({ did, nsid, rkey, parentDid, parentRkey }) => {
     console.log(`pinkSea resolver received: ` + did, nsid, rkey, parentDid, parentRkey)
-    if (!did) return null
+    if (!did) return settings.alwaysOpen ? `https://pinksea.art` : null
     if (!rkey || nsid !== "com.shinolabs.pinksea.oekaki") {
       return `https://pinksea.art/${did}`
     } else if (parentDid && parentRkey) {
@@ -336,7 +368,7 @@ class Resolvers {
     }
 
     const service = await getServiceEndpoint(did)
-    if (!service) return null
+    if (!service) return settings.alwaysOpen ? `https://pinksea.art` : null
 
     const uri = (await getRecord(did, nsid, rkey, service)).value?.inResponseTo?.uri
     if (!uri) return `https://pinksea.art/${did}/oekaki/${rkey}`
@@ -349,7 +381,7 @@ class Resolvers {
   }
   static smokeSignal = async ({ did, nsid, rkey }) => {
     console.log(`smokeSignal resolver received: ` + did, nsid, rkey)
-    if (!did) return null
+    if (!did) return settings.alwaysOpen ? `https://smokesignal.events` : null
     if (!rkey || nsid !== "events.smokesignal.calendar.event") {
       return `https://smokesignal.events/${did}`
     }
@@ -358,7 +390,7 @@ class Resolvers {
   }
   static blueBadge = async ({ did, nsid, rkey }) => {
     console.log(`blueBadge resolver received: ` + did, nsid, rkey)
-    if (!did) return null
+    if (!did) return settings.alwaysOpen ? `https://atproto.camp` : null
     // there is only collection for now, but i do this to stay safe
     if (!rkey || nsid !== "blue.badge.collection") {
       return `https://atproto.camp/${did}`
@@ -367,7 +399,7 @@ class Resolvers {
   }
   static linkAt = async ({ did, nsid, rkey }) => {
     console.log(`linkAt resolver received: ` + did, nsid, rkey)
-    if (!did) return null
+    if (!did) return settings.alwaysOpen ? `https://linkat.blue` : null
     return `https://linkat.blue/${did}`
   }
   static xrpc = async ({ did, nsid, rkey, service, pds }) => {
@@ -431,8 +463,14 @@ class Patterns {
 
 // Convert initial site data to redirected link
 class Handlers {
-  static pdsls = async ({ pds, handle, nsid, rkey }) => {
+  static pdsls = async ({ pds, handle, nsid, rkey }, uriMode) => {
     console.log(`PDSls handler recieved:`, pds, handle, nsid, rkey)
+
+    if (uriMode) {
+      const did = await getDid(handle)
+      if (!did) return null
+      return `at://${did}/${nsid}/${rkey}`
+    }
 
     if (settings.pdslsOpensApi) {
       if (pds !== "at") return `https://${pds}/xrpc/com.atproto.sync.listRepos?limit=1000`
@@ -446,7 +484,7 @@ class Handlers {
     if (!did) return null
     return await checkLexicons({ did, nsid, rkey })
   }
-  static bsky = async ({ prefix, handle, suffix, rkey }) => {
+  static bsky = async ({ prefix, handle, suffix, rkey }, uriMode) => {
     console.log(`bsky handler received: ` + prefix, handle, suffix, rkey)
     const did = await getDid(handle)
     if (!did) return null
@@ -461,7 +499,7 @@ class Handlers {
     switch (suffix) {
       case "post":
         const postUri = `${did}/app.bsky.feed.post/${rkey}`
-        if (settings.getPostThread) {
+        if (!uriMode && settings.getPostThread) {
           const depth = settings.replyCount
           const parents = settings.parentCount
           return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
@@ -475,7 +513,7 @@ class Handlers {
         return null
     }
   }
-  static aglais = async ({ handle, seg2, seg3 }) => {
+  static aglais = async ({ handle, seg2, seg3 }, uriMode) => {
     console.log(`aglais handler received: ` + handle, seg2, seg3)
     const did = await getDid(handle)
     if (!did) return null
@@ -483,14 +521,14 @@ class Handlers {
     const rkey = seg2 || null
     if (!rkey) return `at://${did}`
     const postUri = `${did}/app.bsky.feed.post/${rkey}`
-    if (settings.getPostThread) {
+    if (!uriMode && settings.getPostThread) {
       const depth = settings.replyCount
       const parents = settings.parentCount
       return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
     }
     return `at://${postUri}`
   }
-  static ouranos = async ({ handle, rkey, uri }) => {
+  static ouranos = async ({ handle, rkey, uri }, uriMode) => {
     console.log(`ouranos handler received: ` + handle, rkey, uri)
     if (uri) {
       uri = decodeURIComponent(uri)
@@ -500,10 +538,10 @@ class Handlers {
     if (!did) return null
     return rkey ? `at://${did}/app.bsky.feed.post/${rkey}` : `at://${did}`
   }
-  static klearsky = async ({ type, uri, account }) => {
+  static klearsky = async ({ type, uri, account }, uriMode) => {
     console.log(`klearsky handler received: ` + type, uri, account)
     if (uri) {
-      if (settings.getPostThread && type === "post") {
+      if (!uriMode && settings.getPostThread && type === "post") {
         const depth = settings.replyCount
         const parents = settings.parentCount
         return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=${depth}&parentHeight=${parents}`
@@ -517,7 +555,7 @@ class Handlers {
     else if (type === "list") return `at://${did}/app.bsky.graph.list`
     else return `at://${did}`
   }
-  static pinboards = async ({ handle, type, rkey}) => {
+  static pinboards = async ({ handle, type, rkey}, uriMode) => {
     console.log(`pinboards handler received: ` + handle, type, rkey)
     const did = await getDid(handle)
     if (!did) return null
@@ -526,7 +564,7 @@ class Handlers {
     }
     return null
   }
-  static whtwnd = async ({ handle, title, rkey, postId }) => {
+  static whtwnd = async ({ handle, title, rkey, postId }, uriMode) => {
     console.log(`whtwnd handler recieved: ` + handle, title, rkey, postId)
     const did = await getDid(handle)
     if (!did) return null
@@ -545,7 +583,7 @@ class Handlers {
 
     return `at://${did}/com.whtwnd.blog.entry`
   }
-  static frontpage = async ({ prefix, handle, rkey, handle2, rkey2 }) => {
+  static frontpage = async ({ prefix, handle, rkey, handle2, rkey2 }, uriMode) => {
     console.log(`frontpage handler recieved: ` + prefix, handle, rkey, handle2, rkey2)
     let did
     switch (prefix) {
@@ -565,12 +603,12 @@ class Handlers {
         return null
     }
   }
-  static skylights = async ({ handle }) => {
+  static skylights = async ({ handle }, uriMode) => {
     console.log(`skylights handler recieved: ` + handle)
     const did = await getDid(handle)
     return did ? `at://${did}/my.skylights.rel` : null
   }
-  static pinksea = async ({ handle, suffix, rkey, handle2, rkey2 }) => {
+  static pinksea = async ({ handle, suffix, rkey, handle2, rkey2 }, uriMode) => {
     console.log(`pinksea handler recieved: ` + handle, suffix, rkey, handle2, rkey2)
     handle2 = handle2 === "undefined" ? undefined : handle2;
     rkey2 = rkey2 === "undefined" ? undefined : rkey2;
@@ -584,12 +622,12 @@ class Handlers {
     }
     return baseUrl
   }
-  static atBrowser = async ({ handle, rest }) => {
+  static atBrowser = async ({ handle, rest }, uriMode) => {
     console.log(`atBrowser handler recieved: ` + handle, rest)
     const did = await getDid(handle)
     return did ? `at://${did}/${rest || ""}` : null
   }
-  static clearSky = async ({ handle, type }) => {
+  static clearSky = async ({ handle, type }, uriMode) => {
     console.log(`clearSky handler recieved: ` + handle, type)
     const did = await getDid(handle)
     if (!did) return null
@@ -601,26 +639,26 @@ class Handlers {
           : ""
     return `at://${did}/${typeSuffix}`
   }
-  static blueViewer = async ({ handle, rkey }) => {
+  static blueViewer = async ({ handle, rkey }, uriMode) => {
     console.log(`blueViewer handler recieved: ` + handle, rkey)
     const did = await getDid(handle)
     if (!(did && rkey)) return null
     return `at://${did}/app.bsky.feed.post/${rkey}`
   }
-  static skythread = async ({ handle, rkey }) => {
+  static skythread = async ({ handle, rkey }, uriMode) => {
     console.log(`skythread handler recieved: ` + handle, rkey)
     const did = await getDid(handle)
     if (!(did && rkey)) return null
     return `at://${did}/app.bsky.feed.post/${rkey}`
   }
-  static skyview = async ({ url }) => {
+  static skyview = async ({ url }, uriMode) => {
     console.log(`skyview handler recieved: ` + url)
     const match = decodeURIComponent(url).match(Patterns.bsky)
     if (!match) return null
     console.log(`Passing to bsky handler`)
     return await Handlers.bsky(match.groups)
   }
-  static smokeSignal = async ({ handle, rkey }) => {
+  static smokeSignal = async ({ handle, rkey }, uriMode) => {
     console.log(`smokeSignal handler recieved: ` + handle, rkey)
     const did = await getDid(handle)
     return did
@@ -629,44 +667,45 @@ class Handlers {
         : "/events.smokesignal.app.profile/self"}`
       : null
   }
-  static camp = async ({ handle, rkey }) => {
+  static camp = async ({ handle, rkey }, uriMode) => {
     console.log(`camp handler recieved: ` + handle, rkey)
     const did = await getDid(handle)
     return did ? `at://${did}/blue.badge.collection/${rkey || ""}` : null
   }
-  static blueBadge = async ({ uri }) => {
+  static blueBadge = async ({ uri }, uriMode) => {
     console.log(`blueBadge handler recieved: ` + uri)
     return `at://${decodeURIComponent(uri)}`
   }
-  static linkAt = async ({ handle }) => {
+  static linkAt = async ({ handle }, uriMode) => {
     console.log(`linkAt handler recieved: ` + handle)
     const did = await getDid(handle)
     return did ? `at://${did}/blue.linkat.board/self` : null
   }
-  static internect = async ({ did }) => {
+  static internect = async ({ did }, uriMode) => {
     console.log(`internect handler recieved: ` + did)
     return `at://${did}`
   }
-  static bskyCDN = async ({ did }) => {
+  static bskyCDN = async ({ did }, uriMode) => {
     console.log(`bskyCDN handler recieved: ` + did)
     return `at://${did}/blobs`
   }
-  static bskyVidCDN = async ({ did }) => {
+  static bskyVidCDN = async ({ did }, uriMode) => {
     console.log(`bskyVidCDN handler recieved: ` + did)
     return `at://${decodeURIComponent(did)}/blobs`
   }
-  static xrpc = async ({ domain, api, params }) => {
+  static xrpc = async ({ domain, api, params }, uriMode) => {
     console.log(`xrpc handler recieved: ` + domain, api, params)
     params = Object.fromEntries(new URLSearchParams(params))
     const did = await getDid(params.repo || params.did)
     const nsid = params.collection
     const rkey = params.rkey
-    if (!did) return domain ? `https://pdsls.dev/${domain}` : null
+    if (!did) return (domain && !uriMode) ? `https://pdsls.dev/${domain}` : null
     if (api === "com.atproto.sync.listBlobs") return `at://${did}/blobs`
     return `at://${did}${nsid ? '/' + nsid : ''}${(nsid && rkey) ? '/' + rkey : ''}`
   }
-  static pds = async ({ domain }) => {
+  static pds = async ({ domain }, uriMode) => {
     console.log(`pds handler recieved: ` + domain)
+    if (!uriMode) return null
     if (!settings.pdsFallback) {
       console.warn("PDS fallback matching is set to false. No match found.")
       return null
@@ -677,7 +716,7 @@ class Handlers {
 
 // Loop over supported lexicons and return Resolver URL
 async function checkLexicons(args) {
-  if (!args.did) return null
+  if (!args.did) return settings.alwaysOpen ? `https://pdsls.dev` : null
   if (!args.nsid) {
     console.log(`No lexicon specified. Defaulting to Bluesky profile for DID.`)
     return `https://bsky.app/profile/${args.did}`
@@ -686,22 +725,22 @@ async function checkLexicons(args) {
     const match = args.nsid.match(regex)
     if (match) {
       console.log(`Lexicon match: ${key}`)
-      return await Resolvers[key](args)
+      return await Resolvers[key](args) || (settings.alwaysOpen ? `https://pdsls.dev` : null)
     }
   }
   console.error(`No match found: Invalid lexicon '${args.nsid}'`)
-  return null
+  return settings.alwaysOpen ? `https://pdsls.dev` : null
 }
 
 // Loop over supported patterns and return processed URL
-async function checkPatterns(url) {
+async function checkPatterns(url, uriMode = false) {
   if (!url) return null
   for (const [key, regex] of Object.entries(Patterns)) {
     const match = url.match(regex)
     if (match) {
       console.log(`Match: ${key}`)
-      const result = await Handlers[key](match.groups)
-      if (result && result.startsWith("at://")) {
+      const result = await Handlers[key](match.groups, uriMode)
+      if (!uriMode && result && result.startsWith("at://")) {
         return `https://pdsls.dev/${result}`
       }
       return result
@@ -751,5 +790,28 @@ async function openNewTab(url) {
       ? browser.tabs.create({ url: newUrl })
       : browser.tabs.update({ url: newUrl })
     console.log(`URL opened: ${newUrl}`)
+  }
+}
+
+async function copyAtUri(url) {
+  if (!url) {
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true })
+    url = tabs[0]?.url
+  }
+  if (!url) { console.error("Error: No URL"); return }
+
+  let atUri = await checkPatterns(url, uriMode=true)
+
+  if (atUri) {
+    console.log(`Copying AT-URI to clipboard: ${atUri}`)
+  } else {
+    console.warn(`Unsupported input. Writing pdsls.dev to clipboard.`)
+    atUri = "https://pdsls.dev"
+  }
+
+  try {
+    await navigator.clipboard.writeText(atUri);
+  } catch (err) {
+    console.error("Clipboard write failed: ", err);
   }
 }

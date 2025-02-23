@@ -41,6 +41,7 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 * Directly open getPostThread JSON for Bluesky posts
   * Reply count and parent height configurable, up to 1000
 * Override keybinding
+* Enable copy AT-URI inputs (keybinding and context menu)
 
 ### Performance
 Sometimes the extension has to make API calls (for instance, resolving a handle to a DID). These requests can take variable lengths of time to yield responses. This can lead to delays in redirection.

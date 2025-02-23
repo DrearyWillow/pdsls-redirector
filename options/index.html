@@ -39,9 +39,17 @@
             <input type="number" id="parent-count" name="parent-count" value="0" min="0" max="1000">
         </div>
     </div>
-    <div class="keybinding">
-        <span>Keybinding: </span>
-        <input type="text" class="keybinding" placeholder="Ctrl+Shift+1">
+    <div class="keybinding-manager">
+        <span>Redirect Keybind: </span>
+        <input type="text" id="keybinding" placeholder="Ctrl+Shift+1">
+    </div>
+    <div class="enable-copy-uri">
+        <input type="checkbox" id="enable-copy-uri" name="enable-copy-uri" value="no">
+        <label for="enable-copy-uri">Enable copy AT-URI inputs.</label>
+    </div>
+    <div class="copy-uri-keybind-manager">
+        <span>Copy AT-URI Keybind: </span>
+        <input type="text" id="copy-uri-keybind" placeholder="Ctrl+Shift+2">
     </div>
     <br>
     <div class="buttons">
