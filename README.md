@@ -11,6 +11,7 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 * [TOKIMEKI](https://tokimekibluesky.vercel.app)
 * [Langit](https://langit.pages.dev)
 * [Klearsky](https://klearsky.pages.dev)
+* [Pinboards](https://pinboards.jeroba.xyz)
 * [WhiteWind](https://whtwnd.com/)
 * [FrontPage](https://frontpage.fyi)
 * [Skylights](https://skylights.my)

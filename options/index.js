@@ -39,7 +39,7 @@ window.onload = async () => {
     alwaysOpen: true,
     openInNewTab: true,
     pdsFallback: true,
-    pdslsOpensApi: true,
+    pdslsOpensApi: false,
     alwaysApi: false,
     getPostThread: false,
     keybinding: 'Ctrl+Shift+1',

@@ -15,6 +15,7 @@ Klearsky: https://klearsky.pages.dev/#/profile/list?account=popmox.net
 Klearsky: https://klearsky.pages.dev/#/profile/feed-generators?account=did:plc:p2cp5gopk7mgjegy6wadk3ep
 Klearsky: https://klearsky.pages.dev/#/home/starter-pack?uri=at://did:plc:p2cp5gopk7mgjegy6wadk3ep/app.bsky.graph.starterpack/3kztso5fnic24
 Klearsky: https://klearsky.pages.dev/#/home/feeds?feed=at://did:plc:p2cp5gopk7mgjegy6wadk3ep/app.bsky.feed.generator/aaaatt5lbsrbq&displayName=Numbers+station
+Pinboards: https://pinboards.jeroba.xyz/profile/did:plc:hx53snho72xoj7zqt5uice4u/board/3linhxrqxtn2s
 WhiteWind: https://whtwnd.com/hailey.at/entries/Hello%20Atproto
 WhiteWind: https://whtwnd.com/hailey.at/entries/Why%20post%20anywhere%20else%20when%20the%20engagement%20is%20on%20Bluesky%3F?rkey=3laq5rt7era2x
 WhiteWind: https://whtwnd.com/dreary.dev/3lche4zpqex27#user-content-fnref-8
@@ -23,6 +24,7 @@ FrontPage: https://frontpage.fyi/post/did:plc:iwpxnj7rzdynjkkr7rxaa5is/3lcb56fba
 FrontPage: https://frontpage.fyi/post/did:plc:ngokl2gnmpbvuvrfckja3g7p/3l7tegzuuim2x/fei.chicory.blue/3l7tusoznm22n
 Skylights: https://skylights.my/profile/watwa.re
 Pinksea: https://pinksea.art/did:plc:bj3xr7ytf2mpglcsvcst7ogt/oekaki/3lbaugujgac2n
+Pinksea: https://pinksea.art/did:plc:y33bag2x6rndakrseukqrtf3/oekaki/3lcfr7x37ckcj#did:plc:y33bag2x6rndakrseukqrtf3-3ldidgfrgak67
 AT Browser: https://atproto-browser.vercel.app/at/did:plc:2xau7wbgdq4phuou2ypwuen7/app.bsky.feed.like/3kyutnrmg3s2r
 Clearsky: https://clearsky.app/souris.moe/blocking
 Blueviewer: https://blueviewer.pages.dev/view?actor=soap.kawaii.social&rkey=3l5slo3bria2o
