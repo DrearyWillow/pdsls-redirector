@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "PDSls Redirector",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Open the PDSls page corresponding to an ATProto compatible website.",
   "permissions": [
     "tabs",

@@ -15,11 +15,14 @@ Klearsky: https://klearsky.pages.dev/#/profile/list?account=popmox.net
 Klearsky: https://klearsky.pages.dev/#/profile/feed-generators?account=did:plc:p2cp5gopk7mgjegy6wadk3ep
 Klearsky: https://klearsky.pages.dev/#/home/starter-pack?uri=at://did:plc:p2cp5gopk7mgjegy6wadk3ep/app.bsky.graph.starterpack/3kztso5fnic24
 Klearsky: https://klearsky.pages.dev/#/home/feeds?feed=at://did:plc:p2cp5gopk7mgjegy6wadk3ep/app.bsky.feed.generator/aaaatt5lbsrbq&displayName=Numbers+station
+Skychat: https://skychat.social/#thread/did:plc:veryepic2bagxnblv63a2hac/3l7t55u6srs2x
+Skychat: https://skychat.social/#profile/did:plc:vwzwgnygau7ed7b7wt5ux7y2
 Pinboards: https://pinboards.jeroba.xyz/profile/did:plc:hx53snho72xoj7zqt5uice4u/board/3linhxrqxtn2s
 WhiteWind: https://whtwnd.com/hailey.at/entries/Hello%20Atproto
 WhiteWind: https://whtwnd.com/hailey.at/entries/Why%20post%20anywhere%20else%20when%20the%20engagement%20is%20on%20Bluesky%3F?rkey=3laq5rt7era2x
 WhiteWind: https://whtwnd.com/dreary.dev/3lche4zpqex27#user-content-fnref-8
 WhiteWind: https://whtwnd.com/dreary.dev/entries/Reply%20to%20Dave#user-content-fn-1
+WhiteWind: https://whtwnd.com/did:plc:hx53snho72xoj7zqt5uice4u/3lchgdmecam2u/bafyreidhaeiux73iea6vxev5xdpkjgu55ston36gdk43rzpffufc6hd2ui
 FrontPage: https://frontpage.fyi/post/did:plc:iwpxnj7rzdynjkkr7rxaa5is/3lcb56fba6d2k
 FrontPage: https://frontpage.fyi/post/did:plc:ngokl2gnmpbvuvrfckja3g7p/3l7tegzuuim2x/fei.chicory.blue/3l7tusoznm22n
 Skylights: https://skylights.my/profile/watwa.re
@@ -36,6 +39,10 @@ BlueBadge: https://badge.blue/verify?uri=at%3A%2F%2Fdid%3Aplc%3Acbkjy5n7bk3ax2wp
 ATProto Camp: https://atproto.camp/did:plc:mwjzjxcqah7afwtnfodasogt/3lakceuwfzi2u
 LinkAt: https://linkat.blue/yukouduki.bsky.social
 Internect: https://internect.info/did/did:plc:znmktqkgqhm2twxcbqiszvx4
+Recipe Exchange: https://recipe.exchange/recipes/01JF0B0ANBDG75R8Z5WZJDMMBX
+Plonk: https://plonk.li/u/did:plc:hx53snho72xoj7zqt5uice4u
+PasteSphere: https://pastesphere.link/user/dreary.dev/snippet/3liv2xijzm22b
+BookHive: https://bookhive.buzz/profile/mrjonathanallan.bsky.social
 bskyCDN: https://cdn.bsky.app/img/avatar/plain/did:plc:hx53snho72xoj7zqt5uice4u/bafkreiblp6bxadz42kevdcqcq3qofzxnoej5nhmwdqwcgjdg26ir2offdi@jpeg
 bskyVidCDN: https://video.bsky.app/watch/did%3Aplc%3Ahx53snho72xoj7zqt5uice4u/bafkreicf5nvgomy2kh3f6da7fcwghwrecm6ljcp4najy6vy5hvdn7tvec4/thumbnail.jpg
 XRPC: https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=did:plc:hx53snho72xoj7zqt5uice4u&collection=app.bsky.actor.profile&rkey=self

@@ -12,6 +12,7 @@ window.onload = async () => {
   const enableCopyUriCheckbox = document.getElementById('enable-copy-uri')
   const copyUriKeybindManager = document.querySelector('.copy-uri-keybind-manager')
   const copyUriKeybindInput = document.getElementById('copy-uri-keybind')
+  const enableJetstreamCheckbox = document.getElementById('enable-jetstream')
   const saveButton = document.querySelector('.save-button')
   const resetButton = document.querySelector('.reset-button')
 
@@ -51,6 +52,7 @@ window.onload = async () => {
     keybinding: 'Ctrl+Shift+1',
     copyUriEnabled: false,
     copyUriKeybind: "Ctrl+Shift+2",
+    jetstreamEnabled: false,
     replyCount: 0,
     parentCount: 0,
   }
@@ -70,6 +72,7 @@ window.onload = async () => {
     keybindingInput.value = data.keybinding ?? defaults.keybinding
     enableCopyUriCheckbox.checked = data.copyUriEnabled ?? defaults.copyUriEnabled
     copyUriKeybindInput.value = data.copyUriKeybind ?? defaults.copyUriKeybind
+    enableJetstreamCheckbox.checked = data.jetstreamEnabled ?? defaults.jetstreamEnabled
   } catch (error) {
     console.error('Error retrieving settings:', error)
   }
@@ -87,7 +90,8 @@ window.onload = async () => {
       parentCount: parentCountSpinner.value,
       keybinding: keybindingInput.value,
       copyUriEnabled: enableCopyUriCheckbox.checked,
-      copyUriKeybind: copyUriKeybindInput.value
+      copyUriKeybind: copyUriKeybindInput.value,
+      jetstreamEnabled: enableJetstreamCheckbox.checked
     }, () => {
       console.log('Settings saved')
     })
@@ -107,6 +111,7 @@ window.onload = async () => {
       keybindingInput.value = defaults.keybinding
       enableCopyUriCheckbox.checked = defaults.copyUriEnabled
       copyUriKeybindInput.value = defaults.copyUriKeybind
+      enableJetstreamCheckbox.checked = defaults.enableJetstream
       getPostThreadParams.style.display = getPostThreadCheckbox.checked ? 'block' : 'none'
       copyUriKeybindManager.style.display = enableCopyUriCheckbox.checked ? 'block' : 'none'
       console.log('Settings reset to defaults')

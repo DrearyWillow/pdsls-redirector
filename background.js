@@ -12,6 +12,7 @@ const defaults = {
   keybinding: "Ctrl+Shift+1",
   copyUriEnabled: false,
   copyUriKeybind: "Ctrl+Shift+2",
+  jetstreamEnabled: false,
   replyCount: 0,
   parentCount: 0
 }
@@ -33,11 +34,11 @@ loadSettings()
 // Listen for settings changes
 browser.storage.onChanged.addListener((changes, area) => {
   if (area !== 'sync') return
-  buildMenus()
   for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
     console.log(`Storage key "${key}" changed from`, oldValue, 'to', newValue)
     settings[key] = newValue
   }
+  buildMenus()
   updateKeybindings()
 })
 
@@ -73,6 +74,13 @@ async function buildMenus() {
       contexts: ["page", "selection", "bookmark", "link"]
     })
   }
+  if (settings.jetstreamEnabled) {
+    await browser.contextMenus.create({
+      id: "Jetstream",
+      title: "Jetstream",
+      contexts: ["page", "selection", "bookmark", "link"]
+    })
+  }
 }
 buildMenus()
 
@@ -85,7 +93,7 @@ browser.browserAction.onClicked.addListener(() => {
 // Context Menu
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
   console.log(`Entry point: ${info.menuItemId} contextMenuListener`)
-  if (info.menuItemId !== "PDSls" && info.menuItemId !== "copyATUri") { return true }
+  if (info.menuItemId !== "PDSls" && info.menuItemId !== "copyATUri" && info.menuItemId !== "Jetstream") { return true }
   let url
   if (info.bookmarkId) {
     console.log("URL type: bookmark")
@@ -100,10 +108,13 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!url) {
     return
   }
-  if (info.menuItemId === "PDSls") {
-    openNewTab(url)
-  } else if (info.menuItemId === "copyATUri") {
-    copyAtUri(url)
+  switch (info.menuItemId) {
+    case "PDSls":
+      openNewTab(url)
+    case "copyATUri":
+      copyAtUri(url)
+    case "Jetstream":
+      openJetstream(url)
   }
 })
 
@@ -121,6 +132,11 @@ browser.commands.onCommand.addListener((command) => {
 })
 
 // API functions
+async function getHandle(did) {
+  if (!did.startsWith("did:")) return null
+  return (await getDidDoc(did))?.alsoKnownAs?.[0]?.replace(/^at:\/\//, "");
+}
+
 async function getDid(handle) {
   if (!handle) {
     console.error(`Error: invalid handle '${handle}'`)
@@ -287,6 +303,11 @@ class Lexicons {
   static smokeSignal = /^events\.smokesignal/
   static blueBadge = /^blue\.badge/
   static linkAt = /^blue\.linkat/
+  static recipeExchange = /^exchange.recipe/
+  static bluePlace = /^blue\.place/
+  static plonk = /^li\.plonk/
+  static pastesphere = /^link\.pastesphere/
+  static bookhive = /^buzz\.bookhive/
 }
 
 // Convert URI data to primary site link
@@ -402,6 +423,58 @@ class Resolvers {
     if (!did) return settings.alwaysOpen ? `https://linkat.blue` : null
     return `https://linkat.blue/${did}`
   }
+  static recipeExchange = async ({ did, nsid, rkey }) => {
+    console.log(`recipeExchange resolver received: ` + did, nsid, rkey)
+    if (rkey && (nsid === "exchange.recipe.recipe")) return `https://recipe.exchange/recipes/${rkey}`
+    if (rkey && (nsid === "exchange.recipe.collection")) return `https://recipe.exchange/collections/${rkey}`
+    if (!did) return settings.alwaysOpen ? `https://recipe.exchange` : null
+    if (rkey && (nsid === "exchange.recipe.comment")) {
+      const service = await getServiceEndpoint(did)
+      if (!service) return settings.alwaysOpen ? `https://recipe.exchange` : null
+      const uri = (await getRecord(did, nsid, rkey, service)).value?.recipe?.uri
+      if (!uri) {
+        if (settings.alwaysOpen) {
+          let handle = await getHandle(did)
+          return handle ? `https://recipe.exchange/profiles/${handle}` : `https://recipe.exchange`
+        }
+        return null
+      }
+      console.log(`Recipe URI: ${uri}`)
+      let { did: did2, nsid: nsid2, rkey: rkey2 } = decomposeUri(uri)
+      console.log(`URI decomposed:`, did2, nsid2, rkey2)
+      if (rkey2 && (nsid2 === "exchange.recipe.recipe")) return `https://recipe.exchange/recipes/${rkey2}`
+      if (did2) {
+        let handle = await getHandle(did2)
+        if (handle) return `https://recipe.exchange/profiles/${handle}`
+      }
+      return settings.alwaysOpen ? `https://recipe.exchange` : null
+    }
+    let handle = await getHandle(did)
+    if (handle) return `https://recipe.exchange/profiles/${handle}`
+    return settings.alwaysOpen ? `https://recipe.exchange` : null
+  }
+  static bluePlace = async ({ did, nsid, rkey }) => {
+    console.log(`bluePlace resolver received: ` + did, nsid, rkey)
+    return "https://place.blue"
+  }
+  static plonk = async ({ did, nsid, rkey }) => {
+    console.log(`plonk resolver received: ` + did, nsid, rkey)
+    // best you can do is link to the profile
+    if (!did) return settings.alwaysOpen ? "https://plonk.li" : null
+    return `https://plonk.li/u/${did}`
+  }
+  static pastesphere = async ({ did, nsid, rkey }) => {
+    console.log(`plonk resolver received: ` + did, nsid, rkey)
+    if (!did) return settings.alwaysOpen ? "https://pastesphere.link" : null
+    if (rkey && (nsid === "link.pastesphere.snippet")) {
+      return `https://pastesphere.link/user/${did}/snippet/${rkey}`
+    }
+    return `https://pastesphere.link/user/${did}`
+  }
+  static bookhive = async ({ did, nsid, rkey }) => {
+    if (!did) return settings.alwaysOpen ? "https://bookhive.buzz" : null
+    return `https://bookhive.buzz/profile/${did}`
+  }
   static xrpc = async ({ did, nsid, rkey, service, pds }) => {
     console.log(`xrpc resolver received: ` + did, nsid, rkey, service, pds)
     if (pds && pds !== "at") return `https://${pds}/xrpc/com.atproto.sync.listRepos?limit=1000`
@@ -426,7 +499,7 @@ class Resolvers {
 class Patterns {
   // (?<handle>[\w.:%-]+) https://atproto.com/specs/handle https://atproto.com/specs/did
   // (?<rkey>[A-Za-z0-9._~:-]{1,512}) https://atproto.com/specs/record-key
-  static pdsls = /^https:\/\/pdsls\.dev\/(?<pds>[\w.:%-]+)(?:\:\/)?(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<nsid>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/
+  static pdsls = /^https:\/\/pdsls\.dev\/(?<pds>[\w.%-]+)(?:\:\/)?(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<nsid>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\/)?(?:[?#].*)?$/
   static bsky = new RegExp(
     '^https://' +
     '(?:bsky\\.app|main\\.bsky\\.dev|langit\\.pages\\.dev/u/[\\w.:%-]+|tokimekibluesky\\.vercel\\.app)' +
@@ -440,12 +513,14 @@ class Patterns {
   static aglais = /^https:\/\/aglais\.pages\.dev\/(?<handle>[\w.:%-]+)(?:\/(?<seg2>[\w.:%-]+))?(?:\/(?<seg3>[\w.:%-]+))?(?:[?#].*)?$/
   static ouranos = /^https:\/\/useouranos\.app\/dashboard\/(?:user|feeds)\/(?<handle>[\w.:%-]+)(?:\/(?:[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\?(?:uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)))?$/
   static klearsky = /^https:\/\/klearsky\.pages\.dev\/#\/(?:([^/?]+)\/)?(?<type>[^/?]+)?(?:\?(?:[\w.-]+=(?:at:\/\/|at%3A%2F%2F)(?<uri>[\w.:%/-]+)|account=(?<account>[\w.:/-]+)))?(?:&.*)?$/
+  static skychat = /^https:\/\/skychat\.social\/(?:\#(?<type>[^/?]+))(?:\/(?<handle>[\w.:%-]+))(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/
   static pinboards = /^https:\/\/pinboards\.jeroba\.xyz\/profile\/(?<handle>[\w.:%-]+)\/(?<type>[^/?]+)\/(?<rkey>[\w.:%-]+)(?:[?#].*)?$/
-  static whtwnd = /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)(?:\/entries\/(?<title>[\w.,':%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?:\/(?<postId>[\w.:%-]+)))?(?:[?#][\w.:%-]+)?$/
+  static whtwnd = /^https:\/\/whtwnd\.com\/(?<handle>[\w.:%-]+)(?:\/entries\/(?<title>[\w.,':%-]+)(?:\?rkey=(?<rkey>[\w.:%-]+))?|(?:\/(?<postId>[\w.:%-]+)(?:\/[\w.:%-]+)?))?(?:[?#][\w.:%-]+)?$/
   static frontpage = /^https:\/\/frontpage\.fyi\/(?<prefix>profile|post)\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\/(?<handle2>[\w.:%-]+))?(?:\/(?<rkey2>[\w.:%-]+))?(?:[?#].*)?$/
   static skylights = /^https:\/\/skylights\.my\/profile\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/
   static pinksea = /^https:\/\/pinksea\.art\/(?<handle>[\w.:%-]+)(?:\/(?<suffix>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:#(?<handle2>[\w.:%-]+)-(?<rkey2>[\w.:%-]+))?(?:[?#].*)?$/
   static atBrowser = /^https:\/\/(?:atproto-browser\.vercel\.app|at\.syu\.is)\/at\/(?<handle>[\w.:%-]+)(?:\/(?<rest>[^?]*))?(?:[?#].*)?$/
+  static atpTools = /^https:\/\/atp\.tools(?:\/at:\/(?:(?<handle>[\w.:%-]+)(?:\/(?<nsid>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+)?)?)?)?)?(?:[?#].*)?$/
   static clearSky = /^https:\/\/clearsky\.app\/(?<handle>[\w.:%-]+)(?:\/(?<type>[\w.:%-]+))?(?:[?#].*)?$/
   static blueViewer = /^https:\/\/blueviewer\.pages\.dev\/view\?actor=(?<handle>[\w.:%-]+)&rkey=(?<rkey>[\w.:%-]+)$/
   static skythread = /^https:\/\/blue\.mackuba\.eu\/skythread\/\?author=(?<handle>[\w.:%-]+)&post=(?<rkey>[\w.:%-]+)$/
@@ -455,6 +530,10 @@ class Patterns {
   static blueBadge = /^https:\/\/badge\.blue\/verify\?uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>.+)$/
   static linkAt = /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/
   static internect = /^https:\/\/internect\.info\/did\/(?<did>[\w.:%-]+)(?:[?#].*)?$/
+  static recipeExchange = /^https:\/\/recipe\.exchange(?:\/(?<type>[\w.:%-]+))(?:\/(?<value>[\w.:%-]+))?$/
+  static plonk = /^https:\/\/plonk.li\/u\/(?<did>[\w.:%-]+)/
+  static pastesphere = /^https:\/\/pastesphere\.link\/user(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<type>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?/
+  static bookhive = /^https:\/\/bookhive\.buzz(?:\/profile\/(?<handle>[\w.:%-]+))/
   static bskyCDN = /^https:\/\/cdn\.bsky\.app\/(?:[\w.:%-]+\/){3}(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/
   static bskyVidCDN = /^https:\/\/video\.bsky\.app\/[\w.:%-]+\/(?<did>[\w.:%-]+)(?:\/[\w.:%-@]+)?$/
   static xrpc = /^https:\/\/(?<domain>[^\/]+)\/xrpc\/(?<api>[\w.:%-]+)(?<params>\?.*)?$/
@@ -469,7 +548,7 @@ class Handlers {
     if (uriMode) {
       const did = await getDid(handle)
       if (!did) return null
-      return `at://${did}/${nsid}/${rkey}`
+      return `at://${did}${nsid ? `/${nsid}` : ""}${(nsid && rkey) ? `/${rkey}` : ""}`
     }
 
     if (settings.pdslsOpensApi) {
@@ -555,6 +634,27 @@ class Handlers {
     else if (type === "list") return `at://${did}/app.bsky.graph.list`
     else return `at://${did}`
   }
+  static skychat = async ({ type, handle, rkey }, uriMode) => {
+    console.log(`skychat handler received: ` + type, handle, rkey)
+    const did = await getDid(handle)
+    if (!did) return null
+    switch (type) {
+      case 'feed':
+        return `at://${did}/app.bsky.feed.generator/${rkey || ""}`
+      case 'list':
+        return `at://${did}/app.bsky.graph.list/${rkey || ""}`
+      case 'thread':
+        if (!rkey) return `at://${did}`
+        const postUri = `${did}/app.bsky.feed.post/${rkey}`
+        if (!uriMode && settings.getPostThread) {
+          const depth = settings.replyCount
+          const parents = settings.parentCount
+          return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
+        }
+      default:
+        return `at://${did}`
+    }
+  }
   static pinboards = async ({ handle, type, rkey}, uriMode) => {
     console.log(`pinboards handler received: ` + handle, type, rkey)
     const did = await getDid(handle)
@@ -627,6 +727,12 @@ class Handlers {
     const did = await getDid(handle)
     return did ? `at://${did}/${rest || ""}` : null
   }
+  static atpTools = async ({ handle, nsid, rkey }, uriMode) => {
+    console.log(`clearSky handler recieved: ` + handle, nsid, rkey)
+    const did = await getDid(decodeURIComponent(handle))
+    if (!did) return null
+    return `at://${did}${nsid ? `/${nsid}` : ""}${(nsid && rkey) ? `/${rkey}` : ""}`
+  }
   static clearSky = async ({ handle, type }, uriMode) => {
     console.log(`clearSky handler recieved: ` + handle, type)
     const did = await getDid(handle)
@@ -684,6 +790,29 @@ class Handlers {
   static internect = async ({ did }, uriMode) => {
     console.log(`internect handler recieved: ` + did)
     return `at://${did}`
+  }
+  static recipeExchange = async ({ type, value }, uriMode) => {
+    console.log(`recipeExchange handler recieved: ` + type, value)
+    // you can't look collections or recipes up by did.
+    if (value && type === "profiles") {
+      const did = await getDid(value)
+      if (did) return `at://${did}`
+    }
+    return null
+  }
+  static plonk = async ({ did }, uriMode) => {
+    console.log(`plonk handler recieved: ` + did)
+    return `at://${decodeURIComponent(did)}`
+  }
+  static pastesphere = async ({ handle, type, rkey }, uriMode) => {
+    console.log(`pastesphere handler recieved: ` + handle, type, rkey)
+    const did = await getDid(handle)
+    return did ? `at://${did}/link.pastesphere.snippet/${rkey || ""}` : null
+  }
+  static bookhive = async ({ handle }, uriMode) => {
+    console.log(`pastesphere handler recieved: ` + handle)
+    const did = await getDid(handle)
+    return did ? `at://${did}/buzz.bookhive.book` : null
   }
   static bskyCDN = async ({ did }, uriMode) => {
     console.log(`bskyCDN handler recieved: ` + did)
@@ -793,6 +922,7 @@ async function openNewTab(url) {
   }
 }
 
+// Copy the AT-URI corresponding to a provided URL
 async function copyAtUri(url) {
   if (!url) {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true })
@@ -814,4 +944,31 @@ async function copyAtUri(url) {
   } catch (err) {
     console.error("Clipboard write failed: ", err);
   }
+}
+
+// Open the PDSls Jetstream link for the relevant DID and collection
+async function openJetstream(url) {
+  if (!url) {
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true })
+    url = tabs[0]?.url
+  }
+  if (!url) { console.error("Error: No URL"); return }
+
+  let atUri = await checkPatterns(url, uriMode=true)
+
+  let newUrl = "https://pdsls.dev/jetstream"
+  if (!atUri) {
+    console.warn(`Unsupported input. Opening PDSls Jetstream page without parameters.`)
+  } else {
+    newUrl += `?instance=wss%3A%2F%2Fjetstream1.us-east.bsky.network%2Fsubscribe`
+    let {did: did, nsid: nsid, rkey: rkey } = decomposeUri(atUri)
+    newUrl += `&dids=${encodeURIComponent(did)}`
+    if (nsid) newUrl += `&collections=${encodeURIComponent(nsid)}`
+    newUrl += `&allEvents=on`
+  }
+
+  await settings.openInNewTab
+    ? browser.tabs.create({ url: newUrl })
+    : browser.tabs.update({ url: newUrl })
+  console.log(`URL opened: ${newUrl}`)
 }
