@@ -12,9 +12,7 @@
     "clipboardWrite"
   ],
   "background": {
-    "scripts": [
-      "background.js"
-    ],
+    "page": "background.html",
     "persistent": true
   },
   "icons": {

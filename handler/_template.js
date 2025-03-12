@@ -1,0 +1,17 @@
+import { getDid } from '../utils.js'
+
+export class Bluesky {
+    static DOMAINS = ['']
+
+    static async processURL(url, settings, uriMode) {
+        const { prefix, handle, suffix, rkey } = this.parseURL(url)
+        console.log(` handler received: ` + prefix, handle, suffix, rkey)
+        const did = await getDid(handle)
+        if (!did) return null
+    }
+
+    static parseURL(url) {
+        let [prefix, handle, suffix, rkey] = url.pathname.split("/").slice(1)
+        return {prefix, handle, suffix, rkey}
+    }
+}
