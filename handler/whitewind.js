@@ -1,4 +1,4 @@
-import { getDid, getServiceEndpoint, getWhiteWindUri } from '../utils.js'
+import { findRecordMatch, getDid, getServiceEndpoint } from '../utils.js'
 
 export class WhiteWind {
     static DOMAINS = ['whtwnd.com']
@@ -16,10 +16,9 @@ export class WhiteWind {
     
         if (title) {
           const service = await getServiceEndpoint(did)
-          let uri = service ? await getWhiteWindUri(did, service, title) : null
-          return uri
-            ? `at://${uri.replace("at://", "")}`
-            : `at://${did}/com.whtwnd.blog.entry`
+          if (!service) return `at://${did}/com.whtwnd.blog.entry`
+          let uri = await findRecordMatch(did, service, 'com.whtwnd.blog.entry', {'title': decodeURIComponent(title)})
+          return uri ? uri : `at://${did}/com.whtwnd.blog.entry`
         }
     
         return `at://${did}/com.whtwnd.blog.entry`

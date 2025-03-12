@@ -17,7 +17,7 @@ export class Frontpage {
             const service = await getServiceEndpoint(did)
             if (!service) return settings.alwaysOpen ? `https://frontpage.fyi` : null
     
-            const uri = (await getRecord(did, nsid, rkey, service)).value?.post?.uri
+            const uri = (await getRecord({did, nsid, rkey, service})).value?.post?.uri
             if (!uri) return `https://frontpage.fyi/profile/${did}` // return null?
 
             let parentNsid

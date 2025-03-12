@@ -155,6 +155,7 @@ async function checkHandlers(url, uriMode = false) {
   } else if (url.pathname.split('/')[2] === 'xrpc') {
     return await XRPCHandler.processURL(url, settings, uriMode)
   } else if (settings.pdsFallback) {
+    console.log("PDS handler received: " + url)
     return `https://pdsls.dev/${url.hostname}`
   } else {
     console.warn("PDS fallback matching is set to false. No match found.")

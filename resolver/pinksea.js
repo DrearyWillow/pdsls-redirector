@@ -15,7 +15,7 @@ export class Pinksea {
         const service = await getServiceEndpoint(did)
         if (!service) return settings.alwaysOpen ? `https://pinksea.art` : null
 
-        const uri = (await getRecord(did, nsid, rkey, service)).value?.inResponseTo?.uri
+        const uri = (await getRecord({did, nsid, rkey, service})).value?.inResponseTo?.uri
         if (!uri) return `https://pinksea.art/${did}/oekaki/${rkey}`
 
         let parentNsid // i hate that i have to define this.

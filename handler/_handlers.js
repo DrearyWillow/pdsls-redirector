@@ -4,6 +4,7 @@ import { Aglais } from './aglais.js';
 import { Ouranos } from './ouranos.js'
 import { Klearsky } from './klearsky.js'
 import { Skychat } from './skychat.js'
+import { SuperCoolClient } from './supercoolclient.js';
 import { Pinboards } from './pinboards.js'
 import { WhiteWind } from './whitewind.js'
 import { Frontpage } from './frontpage.js'
@@ -24,6 +25,8 @@ import { RecipeExchange } from './recipeexchange.js'
 import { Plonk } from './plonk.js'
 import { PasteSphere } from './pastesphere.js'
 import { BookHive } from './bookhive.js'
+import { Flushes } from './flushes.js'
+import { Tangled } from './tangled.js';
 import { BskyCDN } from './bskycdn.js'
 import { XRPC } from './xrpc.js'
 
@@ -34,6 +37,7 @@ const handlers = [
     Ouranos,
     Klearsky,
     Skychat,
+    SuperCoolClient,
     Pinboards,
     WhiteWind,
     Frontpage,
@@ -54,6 +58,8 @@ const handlers = [
     Plonk,
     PasteSphere,
     BookHive,
+    Flushes,
+    Tangled,
     BskyCDN,
     XRPC
 ];

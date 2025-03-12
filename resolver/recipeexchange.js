@@ -11,7 +11,7 @@ export class RecipeExchange {
         if (rkey && (nsid === "exchange.recipe.comment")) {
             const service = await getServiceEndpoint(did)
             if (!service) return settings.alwaysOpen ? `https://recipe.exchange` : null
-            const uri = (await getRecord(did, nsid, rkey, service)).value?.recipe?.uri
+            const uri = (await getRecord({did, nsid, rkey, service})).value?.recipe?.uri
             if (!uri) {
                 if (settings.alwaysOpen) {
                 let handle = await getHandle(did)

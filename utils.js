@@ -79,11 +79,10 @@ export async function getServiceEndpoint(did) {
     }
 }
 
-export async function getRecord(did, nsid, rkey, service) {
-    if (!service) {
-        service = await getServiceEndpoint(did)
-        if (!service) return null
-    }
+export async function getRecord(args) {
+    let validatedInput = await validateUriInput(args)
+    if (!validatedInput) return null
+    let {uri, did, nsid, rkey, service} = validatedInput
 
     try {
         const params = new URLSearchParams({
@@ -123,20 +122,21 @@ export async function listRecords(did, service, nsid, limit, cursor) {
     }
 }
 
-export async function getWhiteWindUri(did, service, title) {
-    const nsid = "com.whtwnd.blog.entry"
+// loops over ALL records of a certain NSID for a repo. be mindful of performance.
+// used in contexts where the url only has a record name and not an rkey
+export async function findRecordMatch(did, service, nsid, matchObj) {
     const limit = 100
     let cursor = undefined
-    const decodedTitle = decodeURIComponent(title)
 
     while (true) {
         const data = await listRecords(did, service, nsid, limit, cursor)
         if (!data) break
+
         const records = data.records
 
         if (records && records.length > 0) {
             for (let record of records) {
-                if (record.value && record.value.title === decodedTitle) {
+                if (record['value'] && isMatch(record['value'], matchObj)) {
                     return record.uri
                 }
             }
@@ -149,8 +149,35 @@ export async function getWhiteWindUri(did, service, title) {
             break
         }
     }
-    console.error(`No WhiteWind blog URI found for title '${decodedTitle}'`)
+
+    console.error(`No '${nsid}' URI found matching ${JSON.stringify(matchObj)}`)
     return null
+}
+
+
+export async function validateUriInput({uri, did, nsid, rkey, service}) {
+    console.log(`Received unvalidated URI input: ` + uri, did, nsid, rkey, service)
+    if (!uri && (!did || !nsid || !rkey)) {
+        console.error("Either `uri` or (`did`, `nsid`, `rkey`) must be provided.")
+        return null
+    }
+
+    if (uri) {
+        ({ did, nsid, rkey } = decomposeUri(uri))
+    }
+
+    if (!service) {
+        service = await getServiceEndpoint(did)
+        if (!service) return null
+    }
+
+    console.log(`Returning validated URI input: ` + uri, did, nsid, rkey, service)
+    return {uri: uri, did: did, nsid: nsid, rkey: rkey, service: service}
+}
+
+// TODO: support nested objects
+export function isMatch(recordValue, matchObj) {
+    return Object.entries(matchObj).every(([key, value]) => recordValue[key] === value);
 }
 
 export function decomposeUri(uri) {

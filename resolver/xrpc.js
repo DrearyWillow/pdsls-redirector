@@ -1,3 +1,5 @@
+import { getServiceEndpoint } from "../utils.js"
+
 export class XRPC {
     static async processURI({did, nsid, rkey, service, pds}, settings) {
         console.log(`xrpc resolver received: ` + did, nsid, rkey, service, pds)

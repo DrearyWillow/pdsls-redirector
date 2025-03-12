@@ -12,7 +12,9 @@ import { RecipeExchange } from './recipeexchange.js'
 import { Plonk } from './plonk.js'
 import { PasteSphere } from './pastesphere.js'
 import { BookHive } from './bookhive.js'
+import { Flushes } from './flushes.js'
 import { XRPC } from './xrpc.js'
+import { Tangled } from './tangled.js'
 
 const resolvers = [
     Bluesky,
@@ -29,6 +31,8 @@ const resolvers = [
     Plonk,
     PasteSphere,
     BookHive,
+    Flushes,
+    Tangled,
 ];
 
 const resolverMap = {};

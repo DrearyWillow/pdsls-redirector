@@ -5,7 +5,9 @@ export class Bluesky {
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, suffix, rkey } = this.parseURL(url)
-        console.log(` handler received: ` + prefix, handle, suffix, rkey)
+        console.log(`Bluesky handler received: ` + prefix, handle, suffix, rkey)
+
+        // TODO more code here, for example...
         const did = await getDid(handle)
         if (!did) return null
     }

@@ -1,5 +1,5 @@
 import { getDid } from '../utils.js'
-import { checkResolvers } from '../resolver/_resolvers.js'
+import { checkResolvers, XRPCResolver } from '../resolver/_resolvers.js'
 
 export class PDSls {
     static DOMAINS = ['pdsls.dev']
@@ -18,7 +18,7 @@ export class PDSls {
             if (pds !== "at:") return `https://${pds}/xrpc/com.atproto.sync.listRepos?limit=1000`
             const did = await getDid(handle)
             if (!did) return null
-            return await Resolvers.xrpc({ did, nsid, rkey })
+            return await XRPCResolver.processURI({ did, nsid, rkey })
         }
 
         if (pds !== "at:") return `https://${pds}`
