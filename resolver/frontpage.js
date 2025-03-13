@@ -18,7 +18,7 @@ export class Frontpage {
             if (!service) return settings.alwaysOpen ? `https://frontpage.fyi` : null
     
             const uri = (await getRecord({did, nsid, rkey, service})).value?.post?.uri
-            if (!uri) return `https://frontpage.fyi/profile/${did}` // return null?
+            if (!uri) return `https://frontpage.fyi/profile/${did}`
 
             let parentNsid
             ({ did: parentDid, nsid: parentNsid, rkey: parentRkey } = decomposeUri(uri))

@@ -2,11 +2,11 @@
 //   static blueBadge = /^https:\/\/badge\.blue\/verify\?uri=(?:at:\/\/|at%3A%2F%2F)(?<uri>.+)$/
 
 export class BlueBadge {
-    static DOMAINS = ['']
+    static DOMAINS = ['badge.blue']
 
     static async processURL(url, settings, uriMode) {
-        const { prefix, handle, suffix, rkey } = this.parseURL(url)
-        console.log(`blueBadge handler recieved: ` + uri)
+        const { uri } = this.parseURL(url)
+        console.log(`BlueBadge handler recieved: ` + uri)
         return uri
     }
 

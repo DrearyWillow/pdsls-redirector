@@ -1,7 +1,7 @@
 import { getHandle } from "../utils.js"
 
 export class Woosh {
-    static NSID_AUTH = ['link.woosh']
+    static NSID_AUTH = 'link.woosh'
 
     static async processURI({did, nsid, rkey}) {
         console.log(`Woosh resolver received: ` + did, nsid, rkey)

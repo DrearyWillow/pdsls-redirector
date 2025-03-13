@@ -1,27 +1,28 @@
-import { findRecordMatch, getDid, getServiceEndpoint } from '../utils.js'
+import { composeUri, findRecordMatch, getDid, getServiceEndpoint } from '../utils.js'
 
 export class WhiteWind {
     static DOMAINS = ['whtwnd.com']
 
     static async processURL(url, settings, uriMode) {
-        const { handle, title, rkey, postId } = this.parseURL(url)
+        const { handle, title, rkey } = this.parseURL(url)
 
         console.log(`whtwnd handler recieved: ` + handle, title, rkey)
         const did = await getDid(handle)
         if (!did) return null
-    
+        const nsid = 'com.whtwnd.blog.entry'
+
         if (rkey) {
-          return `at://${did}/com.whtwnd.blog.entry/${rkey}`
+            return composeUri({ did, nsid, rkey })
         }
-    
+
         if (title) {
-          const service = await getServiceEndpoint(did)
-          if (!service) return `at://${did}/com.whtwnd.blog.entry`
-          let uri = await findRecordMatch(did, service, 'com.whtwnd.blog.entry', {'title': decodeURIComponent(title)})
-          return uri ? uri : `at://${did}/com.whtwnd.blog.entry`
+            const service = await getServiceEndpoint(did)
+            if (!service) return composeUri({ did, nsid })
+            let uri = await findRecordMatch(did, service, nsid, { 'title': decodeURIComponent(title) })
+            return uri ? uri : composeUri({ did, nsid })
         }
-    
-        return `at://${did}/com.whtwnd.blog.entry`
+
+        return composeUri({ did, nsid })
     }
 
     static parseURL(url) {
@@ -29,14 +30,14 @@ export class WhiteWind {
         let handle = parts[0] || null;
         let title = null;
         let rkey = null;
-    
+
         if (parts[1] === "entries") {
             title = decodeURIComponent(parts[2] || "");
             rkey = url.searchParams.get("rkey");
         } else if (parts.length >= 2) {
             rkey = parts[1];
         }
-    
+
         return { handle, title, rkey };
     }
 }

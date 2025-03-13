@@ -6,8 +6,7 @@ export class RutHub {
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, rkey } = this.parseURL(url)
         console.log(`RutHub handler received: ` + prefix, handle, rkey)
-
-        // TODO more code here, for example...
+        
         const did = await getDid(handle)
         if (!did) return null
 

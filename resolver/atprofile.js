@@ -1,5 +1,5 @@
 export class ATProfile {
-    static NSID_AUTH = ['com.atprofile']
+    static NSID_AUTH = 'com.atprofile'
 
     static async processURI({did, nsid, rkey}) {
         console.log(`ATProfile resolver received: ` + did, nsid, rkey)

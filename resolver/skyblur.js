@@ -1,5 +1,5 @@
 export class Skyblur {
-    static NSID_AUTH = ['uk.skyblur']
+    static NSID_AUTH = 'uk.skyblur'
 
     static async processURI({did, nsid, rkey}) {
         console.log(`Skyblur resolver received: ` + did, nsid, rkey)

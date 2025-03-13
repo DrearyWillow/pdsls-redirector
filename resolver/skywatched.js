@@ -1,7 +1,7 @@
 import { getHandle } from "../utils.js"
 
 export class Skywatched {
-    static NSID_AUTH = ['app.skywatched']
+    static NSID_AUTH = 'app.skywatched'
 
     static async processURI({did, nsid, rkey}) {
         console.log(`Bluesky resolver received: ` + did, nsid, rkey)

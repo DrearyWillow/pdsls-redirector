@@ -1,5 +1,5 @@
 export class RutHub {
-    static NSID_AUTH = ['com.ruthub']
+    static NSID_AUTH = 'com.ruthub'
 
     static async processURI({did, nsid, rkey}) {
         console.log(`RutHub resolver received: ` + did, nsid, rkey)

@@ -1,7 +1,7 @@
 import { composeUri, decomposeUri, getRecord } from "../utils.js"
 
 export class Popsky {
-    static NSID_AUTH = ['app.popsky']
+    static NSID_AUTH = 'app.popsky'
 
     static async processURI({did, nsid, rkey}) {
         console.log(`Popsky resolver received: ` + did, nsid, rkey)

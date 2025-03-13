@@ -3,7 +3,7 @@
 import { validateUriInput, getRecord, getServiceEndpoint } from "../utils.js"
 
 export class Tangled {
-    static NSID_AUTH = ['sh.tangled']
+    static NSID_AUTH = 'sh.tangled'
 
     static async processURI({ did, nsid, rkey }) {
         console.log(`Tangled resolver received: ` + did, nsid, rkey)

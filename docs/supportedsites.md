@@ -2,13 +2,14 @@
 
 ## Supported Handlers
 
+`Capabilities` column includes only lexicons that specifically get resolved to, as opposed to merely did resolution.
+
 <table>
 <thead valign="bottom">
 <tr>
     <th>Site</th>
     <th>URL</th>
     <th>Capabilities</th>
-    <th>NSID Resolution</th>
 </tr>
 </thead>
 <tbody valign="top">
@@ -16,72 +17,354 @@
     <td>Bluesky</td>
     <td>https://bsky.app</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-    <td>app.bsky</td>
 </tr>
 <tr>
     <td>Langit</td>
     <td>https://bsky.app</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-    <td></td>
 </tr>
 <tr>
     <td>TOKEMI</td>
     <td>https://tokimekibluesky.vercel.app</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-    <td></td>
 </tr>
 <tr>
     <td>Aglais</td>
     <td>https://aglais.pages.dev</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list</td>
-    <td></td>
+</tr>
+<tr>
+    <td>Akami</td>
+    <td>https://akami.blue</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator</td>
+</tr>
+<tr>
+    <td>ATBrowser</td>
+    <td>https://atproto-browser.vercel.app</td>
+    <td>arbitrary uri</td>
+</tr>
+<tr>
+    <td>Syu</td>
+    <td>https://at.syu.is</td>
+    <td>arbitrary uri</td>
+</tr>
+<tr>
+    <td>ATProfile</td>
+    <td>https://atprofile.com</td>
+    <td>com.atprofile.beta.profile</td>
+</tr>
+<tr>
+    <td>AtProtoCamp</td>
+    <td>https://atproto.camp</td>
+    <td>blue.badge.collection</td>
+</tr>
+<tr>
+    <td>ATPTools</td>
+    <td>https://atp.tools</td>
+    <td>arbitrary uri</td>
+</tr>
+<tr>
+    <td>BlueBadge</td>
+    <td>https://badge.blue</td>
+    <td>blue.badge.collection</td>
+</tr>
+<tr>
+    <td>BlueViewer</td>
+    <td>https://blueviewer.pages.dev</td>
+    <td>app.bsky.feed.post</td>
+</tr>
+<tr>
+    <td>BookHive</td>
+    <td>https://bookhive.buzz</td>
+    <td>buzz.bookhive.book</td>
+</tr>
+<tr>
+    <td>Bluesky CDN</td>
+    <td>https://cdn.bsky.app<br>https://video.sky.app</td>
+    <td>blobs</td>
+</tr>
+<tr>
+    <td>Clearsky</td>
+    <td>https://clearsky.app</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.block</td>
+</tr>
+<tr>
+    <td>Flushes</td>
+    <td>https://flushes.app</td>
+    <td>did</td>
+</tr>
+<tr>
+    <td>FrontPage</td>
+    <td>https://frontpage.fyi</td>
+    <td>fyi.unravel.frontpage.post<br>fyi.unravel.frontpage.comment</td>
 </tr>
 <tr>
     <td>Klearsky</td>
     <td>https://klearsky.pages.dev</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-    <td></td>
+</tr>
+<tr>
+    <td>Internect</td>
+    <td>https://internect.info</td>
+    <td>did</td>
+</tr>
+<tr>
+    <td>LinkAT</td>
+    <td>https://linkat.blue</td>
+    <td>did<br>blue.linkat.board</td>
+</tr>
+<tr>
+    <td>Ouranos</td>
+    <td>https://useouranos.app</td>
+    <td>did<br>app.bsky.feed.post</td>
+</tr>
+<tr>
+    <td>PasteSphere</td>
+    <td>https://pastesphere.link</td>
+    <td>link.pastesphere.snippet</td>
+</tr>
+<tr>
+    <td>PDSls</td>
+    <td>https://pdsls.dev</td>
+    <td>arbitrary uri</td>
+</tr>
+<tr>
+    <td>Pinboards</td>
+    <td>https://pinboards.jeroba.xyz</td>
+    <td>xyz.jeroba.tags.tag</td>
+</tr>
+<tr>
+    <td>PinkSea</td>
+    <td>https://pinksea.art</td>
+    <td>com.shinolabs.pinksea.oekaki</td>
+</tr>
+<tr>
+    <td>Plonk</td>
+    <td>https://plonk.li</td>
+    <td>did</td>
+</tr>
+<tr>
+    <td>Popsky</td>
+    <td>https://popsky.social</td>
+    <td>did<br>app.popsky.review<br>app.popsky.list</td>
+</tr>
+<tr>
+    <td>Recipe Exchange</td>
+    <td>https://recipe.exchange</td>
+    <td>did</td>
+</tr>
+<tr>
+    <td>RutHub</td>
+    <td>https://ruthub.com</td>
+    <td>did<br>com.ruthub<br>com.ruthub.entry<br>com.ruthub.kanban</td>
+</tr>
+<tr>
+    <td>Skyblur</td>
+    <td>https://skyblur.uk</td>
+    <td>uk.skyblur.post</td>
 </tr>
 <tr>
     <td>SkyChat</td>
     <td>https://skychat.social</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-    <td></td>
+</tr>
+<tr>
+    <td>Skylights</td>
+    <td>https://skylights.my</td>
+    <td>my.skylights.rel</td>
+</tr>
+<tr>
+    <td>Skythread</td>
+    <td>https://blue.mackuba.eu</td>
+    <td>app.bsky.feed.post</td>
+</tr>
+<tr>
+    <td>Skyview</td>
+    <td>https://skyview.social</td>
+    <td>app.bsky.feed.post</td>
+</tr>
+<tr>
+    <td>Skywatched</td>
+    <td>https://skywatched.app</td>
+    <td>my.skylights.rel</td>
+</tr>
+<tr>
+    <td>SmokeSignal</td>
+    <td>https://smokesignal.events</td>
+    <td>events.smokesignal.calendar.event<br>events.smokesignal.app.profile</td>
 </tr>
 <tr>
     <td>SuperCoolClient</td>
     <td>https://supercoolclient.pages.dev</td>
     <td>did<br>app.bsky.feed.post</td>
-    <td></td>
+</tr>
+<tr>
+    <td>Swablu</td>
+    <td>https://swablu.pages.dev</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list</td>
+</tr>
+<tr>
+    <td>Tangled</td>
+    <td>https://tangled.sh</td>
+    <td>did<br>sh.tangled.repo</td>
+</tr>
+<tr>
+    <td>WhiteWind</td>
+    <td>https://whtwnd.com</td>
+    <td>com.whtwnd.blog.entry</td>
+</tr>
+<tr>
+    <td>Woosh</td>
+    <td>https://woosh.link</td>
+    <td>did</td>
+</tr>
+<tr>
+    <td>WhiteWind</td>
+    <td>https://whtwnd.com</td>
+    <td>com.whtwnd.blog.entry</td>
+</tr>
+<tr>
+    <td>XRPC</td>
+    <td>https://public.api.bsky.app<br>pds service endpoints</td>
+    <td>arbitrary uri</td>
 </tr>
 </tbody>
 </table>
 
 ## Supported Resolvers
 
+`Lexicons` column includes only lexicons with special resolution. For example, `app.bsky.feed.post` resolves to `https://bsky.app/profile/did/post/rkey`, rather than merely `https://bsky.app/profile/did`.
+
+I should really change `Lexicons` to `Capabilities` and have the human-friendly functionality. Ex. profile, post, etc.
+
 <table>
 <thead valign="bottom">
 <tr>
     <th>Domain Authority</th>
-    <th>Lexicons</th>
     <th>URL Resolution</th>
+    <th>Lexicons</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr>
+    <td>com.atprofile</td>
+    <td>https://atprofile.com</td>
+    <td>did</td>
+</tr>
+<tr>
+    <td>blue.badge</td>
+    <td>https://atproto.camp</td>
+    <td>did<br>badge.blue.collection</td>
+</tr>
+<tr>
+    <td>blue.place</td>
+    <td>https://place.blue</td>
+    <td></td>
+</tr>
+<tr>
     <td>app.bsky</td>
-    <td>app.bsky.actor.profile<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
     <td>https://bsky.app</td>
+    <td>app.bsky.actor.profile<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+</tr>
+<tr>
+    <td>buzz.bookhive</td>
+    <td>https://bookhive.buzz</td>
+    <td>did</td>
 </tr>
 <tr>
     <td>im.flushing</td>
-    <td></td>
     <td>https://flushes.app</td>
+    <td></td>
+</tr>
+<tr>
+    <td>fyi.unravel</td>
+    <td>https://frontpage.fyi</td>
+    <td>did<br>fyi.unravel.frontpage.post<br>fyi.unravel.frontpage.comment</td>
+</tr>
+<tr>
+    <td>blue.linkat</td>
+    <td>https://linkat.blue</td>
+    <td>did</td>
+</tr>
+<tr>
+    <td>link.pastesphere</td>
+    <td>https://pastesphere.link</td>
+    <td>pastesphere.link.snippet</td>
+</tr>
+<tr>
+    <td>xyz.jeroba</td>
+    <td>https://pinboards.jeroba.xyz</td>
+    <td>xyz.jeroba.tags.tag</td>
+</tr>
+<tr>
+    <td>com.shinolabs</td>
+    <td>https://pinnksea.art</td>
+    <td>com.shinolabs.pinksea.oekaki</td>
+</tr>
+<tr>
+    <td>li.plonk</td>
+    <td>https://plonk.li</td>
+    <td></td>
+</tr>
+<tr>
+    <td>app.popsky</td>
+    <td>https://popsky.app</td>
+    <td>did<br>app.popsky.review<br>app.popsky.comment<br>app.popsky.list<br>app.popsky.listItem<br>app.popsky.like</td>
+</tr>
+<tr>
+    <td>social.psky</td>
+    <td>https://psky.social</td>
+    <td></td>
+</tr>
+<tr>
+    <td>exchange.recipe</td>
+    <td>https://recipe.exchange</td>
+    <td>did<br>exchange.recipe.recipe<br>exchange.recipe.collection</td>
+</tr>
+<tr>
+    <td>com.ruthub</td>
+    <td>https://ruthub.com</td>
+    <td>did<br>com.ruthub.entry<br>com.ruthub.kanban<br>com.ruthub.kanbans<br>com.ruthub.item<br>com.ruthub.track</td>
+</tr>
+<tr>
+    <td>uk.skyblur</td>
+    <td>https://skyblur.uk</td>
+    <td></td>
+</tr>
+<tr>
+    <td>my.skylights</td>
+    <td>https://skylights.my<br>https://skywatched.app</td>
+    <td></td>
+</tr>
+<tr>
+    <td>app.skywatched</td>
+    <td>https://skywatched.app</td>
+    <td></td>
+</tr>
+<tr>
+    <td>events.smokesignal</td>
+    <td>https://smokesignal.events</td>
+    <td>events.smokesignal.calendar.event</td>
+</tr>
+<tr>
+    <td>sh.tangled</td>
+    <td>https://tangled.sh</td>
+    <td>did<br>sh.tangled.repo<br>sh.tangled.repo.issue<br>sh.tangled.repo.issue.comment<br>sh.tangled.repo.issue.state<br>sh.tangled.repo.pull<br>sh.tangled.feed.star<br>sh.tangled.feed.follow</td>
+</tr>
+<tr>
+    <td>com.whtwnd</td>
+    <td>https://whtwnd.com</td>
+    <td>did<br>com.whtwnd.blog.entry</td>
+</tr>
+<tr>
+    <td>link.woosh</td>
+    <td>https://woosh.link</td>
+    <td></td>
 </tr>
 <tr>
     <td>XRPC</td>
-    <td>All URI</td>
     <td>API calls are made directly to repo's PDS</td>
+    <td>arbitrary uri</td>
 </tr>
 </tbody>
 </table>

@@ -7,7 +7,7 @@ export class BlueViewer {
         const { handle, rkey } = this.parseURL(url)
         console.log(`blueViewer handler recieved: ` + handle, rkey)
         const did = await getDid(handle)
-        if (!(did && rkey)) return null
+        if (!did || !rkey) return null
         return `at://${did}/app.bsky.feed.post/${rkey}`
     }
 
