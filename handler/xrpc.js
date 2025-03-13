@@ -1,7 +1,7 @@
 // static xrpc = /^https:\/\/(?<domain>[^\/]+)\/xrpc\/(?<api>[\w.:%-]+)(?<params>\?.*)?$/
 // XRPC: https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=did:plc:hx53snho72xoj7zqt5uice4u&collection=app.bsky.actor.profile&rkey=self
 
-import { getDid } from '../utils.js'
+import { composeUri, getDid } from '../utils.js'
 
 export class XRPC {
     static DOMAINS = ['public.api.bsky.app']
@@ -15,13 +15,13 @@ export class XRPC {
         const rkey = params.rkey
         if (!did) return (domain && (domain != 'public.api.bsky.app') && !uriMode) ? `https://pdsls.dev/${domain}` : null
         if (api === "com.atproto.sync.listBlobs") return `at://${did}/blobs`
-        return ['at:/', did, nsid, rkey].filter(Boolean).join('/')
+        return composeUri({ did, nsid, rkey })
     }
 
     static parseURL(url) {
         let domain = url.hostname
         let api = url.pathname.split("/").slice(2)
         let params = url.searchParams
-        return {domain, api, params}
+        return { domain, api, params }
     }
 }

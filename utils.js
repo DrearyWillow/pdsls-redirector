@@ -40,10 +40,10 @@ export async function getDidDoc(did) {
     let res
     try {
         if (did.startsWith("did:web:")) {
-            console.log("Fetching did:web did doc")
+            console.log(`Fetching did:web did doc for: ${did}`)
             res = await fetch(`https://${did.slice(8)}/.well-known/did.json`)
         } else {
-            console.log("Fetching did:plc did doc")
+            console.log(`Fetching did:plc did doc for: ${did}`)
             res = await fetch(`https://plc.directory/${did}`)
         }
 
@@ -183,4 +183,17 @@ export function isMatch(recordValue, matchObj) {
 export function decomposeUri(uri) {
     const [did = undefined, nsid = undefined, rkey = undefined] = uri.replace("at://", "").split("/")
     return { did, nsid, rkey }
+}
+
+export function composeUri({did, nsid, rkey}) {
+    if (did) {
+        if (nsid) {
+            if (rkey) {
+                return `at://${did}/${nsid}/${rkey}`
+            }
+            return `at://${did}/${nsid}`
+        }
+        return `at://${did}`
+    }
+    return null
 }

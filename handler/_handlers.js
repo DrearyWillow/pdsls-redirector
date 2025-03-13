@@ -27,8 +27,15 @@ import { PasteSphere } from './pastesphere.js'
 import { BookHive } from './bookhive.js'
 import { Flushes } from './flushes.js'
 import { Tangled } from './tangled.js';
+import { Skywatched } from './skywatched.js';
+import { ATProfile } from './atprofile.js';
+import { Woosh } from './woosh.js';
+import { Skyblur } from './skyblur.js';
+import { Popsky } from './popsky.js';
+import { RutHub } from './ruthub.js';
 import { BskyCDN } from './bskycdn.js'
 import { XRPC } from './xrpc.js'
+import { Swablu } from './swablu.js';
 
 const handlers = [
     PDSls,
@@ -60,6 +67,13 @@ const handlers = [
     BookHive,
     Flushes,
     Tangled,
+    ATProfile,
+    Skyblur,
+    Swablu,
+    RutHub,
+    Popsky,
+    Woosh,
+    Skywatched,
     BskyCDN,
     XRPC
 ];

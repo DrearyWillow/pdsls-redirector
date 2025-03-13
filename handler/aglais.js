@@ -10,7 +10,10 @@ export class Aglais {
         const did = await getDid(handle)
         if (!did) return null
 
-        if (seg2 === 'curation-lists') return seg3 ? `at://${did}/app.bsky.graph.list/${seg3}` : `at://${did}`
+        if (['curation-lists','moderation-lists'].includes(seg2)) {
+            return seg3 ? `at://${did}/app.bsky.graph.list/${seg3}` : `at://${did}`
+        }
+
         const rkey = seg2 || null
         if (!rkey) return `at://${did}`
         const postUri = `${did}/app.bsky.feed.post/${rkey}`
@@ -20,6 +23,7 @@ export class Aglais {
             const parents = settings.parentCount
             return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
         }
+        
         return `at://${postUri}`
     }
 

@@ -36,7 +36,9 @@ export class Bluesky {
 
 ```js
 export class Bluesky {
-    static NSID_AUTH = 'app.bsky' // first two segments (assumed) of applicable NSIDs. https://atproto.com/specs/nsid
+    // assumed to be first 2 or 3 segments of applicable NSID
+    // https://atproto.com/specs/nsid
+    static NSID_AUTH = 'app.bsky'
 
     static async processURI({did, nsid, rkey}) {
         console.log(`Bluesky resolver received: ` + did, nsid, rkey)

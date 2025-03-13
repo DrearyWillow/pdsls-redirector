@@ -14,6 +14,13 @@ import { PasteSphere } from './pastesphere.js'
 import { BookHive } from './bookhive.js'
 import { Flushes } from './flushes.js'
 import { XRPC } from './xrpc.js'
+import { Psky } from './psky.js'
+import { Popsky } from './popsky.js'
+import { Skyblur } from './skyblur.js'
+import { RutHub } from './ruthub.js'
+import { Woosh } from './woosh.js'
+import { Skywatched } from './skywatched.js'
+import { ATProfile } from './atprofile.js'
 import { Tangled } from './tangled.js'
 
 const resolvers = [
@@ -32,6 +39,13 @@ const resolvers = [
     PasteSphere,
     BookHive,
     Flushes,
+    Skywatched,
+    Skyblur,
+    Popsky,
+    RutHub,
+    ATProfile,
+    Psky,
+    Woosh,
     Tangled,
 ];
 
@@ -43,17 +57,22 @@ for (const Resolver of resolvers) {
 export { resolverMap, XRPC as XRPCResolver, resolvers };
 
 export async function checkResolvers(args, settings) {
-    console.log(args)
+    console.log(`Checking applicable resolvers with: `, args)
+
     if (!args.did) return settings.alwaysOpen ? `https://pdsls.dev` : null
     if (!args.nsid) {
         console.log(`No lexicon specified. Defaulting to Bluesky profile for DID.`)
         return `https://bsky.app/profile/${args.did}`
     }
-    console.log(args.nsid.split('.').slice(0, 2).join('.'))
-    const Resolver = resolverMap[args.nsid.split('.').slice(0, 2).join('.')]
+
+    const nsidSeg2 = args.nsid.split('.').slice(0, 2).join('.')
+    const nsidSeg3 = args.nsid.split('.').slice(0, 3).join('.')
+    const Resolver = resolverMap[nsidSeg2] || resolverMap[nsidSeg3]
+
     if (Resolver) {
-        return await Resolver.processURI(args, settings) || (settings.alwaysOpen ? `https://pdsls.dev` : null)
+        return (await Resolver.processURI(args, settings)) || (settings.alwaysOpen ? `https://pdsls.dev` : null)
     }
+
     console.error(`No matching resolver found: Invalid lexicon '${args.nsid}'`)
     return settings.alwaysOpen ? `https://pdsls.dev` : null
 }

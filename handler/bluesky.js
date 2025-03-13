@@ -1,7 +1,7 @@
 import { getDid } from '../utils.js'
 
 export class Bluesky {
-    static DOMAINS = ['bsky.app', 'main.bsky.dev', 'langit.pages.dev', 'tokimekibluesky.vercel.app']
+    static DOMAINS = ['bsky.app', 'main.bsky.dev', 'langit.pages.dev', 'tokimekibluesky.vercel.app', 'akari.blue']
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, suffix, rkey } = this.parseURL(url)

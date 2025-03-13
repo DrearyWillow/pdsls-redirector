@@ -1,6 +1,6 @@
 import { handlerMap, XRPCHandler, PDSlsHandler } from './handler/_handlers.js'
 import { XRPCResolver } from './resolver/_resolvers.js'
-import { getDid, decomposeUri } from './utils.js'
+import { decomposeUri } from './utils.js'
 
 // Settings
 // browser.storage.sync.clear()
@@ -97,7 +97,7 @@ browser.browserAction.onClicked.addListener(() => {
 // Context Menu
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
   console.log(`Entry point: ${info.menuItemId} contextMenuListener`)
-  if (info.menuItemId !== "PDSls" && info.menuItemId !== "copyATUri" && info.menuItemId !== "Jetstream") { return true }
+  if (info.menuItemId !== "PDSls" && info.menuItemId !== "copyATUri" && info.menuItemId !== "Jetstream") return
   let url
   if (info.bookmarkId) {
     console.log("URL type: bookmark")
@@ -148,15 +148,21 @@ async function checkHandlers(url, uriMode = false) {
   if (Handler) {
     console.log(`Match: ${Handler.name}`)
     let result = await Handler.processURL(url, settings, uriMode);
-    if (!uriMode && result && result.startsWith("at://")) {
-      return `https://pdsls.dev/${result}`
+    if (result && result.startsWith("at://")) {
+      if (settings.alwaysApi) {
+        return (await XRPCResolver.processURI(decomposeUri({result})))
+      } else if (!uriMode) {
+        return `https://pdsls.dev/${result}`
+      }
     }
     return result
   } else if (url.pathname.split('/')[2] === 'xrpc') {
     return await XRPCHandler.processURL(url, settings, uriMode)
   } else if (settings.pdsFallback) {
     console.log("PDS handler received: " + url)
-    return `https://pdsls.dev/${url.hostname}`
+    return settings.alwaysApi
+      ? (await XRPCResolver.processURI({pds: url.hostname}))
+      : `https://pdsls.dev/${url.hostname}`
   } else {
     console.warn("PDS fallback matching is set to false. No match found.")
     return null
@@ -166,17 +172,6 @@ async function checkHandlers(url, uriMode = false) {
 // Validate a returned handler pattern
 async function validateUrl(url) {
   console.log(`Validate URL received: ${url}`)
-  if (settings.alwaysApi && url) {
-    try {
-      if (PDSlsHandler.DOMAINS.includes(new URL(url).hostname)) {
-        const { pds, handle, nsid, rkey } = PDSlsHandler.parseURL(url)
-        console.log(`Passing variables to xrpc Resolver: ` + pds, handle, nsid, rkey)
-        const did = await getDid(handle)
-        if (!did) return null
-        url = await XRPCResolver.processURI({ pds, did, nsid, rkey })
-      }
-    } catch { }
-  }
   if (!url) {
     if (!settings.alwaysOpen) {
       console.warn(`Unsupported input. Not redirecting due to user preferences.`)

@@ -1,4 +1,4 @@
-import { getDid } from '../utils.js'
+import { composeUri, getDid } from '../utils.js'
 import { checkResolvers, XRPCResolver } from '../resolver/_resolvers.js'
 
 export class PDSls {
@@ -11,7 +11,7 @@ export class PDSls {
         if (uriMode) {
             const did = await getDid(handle)
             if (!did) return null
-            return ['at:/', did, nsid, rkey].filter(Boolean).join('/')
+            return composeUri({ did, nsid, rkey })
         }
 
         if (settings.pdslsOpensApi) {
@@ -29,9 +29,8 @@ export class PDSls {
 
     static parseURL(url) {
         let [pds, handle, nsid, rkey] = url.pathname.split('/').filter(Boolean)
-        return {pds, handle, nsid, rkey}
+        return { pds, handle, nsid, rkey }
     }
 }
 
 // static pdsls = /^https:\/\/pdsls\.dev\/(?<pds>[\w.%-]+)(?:\:\/)?(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<nsid>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\/)?(?:[?#].*)?$/
-  
