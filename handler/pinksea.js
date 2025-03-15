@@ -19,9 +19,9 @@ export class Pinksea {
         if (!did) return null
         let baseUrl = `at://${did}/com.shinolabs.pinksea.oekaki`
         if (rkey2) {
-        return `${baseUrl}/${rkey2}`
+            return `${baseUrl}/${rkey2}`
         } else if (rkey) {
-        return `${baseUrl}/${rkey}`
+            return `${baseUrl}/${rkey}`
         }
         return baseUrl
     }
@@ -29,6 +29,6 @@ export class Pinksea {
     static parseURL(url) {
         let [handle, type, rkey] = url.pathname.split("/").slice(1)
         let [handle2, rkey2] = url.hash.slice(1).split("-")
-        return {handle, type, rkey, handle2, rkey2}
+        return { handle, type, rkey, handle2, rkey2 }
     }
 }

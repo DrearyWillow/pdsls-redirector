@@ -19,6 +19,6 @@ export class Skythread {
         let params = url.searchParams
         let handle = params.get('author')
         let rkey = params.get('post')
-        return {handle, rkey}
+        return { handle, rkey }
     }
 }

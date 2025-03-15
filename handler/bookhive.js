@@ -16,6 +16,6 @@ export class BookHive {
 
     static parseURL(url) {
         let [handle] = url.pathname.split("/").slice(2)
-        return {handle}
+        return { handle }
     }
 }

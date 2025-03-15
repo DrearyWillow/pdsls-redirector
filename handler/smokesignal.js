@@ -15,14 +15,14 @@ export class SmokeSignal {
         console.log(`SmokeSignal handler recieved: ` + handle, rkey)
         const did = await getDid(handle)
         return did
-        ? `at://${did}${rkey
-            ? `/events.smokesignal.calendar.event/${rkey}`
-            : "/events.smokesignal.app.profile/self"}`
-        : null
+            ? `at://${did}${rkey
+                ? `/events.smokesignal.calendar.event/${rkey}`
+                : "/events.smokesignal.app.profile/self"}`
+            : null
     }
 
     static parseURL(url) {
         let [handle, rkey] = url.pathname.split("/").slice(1)
-        return {handle, rkey}
+        return { handle, rkey }
     }
 }

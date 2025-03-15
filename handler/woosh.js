@@ -15,7 +15,7 @@ export class Woosh {
     }
 
     static parseURL(url) {
-        let [ handle ] = url.pathname.split("/").slice(1)
+        let [handle] = url.pathname.split("/").slice(1)
         return { handle }
     }
 }

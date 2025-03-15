@@ -27,6 +27,6 @@ export class Popsky {
 
     static parseURL(url) {
         let [prefix, value] = url.pathname.split("/").slice(1)
-        return {prefix, value}
+        return { prefix, value }
     }
 }

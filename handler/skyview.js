@@ -16,6 +16,6 @@ export class Skyview {
 
     static parseURL(url) {
         let bskyUrl = decodeURIComponent(url.searchParams.get('url'))
-        return {bskyUrl}
+        return { bskyUrl }
     }
 }

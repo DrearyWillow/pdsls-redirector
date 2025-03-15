@@ -40,20 +40,20 @@ export class Bluesky {
         if (prefix !== "profile") return null
 
         switch (suffix) {
-        case "post":
-            const postUri = `${did}/app.bsky.feed.post/${rkey}`
-            if (!uriMode && settings.getPostThread) {
-            const depth = settings.replyCount
-            const parents = settings.parentCount
-            return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
-            }
-            return `at://${postUri}`
-        case "feed":
-            return `at://${did}/app.bsky.feed.generator/${rkey}`
-        case "lists":
-            return `at://${did}/app.bsky.graph.list/${rkey}`
-        default:
-            return null
+            case "post":
+                const postUri = `${did}/app.bsky.feed.post/${rkey}`
+                if (!uriMode && settings.getPostThread) {
+                    const depth = settings.replyCount
+                    const parents = settings.parentCount
+                    return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
+                }
+                return `at://${postUri}`
+            case "feed":
+                return `at://${did}/app.bsky.feed.generator/${rkey}`
+            case "lists":
+                return `at://${did}/app.bsky.graph.list/${rkey}`
+            default:
+                return null
         }
     }
 
@@ -63,8 +63,8 @@ export class Bluesky {
         if (!['post', 'lists', 'feed'].includes(suffix)) {
             rkey = suffix
             suffix = undefined
-        } 
-        return {prefix, handle, suffix, rkey}
+        }
+        return { prefix, handle, suffix, rkey }
     }
 }
 

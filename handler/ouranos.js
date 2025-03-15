@@ -29,6 +29,6 @@ export class Ouranos {
         let handle = parts[0]
         let rkey = parts[2]
         let uri = url.searchParams.get('uri')
-        return {handle, rkey, uri}
+        return { handle, rkey, uri }
     }
 }

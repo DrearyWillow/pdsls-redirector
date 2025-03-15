@@ -7,7 +7,7 @@ export class Skywatched {
         output: 'https://skywatched.app/user/dreary.dev'
     }]
 
-    static async processURI({did, nsid, rkey}) {
+    static async processURI({ did, nsid, rkey }) {
         console.log(`Bluesky resolver received: ` + did, nsid, rkey)
 
         if (!did) return settings.alwaysOpen ? `https://skywatched.app` : null

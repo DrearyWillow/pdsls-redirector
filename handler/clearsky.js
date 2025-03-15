@@ -16,16 +16,16 @@ export class Clearsky {
         const did = await getDid(handle)
         if (!did) return null
         const typeSuffix =
-        type === "history"
-            ? "app.bsky.feed.post"
-            : type === "blocking"
-            ? "app.bsky.graph.block"
-            : ""
+            type === "history"
+                ? "app.bsky.feed.post"
+                : type === "blocking"
+                    ? "app.bsky.graph.block"
+                    : ""
         return `at://${did}/${typeSuffix}`
     };
 
     static parseURL(url) {
         let [handle, type] = url.pathname.split("/").slice(1)
-        return {handle, type}
+        return { handle, type }
     }
 }

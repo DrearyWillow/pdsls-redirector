@@ -13,11 +13,11 @@ export class ATPTools {
         console.log(`ATPTools handler recieved: ` + handle, nsid, rkey)
         const did = await getDid(decodeURIComponent(handle))
         if (!did) return null
-        return composeUri({did, nsid, rkey})
+        return composeUri({ did, nsid, rkey })
     }
 
     static parseURL(url) {
         let [handle, nsid, rkey] = url.pathname.split("/").slice(2)
-        return {handle, nsid, rkey}
+        return { handle, nsid, rkey }
     }
 }

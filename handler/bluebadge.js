@@ -13,6 +13,6 @@ export class BlueBadge {
 
     static parseURL(url) {
         let uri = decodeURIComponent(url.searchParams.get('uri'))
-        return {uri}
+        return { uri }
     }
 }

@@ -16,6 +16,6 @@ export class PasteSphere {
 
     static parseURL(url) {
         let [handle, type, rkey] = url.pathname.split("/").slice(2)
-        return {handle, type, rkey}
+        return { handle, type, rkey }
     }
 }

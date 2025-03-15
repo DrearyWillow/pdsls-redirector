@@ -17,6 +17,6 @@ export class ATProtoCamp {
 
     static parseURL(url) {
         let [handle, rkey] = url.pathname.split("/").slice(1)
-        return {handle, rkey}
+        return { handle, rkey }
     }
 }

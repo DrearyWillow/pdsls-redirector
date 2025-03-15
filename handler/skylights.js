@@ -16,6 +16,6 @@ export class Skylights {
 
     static parseURL(url) {
         let handle = url.pathname.split("/")[2]
-        return {handle}
+        return { handle }
     }
 }

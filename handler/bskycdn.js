@@ -1,5 +1,5 @@
 export class BskyCDN {
-    static DOMAINS = [ 'cdn.bsky.app', 'video.bsky.app' ]
+    static DOMAINS = ['cdn.bsky.app', 'video.bsky.app']
     static TESTS = [{
         url: 'https://cdn.bsky.app/img/avatar/plain/did:plc:hx53snho72xoj7zqt5uice4u/bafkreiblp6bxadz42kevdcqcq3qofzxnoej5nhmwdqwcgjdg26ir2offdi@jpeg',
         output: 'https://pdsls.dev/at://did:plc:hx53snho72xoj7zqt5uice4u/blobs'
@@ -17,6 +17,6 @@ export class BskyCDN {
     static parseURL(url) {
         const sliceIndex = url.hostname === 'cdn.bsky.app' ? 4 : 2
         const [did] = decodeURIComponent(url.pathname).split("/").slice(sliceIndex)
-        return {did}
+        return { did }
     }
 }

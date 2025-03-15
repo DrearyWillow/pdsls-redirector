@@ -17,6 +17,6 @@ export class Flushes {
 
     static parseURL(url) {
         let [handle] = url.pathname.split("/").slice(2)
-        return {handle}
+        return { handle }
     }
 }

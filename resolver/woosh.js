@@ -7,7 +7,7 @@ export class Woosh {
         output: 'https://woosh.link/woosh.link'
     }]
 
-    static async processURI({did, nsid, rkey}) {
+    static async processURI({ did, nsid, rkey }) {
         console.log(`Woosh resolver received: ` + did, nsid, rkey)
 
         if (!did) return settings.alwaysOpen ? `https://woosh.link` : null

@@ -15,8 +15,8 @@ export class XRPC {
         uri: 'at://did:plc:oisofpd7lj26yvgiivf3lxsi/app.bsky.graph.follow/3ljhao2uhxk2w',
         output: 'https://pds.haileyok.com/xrpc/com.atproto.repo.getRecord?repo=did:plc:oisofpd7lj26yvgiivf3lxsi&collection=app.bsky.graph.follow&rkey=3ljhao2uhxk2w'
     }]
-    
-    static async processURI({did, nsid, rkey, service, pds}, settings) {
+
+    static async processURI({ did, nsid, rkey, service, pds }, settings) {
         console.log(`xrpc resolver received: ` + did, nsid, rkey, service, pds)
         if (pds && pds !== "at") return `https://${pds}/xrpc/com.atproto.sync.listRepos?limit=1000`
         if (!did) return null

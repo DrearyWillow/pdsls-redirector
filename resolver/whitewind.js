@@ -5,7 +5,7 @@ export class WhiteWind {
         output: 'https://whtwnd.com/did:plc:oisofpd7lj26yvgiivf3lxsi/3laq5rt7era2x'
     }]
 
-    static async processURI({did, nsid, rkey}, settings) {
+    static async processURI({ did, nsid, rkey }, settings) {
         console.log(`WhiteWind resolver received: ` + did, nsid, rkey)
         // there is only collection for now, but i do this to stay safe
         if (!did) return settings.alwaysOpen ? `https://whtwnd.com` : null

@@ -8,7 +8,7 @@ export class RutHub {
         output: 'https://ruthub.com/kb/did:plc:vd3bvirbooxanq7rc4myzxym'
     }]
 
-    static async processURI({did, nsid, rkey}) {
+    static async processURI({ did, nsid, rkey }) {
         console.log(`RutHub resolver received: ` + did, nsid, rkey)
 
         let baseUrl = `https://ruthub.com`

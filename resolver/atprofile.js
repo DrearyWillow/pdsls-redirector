@@ -5,7 +5,7 @@ export class ATProfile {
         output: 'https://atprofile.com/did:plc:jkjaihp54h2aholmwipud5hv'
     }]
 
-    static async processURI({did, nsid, rkey}, settings) {
+    static async processURI({ did, nsid, rkey }, settings) {
         console.log(`ATProfile resolver received: ` + did, nsid, rkey)
 
         if (!did) return settings.alwaysOpen ? `https://atprofile.com` : null

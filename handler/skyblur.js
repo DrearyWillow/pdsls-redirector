@@ -13,13 +13,13 @@ export class Skyblur {
 
         const did = await getDid(handle)
         if (did && rkey && prefix === "post") {
-            return composeUri({did, nsid: 'uk.skyblur.post', rkey})
+            return composeUri({ did, nsid: 'uk.skyblur.post', rkey })
         }
         return null
     }
 
     static parseURL(url) {
         let [prefix, handle, rkey] = url.pathname.split("/").slice(1)
-        return {prefix, handle, rkey}
+        return { prefix, handle, rkey }
     }
 }

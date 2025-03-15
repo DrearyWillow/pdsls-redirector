@@ -13,6 +13,6 @@ export class Internect {
 
     static parseURL(url) {
         let [did] = url.pathname.split("/").slice(2)
-        return {did}
+        return { did }
     }
 }

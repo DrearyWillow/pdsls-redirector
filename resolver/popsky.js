@@ -19,25 +19,25 @@ export class Popsky {
         output: 'https://popsky.social/review/at%3A%2F%2Fdid%3Aplc%3Aofrbh253gwicbkc5nktqepol%2Fapp.popsky.review%2F3ljk2wnjpo22u'
     }]
 
-    static async processURI({did, nsid, rkey}) {
+    static async processURI({ did, nsid, rkey }) {
         console.log(`Popsky resolver received: ` + did, nsid, rkey)
 
         const baseUrl = `https://popsky.social`
         if (!did) return settings.alwaysOpen ? baseUrl : null
         const fallback = `${baseUrl}/profile/${did}`
         if (!rkey) return fallback
-        
+
         switch (nsid) {
             case 'app.popsky.review':
-                return `${baseUrl}/review/${encodeURIComponent(composeUri({did, nsid, rkey}))}`
+                return `${baseUrl}/review/${encodeURIComponent(composeUri({ did, nsid, rkey }))}`
             case 'app.popsky.comment':
-                return (await this.retrieveUrl({did, nsid, rkey}, "subjectUri")) || fallback
+                return (await this.retrieveUrl({ did, nsid, rkey }, "subjectUri")) || fallback
             case 'app.popsky.list':
-                return `${baseUrl}/list/${encodeURIComponent(composeUri({did, nsid, rkey}))}`
+                return `${baseUrl}/list/${encodeURIComponent(composeUri({ did, nsid, rkey }))}`
             case 'app.popsky.listItem':
-                return (await this.retrieveUrl({did, nsid, rkey}, "listUri")) || fallback
+                return (await this.retrieveUrl({ did, nsid, rkey }, "listUri")) || fallback
             case 'app.popsky.like':
-                return (await this.retrieveUrl({did, nsid, rkey}, "subjectUri")) || fallback
+                return (await this.retrieveUrl({ did, nsid, rkey }, "subjectUri")) || fallback
             default:
                 return fallback
         }

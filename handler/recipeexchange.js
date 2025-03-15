@@ -24,6 +24,6 @@ export class RecipeExchange {
 
     static parseURL(url) {
         let [type, value] = url.pathname.split("/").slice(1)
-        return {type, value}
+        return { type, value }
     }
 }

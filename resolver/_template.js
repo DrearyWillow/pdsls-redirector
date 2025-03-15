@@ -5,7 +5,7 @@ export class Bluesky {
         output: ''
     }]
 
-    static async processURI({did, nsid, rkey}) {
+    static async processURI({ did, nsid, rkey }) {
         console.log(`Bluesky resolver received: ` + did, nsid, rkey)
 
         // TODO: more code here, for example...

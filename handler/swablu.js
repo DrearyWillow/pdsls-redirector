@@ -15,8 +15,8 @@ export class Swablu {
 
     static async processURL(url, settings, uriMode) {
         let { type, uri } = this.parseURL(url)
-        
-        console.log(`Swablu handler received: ` + type, uri )
+
+        console.log(`Swablu handler received: ` + type, uri)
         if (!uri) return null
         uri = decodeURIComponent(uri)
 

@@ -17,6 +17,6 @@ export class Plonk {
 
     static parseURL(url) {
         let [prefix, did] = url.pathname.split("/").slice(1)
-        return {prefix, did}
+        return { prefix, did }
     }
 }

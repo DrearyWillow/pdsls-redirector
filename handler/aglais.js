@@ -19,7 +19,7 @@ export class Aglais {
         const did = await getDid(handle)
         if (!did) return null
 
-        if (['curation-lists','moderation-lists'].includes(seg2)) {
+        if (['curation-lists', 'moderation-lists'].includes(seg2)) {
             return seg3 ? `at://${did}/app.bsky.graph.list/${seg3}` : `at://${did}`
         }
 
@@ -32,12 +32,12 @@ export class Aglais {
             const parents = settings.parentCount
             return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
         }
-        
+
         return `at://${postUri}`
     }
 
     static parseURL(url) {
         let [handle, seg2, seg3] = url.pathname.split("/").slice(1)
-        return {handle, seg2, seg3}
+        return { handle, seg2, seg3 }
     }
 }

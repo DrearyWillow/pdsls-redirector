@@ -25,5 +25,5 @@ export class ATBrowser {
         const rest = parts.slice(1).join("/") || null;
         return { handle, rest };
     }
-    
+
 }

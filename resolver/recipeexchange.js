@@ -13,7 +13,7 @@ export class RecipeExchange {
         output: 'https://recipe.exchange/collections/01JFMSBYNSD3YAR75NFWNKRCVX'
     }]
 
-    static async processURI({did, nsid, rkey}, settings) {
+    static async processURI({ did, nsid, rkey }, settings) {
         console.log(`RecipeExchange resolver received: ` + did, nsid, rkey)
         if (rkey && (nsid === "exchange.recipe.recipe")) return `https://recipe.exchange/recipes/${rkey}`
         if (rkey && (nsid === "exchange.recipe.collection")) return `https://recipe.exchange/collections/${rkey}`
@@ -21,11 +21,11 @@ export class RecipeExchange {
         if (rkey && (nsid === "exchange.recipe.comment")) {
             const service = await getServiceEndpoint(did)
             if (!service) return settings.alwaysOpen ? `https://recipe.exchange` : null
-            const uri = (await getRecord({did, nsid, rkey, service})).value?.recipe?.uri
+            const uri = (await getRecord({ did, nsid, rkey, service })).value?.recipe?.uri
             if (!uri) {
                 if (settings.alwaysOpen) {
-                let handle = await getHandle(did)
-                return handle ? `https://recipe.exchange/profiles/${handle}` : `https://recipe.exchange`
+                    let handle = await getHandle(did)
+                    return handle ? `https://recipe.exchange/profiles/${handle}` : `https://recipe.exchange`
                 }
                 return null
             }

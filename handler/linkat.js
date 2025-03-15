@@ -16,6 +16,6 @@ export class LinkAT {
 
     static parseURL(url) {
         let [handle] = url.pathname.split("/").slice(1)
-        return {handle}
+        return { handle }
     }
 }

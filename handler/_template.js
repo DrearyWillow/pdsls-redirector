@@ -23,6 +23,6 @@ export class Bluesky {
 
     static parseURL(url) {
         let [prefix, handle, suffix, rkey] = url.pathname.split("/").slice(1)
-        return {prefix, handle, suffix, rkey}
+        return { prefix, handle, suffix, rkey }
     }
 }

@@ -16,7 +16,7 @@ export class RutHub {
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, rkey } = this.parseURL(url)
         console.log(`RutHub handler received: ` + prefix, handle, rkey)
-        
+
         const did = await getDid(handle)
         if (!did) return null
 
@@ -38,6 +38,6 @@ export class RutHub {
 
     static parseURL(url) {
         let [prefix, handle, rkey] = url.pathname.split("/").slice(1)
-        return {prefix, handle, rkey}
+        return { prefix, handle, rkey }
     }
 }

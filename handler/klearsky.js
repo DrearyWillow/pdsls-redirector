@@ -27,7 +27,7 @@ export class Klearsky {
 
     static async processURL(url, settings, uriMode) {
         let { type, uri, account } = this.parseURL(url)
-        
+
         console.log(`klearsky handler received: ` + type, uri, account)
         if (uri) {
             uri = decodeURIComponent(uri)
@@ -51,10 +51,10 @@ export class Klearsky {
         const type = parts.length > 0 ? parts[parts.length - 1] : "";
 
         const searchParams = new URLSearchParams(url.hash.split("?")[1] || "");
-    
+
         const uri = searchParams.get("uri") || searchParams.get("list") || searchParams.get("feed")
         const account = searchParams.get("account");
-    
+
         return { type, uri, account };
     }
 }

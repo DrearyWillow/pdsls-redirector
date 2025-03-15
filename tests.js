@@ -27,50 +27,11 @@ async function loadClasses(mode) {
     return classes;
 }
 
-// async function runResolver(mode, userInput) {
-//     const resolvers = await loadClasses(mode)
-//     let resolverKey, testNum
-//     if (userInput.toLowerCase() === "all") {
-//         resolverTestAll(handlers)
-//         return
-//     } else if (userInput.startsWith('at://')) {
-//         let uri = userInput
-//         let settings = await loadDefaultSettings()
-//         let output = await checkResolvers(uri, settings)
-//         log(`Output: ${output}`)
-//         return
-//     } else if (userInput.includes('_')) {
-//         [resolverKey, testNum] = userInput.split('_')
-//         testNum = Number(testNum)
-//         resolverKey = resolverKey.toLowerCase()
-//     } else {
-//         resolverKey = userInput.toLowerCase()
-//     }
-
-//     let resolverClass
-//     if (testNum && handlers[handlerKey]) {
-//         HandlerClass = handlers[handlerKey];
-//         console.log()
-//         log2(`Running handler test ${testNum} for ${HandlerClass.name}`);
-//         handlerTestSingle(HandlerClass, testNum)
-//     } else if (handlers[handlerKey]) {
-//         HandlerClass = handlers[handlerKey];
-//         console.log()
-//         log2(`Running all handler tests for ${HandlerClass.name}`);
-//         handlerTestLoop(HandlerClass);
-//     } else {
-//         error(`No matching handler class found for '${userInput}'`);
-//     }
-// }
-
 async function runTests(mode, userInput) {
     const classes = await loadClasses(mode)
     let classKey, testNum
     if (userInput.toLowerCase() === "all") {
         return testAll(mode, classes)
-        // return (mode === 'HANDLER')
-        //     ? handlerTestAll(classes)
-        //     : resolverTestAll(classes)
     } else if ((mode === 'HANDLER') && userInput.startsWith('https://')) {
         let url = userInput
         let settings = await loadDefaultSettings()
@@ -108,44 +69,6 @@ async function runTests(mode, userInput) {
         error(`No matching ${mode.toLowerCase()} class found for '${userInput}'`);
     }
 }
-
-// async function runHandler(mode, userInput) {
-//     const handlers = await loadClasses(mode);
-//     let handlerKey, testNum
-//     if (userInput.toLowerCase() === "all") {
-//         handlerTestAll(handlers)
-//         return
-//     } else if (userInput.startsWith('https://')) {
-//         let url = userInput
-//         let settings = await loadDefaultSettings()
-//         let uriMode = false
-//         let output = await checkHandlers(new URL(url), settings, uriMode)
-//         if (!uriMode) output = await validateUrl(output, settings)
-//         log(`Output: ${output}`)
-//         return
-//     } else if (userInput.includes('_')) {
-//         [handlerKey, testNum] = userInput.split('_')
-//         testNum = Number(testNum)
-//         handlerKey = handlerKey.toLowerCase()
-//     } else {
-//         handlerKey = userInput.toLowerCase()
-//     }
-
-//     let HandlerClass
-//     if (testNum && handlers[handlerKey]) {
-//         HandlerClass = handlers[handlerKey];
-//         console.log()
-//         log2(`Running handler test ${testNum} for ${HandlerClass.name}`);
-//         handlerTestSingle(HandlerClass, testNum)
-//     } else if (handlers[handlerKey]) {
-//         HandlerClass = handlers[handlerKey];
-//         console.log()
-//         log2(`Running all handler tests for ${HandlerClass.name}`);
-//         handlerTestLoop(HandlerClass);
-//     } else {
-//         error(`No matching handler class found for '${userInput}'`);
-//     }
-// }
 
 async function testOneResolver(Resolver, test, index) {
     let success = true
@@ -280,7 +203,7 @@ async function testAll(mode, classes) {
     if (completed < classes.length) {
         error2(msg)
         error2(`Broke on ${Class.name}`)
-    } else { 
+    } else {
         log2(msg)
     }
     console.log()
@@ -299,19 +222,9 @@ async function initializeTests() {
                 resolve(answer)
             })
         })
-    
+
     mode = mode.trim().toUpperCase().startsWith("R") ? "RESOLVER" : "HANDLER";
-    
-    // mode = mode.slice(0, 1).toUpperCase()
-    // if (mode === 'R') {
-    //     mode = 'RESOLVER'
-    // } else if (mode === 'H') {
-    //     mode = 'HANDLER'
-    // } else {
-    //     error('Invalid mode specified. Please choose [R]esolver or [H]andler')
-    //     return
-    // }
-    
+
     const userInput = process.argv[3]
         ? process.argv[3]
         : await new Promise(resolve => {
@@ -324,13 +237,8 @@ async function initializeTests() {
                 resolve(answer)
             })
         })
-    
+
     runTests(mode, userInput)
-    // if (mode === 'RESOLVER') {
-    //     runResolver(mode, userInput)
-    // } else if (mode === 'HANDLER') {
-    //     runHandler(mode, userInput)
-    // }
 }
 
 await initializeTests()

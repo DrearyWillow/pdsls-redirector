@@ -15,25 +15,25 @@ export class Frontpage {
         console.log(`frontpage handler recieved: ` + prefix, handle, rkey, handle2, rkey2)
         let did
         switch (prefix) {
-        case 'post':
-            if (handle2 && rkey2) {
-                const did2 = await getDid(handle2)
-                if (did2) return `at://${did2}/fyi.unravel.frontpage.comment/${rkey2}`
-            }
-            did = await getDid(handle)
-            if (!did) return null
-            return rkey ? `at://${did}/fyi.unravel.frontpage.post/${rkey}` : null
-        case 'profile':
-            did = await getDid(handle)
-            if (!did) return null
-            return `at://${did}/fyi.unravel.frontpage.post`
-        default:
-            return null
+            case 'post':
+                if (handle2 && rkey2) {
+                    const did2 = await getDid(handle2)
+                    if (did2) return `at://${did2}/fyi.unravel.frontpage.comment/${rkey2}`
+                }
+                did = await getDid(handle)
+                if (!did) return null
+                return rkey ? `at://${did}/fyi.unravel.frontpage.post/${rkey}` : null
+            case 'profile':
+                did = await getDid(handle)
+                if (!did) return null
+                return `at://${did}/fyi.unravel.frontpage.post`
+            default:
+                return null
         }
     }
 
     static parseURL(url) {
         let [prefix, handle, rkey, handle2, rkey2] = url.pathname.split("/").slice(1)
-        return {prefix, handle, rkey, handle2, rkey2}
+        return { prefix, handle, rkey, handle2, rkey2 }
     }
 }

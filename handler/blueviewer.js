@@ -19,6 +19,6 @@ export class BlueViewer {
         let params = url.searchParams
         let handle = params.get('actor')
         let rkey = params.get('rkey')
-        return {handle, rkey}
+        return { handle, rkey }
     }
 }

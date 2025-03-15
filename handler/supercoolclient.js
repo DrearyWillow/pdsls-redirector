@@ -23,6 +23,6 @@ export class SuperCoolClient {
 
     static parseURL(url) {
         let [handle, suffix, rkey] = url.pathname.split("/").slice(1)
-        return {handle, suffix, rkey}
+        return { handle, suffix, rkey }
     }
 }
