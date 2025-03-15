@@ -6,7 +6,7 @@ export class BluePlace {
     }]
 
     static async processURI({ did, nsid, rkey }, settings) {
-        console.log(`BluePlace resolver received: ` + did, nsid, rkey)
+        console.log(`BluePlace resolver received: `, { did, nsid, rkey })
         return "https://place.blue"
     }
 }

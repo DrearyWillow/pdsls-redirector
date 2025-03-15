@@ -10,7 +10,7 @@ export class ATProfile {
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)
-        console.log(`ATProfile handler received: ` + handle)
+        console.log(`ATProfile handler received: `, { handle })
 
         const did = await getDid(handle)
         return did ? `at://${did}/com.atprofile.beta.profile/self` : null

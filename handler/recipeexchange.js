@@ -13,7 +13,7 @@ export class RecipeExchange {
 
     static async processURL(url, settings, uriMode) {
         const { type, value } = this.parseURL(url)
-        console.log(`RecipeExchange handler recieved: ` + type, value)
+        console.log(`RecipeExchange handler recieved: `, { type, value })
         // you can't look collections or recipes up by did.
         if (value && type === "profiles") {
             const did = await getDid(value)

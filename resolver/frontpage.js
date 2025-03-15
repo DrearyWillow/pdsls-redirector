@@ -14,7 +14,7 @@ export class Frontpage {
     }]
 
     static async processURI({ did, nsid, rkey, parentDid, parentRkey }, settings) {
-        console.log(`Frontpage resolver received: ` + did, nsid, rkey, parentDid, parentRkey)
+        console.log(`Frontpage resolver received: `, { did, nsid, rkey, parentDid, parentRkey })
         if (!did) return settings.alwaysOpen ? `https://frontpage.fyi` : null
         if (!rkey) return `https://frontpage.fyi/profile/${did}`
         switch (nsid) {

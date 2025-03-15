@@ -10,7 +10,7 @@ export class ATProtoCamp {
 
     static async processURL(url, settings, uriMode) {
         const { handle, rkey } = this.parseURL(url)
-        console.log(`camp handler recieved: ` + handle, rkey)
+        console.log(`ATProtoCamp handler recieved: `, { handle, rkey })
         const did = await getDid(handle)
         return did ? `at://${did}/blue.badge.collection/${rkey || ""}` : null
     }

@@ -12,7 +12,7 @@ export class Frontpage {
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, rkey, handle2, rkey2 } = this.parseURL(url)
-        console.log(`frontpage handler recieved: ` + prefix, handle, rkey, handle2, rkey2)
+        console.log(`Frontpage handler recieved: `, { prefix, handle, rkey, handle2, rkey2 })
         let did
         switch (prefix) {
             case 'post':

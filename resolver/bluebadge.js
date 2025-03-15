@@ -6,9 +6,9 @@ export class BlueBadge {
     }]
 
     static async processURI({ did, nsid, rkey }, settings) {
-        console.log(`blueBadge resolver received: ` + did, nsid, rkey)
+        console.log(`BlueBadge resolver received: `, { did, nsid, rkey })
         if (!did) return settings.alwaysOpen ? `https://atproto.camp` : null
-        // there is only collection for now, but i do this to stay safe
+        // one collection for now, but just to be safe
         if (!rkey || nsid !== "blue.badge.collection") {
             return `https://atproto.camp/${did}`
         }

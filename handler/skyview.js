@@ -9,7 +9,7 @@ export class Skyview {
 
     static async processURL(url, settings, uriMode) {
         const { bskyUrl } = this.parseURL(url)
-        console.log(`skyview handler recieved: ` + bskyUrl)
+        console.log(`Skyview handler recieved: `, { bskyUrl })
         console.log(`Passing to bsky handler`)
         return await Bluesky.processURL(new URL(bskyUrl), settings, uriMode)
     }

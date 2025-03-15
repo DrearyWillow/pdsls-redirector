@@ -1,4 +1,4 @@
-import { getDid } from '../utils.js'
+import { getDid, postThreadCheck } from '../utils.js'
 
 export class SuperCoolClient {
     static DOMAINS = ['supercoolclient.pages.dev']
@@ -12,11 +12,12 @@ export class SuperCoolClient {
 
     static async processURL(url, settings, uriMode) {
         const { handle, suffix, rkey } = this.parseURL(url)
-        console.log(`SuperCoolClient handler received: ` + handle, suffix, rkey)
+        console.log(`SuperCoolClient handler received: `, { handle, suffix, rkey })
         const did = await getDid(handle)
         if (!did) return null
         if (rkey && suffix === 'post') {
-            return `at://${did}/app.bsky.feed.post/${rkey}`
+            let uri = `at://${did}/app.bsky.feed.post/${rkey}`
+            return postThreadCheck(uri, settings, uriMode) || uri
         }
         return `at://${did}`
     }

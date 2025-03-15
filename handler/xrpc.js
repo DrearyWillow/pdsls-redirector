@@ -18,7 +18,7 @@ export class XRPC {
 
     static async processURL(url, settings, uriMode) {
         let { domain, api, params } = this.parseURL(url)
-        console.log(`XRPC handler recieved: ` + domain, api, params)
+        console.log(`XRPC handler recieved: `, { domain, api, params })
         params = Object.fromEntries(params)
         const did = await getDid(params.repo || params.did)
         const nsid = params.collection

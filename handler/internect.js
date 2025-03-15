@@ -7,7 +7,7 @@ export class Internect {
 
     static async processURL(url, settings, uriMode) {
         const { did } = this.parseURL(url)
-        console.log(`internect handler recieved: ` + did)
+        console.log(`Internect handler recieved: `, { did })
         return `at://${did}`
     }
 

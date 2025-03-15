@@ -200,6 +200,15 @@ export function composeUri({ did, nsid, rkey }) {
     return null
 }
 
+export function postThreadCheck(uri, settings, uriMode) {
+    if (!uriMode && settings.getPostThread) {
+        const depth = settings.replyCount
+        const parents = settings.parentCount
+        return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${uri}&depth=${depth}&parentHeight=${parents}`
+    }
+    return null
+}
+
 // EXTENSION UTILS //
 
 export async function buildMenus(settings = {}) {

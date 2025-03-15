@@ -7,7 +7,7 @@ export class BlueBadge {
 
     static async processURL(url, settings, uriMode) {
         const { uri } = this.parseURL(url)
-        console.log(`BlueBadge handler recieved: ` + uri)
+        console.log(`BlueBadge handler recieved: `, { uri })
         return uri
     }
 

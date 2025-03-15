@@ -12,7 +12,7 @@ export class Skywatched {
 
     static async processURL(url, settings, uriMode) {
         const { prefix, value } = this.parseURL(url)
-        console.log(`Skywatched handler received: ` + prefix, value)
+        console.log(`Skywatched handler received: `, { prefix, value })
 
         if (!value) return null
         switch (prefix) {

@@ -9,7 +9,7 @@ export class Woosh {
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)
-        console.log(`Woosh handler received: ` + handle)
+        console.log(`Woosh handler received: `, { handle })
         const did = await getDid(handle)
         return did ? `at://${did}` : null
     }

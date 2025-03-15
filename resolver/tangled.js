@@ -26,7 +26,7 @@ export class Tangled {
     }]
 
     static async processURI({ did, nsid, rkey }) {
-        console.log(`Tangled resolver received: ` + did, nsid, rkey)
+        console.log(`Tangled resolver received: `, { did, nsid, rkey })
 
         let baseUrl = `https://tangled.sh`
         if (!did) return settings.alwaysOpen ? baseUrl : null

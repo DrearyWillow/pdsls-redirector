@@ -10,7 +10,7 @@ export class BskyCDN {
 
     static async processURL(url, settings, uriMode) {
         const { did } = this.parseURL(url)
-        console.log(`BskyCDN handler recieved: ` + did)
+        console.log(`BskyCDN handler recieved: `, { did })
         return `at://${did}/blobs`
     }
 

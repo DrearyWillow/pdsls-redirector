@@ -18,7 +18,7 @@ export class Bluesky {
     }]
 
     static async processURI({ did, nsid, rkey }, settings) {
-        console.log(`Bluesky resolver received: ` + did, nsid, rkey)
+        console.log(`Bluesky resolver received: `, { did, nsid, rkey })
         if (!did) return settings.alwaysOpen ? `https://bsky.app` : null
         if (!rkey) return `https://bsky.app/profile/${did}`
         switch (nsid) {

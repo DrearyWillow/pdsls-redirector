@@ -9,7 +9,7 @@ export class Skyblur {
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, rkey } = this.parseURL(url)
-        console.log(`Skyblur handler received: ` + prefix, handle, rkey)
+        console.log(`Skyblur handler received: `, { prefix, handle, rkey })
 
         const did = await getDid(handle)
         if (did && rkey && prefix === "post") {

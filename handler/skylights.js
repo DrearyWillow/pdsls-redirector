@@ -9,7 +9,7 @@ export class Skylights {
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)
-        console.log(`skylights handler recieved: ` + handle)
+        console.log(`Skylights handler recieved: `, { handle })
         const did = await getDid(handle)
         return did ? `at://${did}/my.skylights.rel` : null
     }

@@ -4,17 +4,15 @@ export class Bluesky {
     static DOMAINS = ['']
     static TESTS = [{
         url: '',
-        returned: '',
         output: ''
     }, {
         url: '',
-        returned: '',
         output: ''
     }]
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, suffix, rkey } = this.parseURL(url)
-        console.log(`Bluesky handler received: ` + prefix, handle, suffix, rkey)
+        console.log(`Bluesky handler received: `, { prefix, handle, suffix, rkey })
 
         // TODO more code here, for example...
         const did = await getDid(handle)

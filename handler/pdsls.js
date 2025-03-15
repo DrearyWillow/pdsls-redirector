@@ -20,7 +20,7 @@ export class PDSls {
 
     static async processURL(url, settings, uriMode) {
         const { pds, handle, nsid, rkey } = this.parseURL(url)
-        console.log(`PDSls handler recieved:`, pds, handle, nsid, rkey)
+        console.log(`PDSls handler recieved:`, { pds, handle, nsid, rkey })
 
         if (uriMode) {
             const did = await getDid(handle)

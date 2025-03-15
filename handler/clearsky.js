@@ -12,7 +12,7 @@ export class Clearsky {
 
     static async processURL(url, settings, uriMode) {
         const { handle, type } = this.parseURL(url)
-        console.log(`clearSky handler recieved: ` + handle, type)
+        console.log(`Clearsky handler recieved: `, { handle, type })
         const did = await getDid(handle)
         if (!did) return null
         const typeSuffix =

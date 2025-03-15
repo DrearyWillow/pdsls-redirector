@@ -9,7 +9,7 @@ export class Pinboards {
 
     static async processURL(url, settings, uriMode) {
         const { handle, type, rkey } = this.parseURL(url)
-        console.log(`pinboards handler received: ` + handle, type, rkey)
+        console.log(`Pinboards handler received: `, { handle, type, rkey })
         const did = await getDid(handle)
         if (!did) return null
         if (type === `board` && rkey) {

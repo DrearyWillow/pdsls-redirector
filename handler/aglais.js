@@ -1,4 +1,4 @@
-import { getDid } from '../utils.js'
+import { getDid, postThreadCheck } from '../utils.js'
 
 export class Aglais {
     static DOMAINS = ['aglais.pages.dev']
@@ -15,7 +15,7 @@ export class Aglais {
     static async processURL(url, settings, uriMode) {
         const { handle, seg2, seg3 } = this.parseURL(url)
 
-        console.log(`aglais handler received: ` + handle, seg2, seg3)
+        console.log(`Aglais handler received: `, { handle, seg2, seg3 })
         const did = await getDid(handle)
         if (!did) return null
 
@@ -27,13 +27,9 @@ export class Aglais {
         if (!rkey) return `at://${did}`
         const postUri = `${did}/app.bsky.feed.post/${rkey}`
 
-        if (!uriMode && settings.getPostThread) {
-            const depth = settings.replyCount
-            const parents = settings.parentCount
-            return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=at://${postUri}&depth=${depth}&parentHeight=${parents}`
-        }
+        const apiLink = postThreadCheck(postUri, settings, uriMode)
 
-        return `at://${postUri}`
+        return apiLink || `at://${postUri}`
     }
 
     static parseURL(url) {

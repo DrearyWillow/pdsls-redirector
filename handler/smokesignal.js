@@ -12,7 +12,7 @@ export class SmokeSignal {
 
     static async processURL(url, settings, uriMode) {
         const { handle, rkey } = this.parseURL(url)
-        console.log(`SmokeSignal handler recieved: ` + handle, rkey)
+        console.log(`SmokeSignal handler recieved: `, { handle, rkey })
         const did = await getDid(handle)
         return did
             ? `at://${did}${rkey

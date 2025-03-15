@@ -11,7 +11,7 @@ export class Skylights {
     }]
 
     static async processURI({ did, nsid, rkey }, settings) {
-        console.log(`Skylights resolver received: ` + did, nsid, rkey)
+        console.log(`Skylights resolver received: `, { did, nsid, rkey })
         if (!did) return settings.alwaysOpen ? `https://skylights.my` : null
 
         if (nsid === 'my.skylights.rel') {

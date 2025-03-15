@@ -20,7 +20,7 @@ export class Popsky {
     }]
 
     static async processURI({ did, nsid, rkey }) {
-        console.log(`Popsky resolver received: ` + did, nsid, rkey)
+        console.log(`Popsky resolver received: `, { did, nsid, rkey })
 
         const baseUrl = `https://popsky.social`
         if (!did) return settings.alwaysOpen ? baseUrl : null

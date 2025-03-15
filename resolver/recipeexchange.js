@@ -14,7 +14,7 @@ export class RecipeExchange {
     }]
 
     static async processURI({ did, nsid, rkey }, settings) {
-        console.log(`RecipeExchange resolver received: ` + did, nsid, rkey)
+        console.log(`RecipeExchange resolver received: `, { did, nsid, rkey })
         if (rkey && (nsid === "exchange.recipe.recipe")) return `https://recipe.exchange/recipes/${rkey}`
         if (rkey && (nsid === "exchange.recipe.collection")) return `https://recipe.exchange/collections/${rkey}`
         if (!did) return settings.alwaysOpen ? `https://recipe.exchange` : null

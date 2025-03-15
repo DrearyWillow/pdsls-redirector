@@ -12,7 +12,7 @@ export class Tangled {
 
     static async processURL(url, settings, uriMode) {
         const { handle, projectName, suffix, issueId } = this.parseURL(url)
-        console.log(`Tangled handler received: ` + handle, projectName, suffix, issueId)
+        console.log(`Tangled handler received: `, { handle, projectName, suffix, issueId })
         const did = await getDid(handle)
         if (!did) return null
 

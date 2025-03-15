@@ -17,7 +17,7 @@ export class XRPC {
     }]
 
     static async processURI({ did, nsid, rkey, service, pds }, settings) {
-        console.log(`xrpc resolver received: ` + did, nsid, rkey, service, pds)
+        console.log(`XRPC resolver received: `, { did, nsid, rkey, service, pds })
         if (pds && pds !== "at") return `https://${pds}/xrpc/com.atproto.sync.listRepos?limit=1000`
         if (!did) return null
         if (!service) {

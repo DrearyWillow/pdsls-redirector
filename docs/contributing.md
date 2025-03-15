@@ -11,13 +11,12 @@ export class Bluesky {
     static DOMAINS = ['bsky.app']
     static TESTS = [{
         url: '',
-        returned: '',
         output: ''
     }]
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, suffix, rkey } = this.parseURL(url)
-        console.log(`Bluesky handler received: ` + prefix, handle, suffix, rkey)
+        console.log(`Bluesky handler received: `, { prefix, handle, suffix, rkey })
 
         // TODO more code here, for example...
         const did = await getDid(handle)
@@ -31,7 +30,7 @@ export class Bluesky {
 }
 ```
 
-2. Add an import in [`handler/_handlers.js`](handler/_handlers.js) and add it to to the `handlers` list.
+2. Add an import in [`handler/_handlers.js`](handler/_handlers.js) and add it to to the `handlers` list. Tip: press `Shift+Alt+O` in VSCode to alphabetize imports.
 
 3. Add a line to [`docs/supportedsites.md`](docs/supportedsites.md) with the relevant website, lexicons, and nsid domain authority, if applicable.
 
@@ -46,12 +45,11 @@ export class Bluesky {
     static NSID_AUTH = 'app.bsky'
     static TESTS = [{
         url: '',
-        returned: '',
         output: ''
     }]
 
     static async processURI({did, nsid, rkey}) {
-        console.log(`Bluesky resolver received: ` + did, nsid, rkey)
+        console.log(`Bluesky resolver received: `, { did, nsid, rkey })
 
         // TODO: more code here, for example...
         if (!did) return settings.alwaysOpen ? `https://bsky.app` : null
@@ -59,6 +57,6 @@ export class Bluesky {
 }
 ```
 
-2. Add an import in [`resolver/_resolvers.js`](resolver/_resolvers.js) and add it to to the `resolvers` list.
+2. Add an import in [`resolver/_resolvers.js`](resolver/_resolvers.js) and add it to to the `resolvers` list. Tip: press `Shift+Alt+O` in VSCode to alphabetize imports.
 
 3. Add a line to [`docs/supportedsites.md`](docs/supportedsites.md) with the relevant lexicons and resolution url.

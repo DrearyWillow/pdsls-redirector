@@ -8,7 +8,7 @@ export class Pinksea {
     }]
 
     static async processURI({ did, nsid, rkey, parentDid, parentRkey }, settings) {
-        console.log(`Pinksea resolver received: ` + did, nsid, rkey, parentDid, parentRkey)
+        console.log(`Pinksea resolver received: `, { did, nsid, rkey, parentDid, parentRkey })
         if (!did) return settings.alwaysOpen ? `https://pinksea.art` : null
         if (!rkey || nsid !== "com.shinolabs.pinksea.oekaki") {
             return `https://pinksea.art/${did}`

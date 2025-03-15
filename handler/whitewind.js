@@ -42,18 +42,18 @@ export class WhiteWind {
     }
 
     static parseURL(url) {
-        const parts = url.pathname.split("/").slice(1);
-        let handle = parts[0] || null;
-        let title = null;
-        let rkey = null;
+        const parts = url.pathname.split("/").slice(1)
+        let handle = parts[0] || null
+        let title = null
+        let rkey = null
 
         if (parts[1] === "entries") {
-            title = decodeURIComponent(parts[2] || "");
-            rkey = url.searchParams.get("rkey");
+            title = decodeURIComponent(parts[2] || "")
+            rkey = url.searchParams.get("rkey")
         } else if (parts.length >= 2) {
-            rkey = parts[1];
+            rkey = parts[1]
         }
 
-        return { handle, title, rkey };
+        return { handle, title, rkey }
     }
 }

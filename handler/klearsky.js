@@ -1,4 +1,4 @@
-import { getDid } from '../utils.js'
+import { getDid, postThreadCheck } from '../utils.js'
 
 export class Klearsky {
     static DOMAINS = ['klearsky.pages.dev']
@@ -28,15 +28,10 @@ export class Klearsky {
     static async processURL(url, settings, uriMode) {
         let { type, uri, account } = this.parseURL(url)
 
-        console.log(`klearsky handler received: ` + type, uri, account)
+        console.log(`Klearsky handler received: `, { type, uri, account })
         if (uri) {
             uri = decodeURIComponent(uri)
-            if (!uriMode && settings.getPostThread && type === "post") {
-                const depth = settings.replyCount
-                const parents = settings.parentCount
-                return `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${uri}&depth=${depth}&parentHeight=${parents}`
-            }
-            return uri
+            return postThreadCheck(uri, settings, uriMode) || uri
         }
         const did = await getDid(account)
         if (!did) return null
@@ -48,13 +43,13 @@ export class Klearsky {
 
     static parseURL(url) {
         const parts = url.hash.split("?")[0].split("/")
-        const type = parts.length > 0 ? parts[parts.length - 1] : "";
+        const type = parts.length > 0 ? parts[parts.length - 1] : ""
 
-        const searchParams = new URLSearchParams(url.hash.split("?")[1] || "");
+        const searchParams = new URLSearchParams(url.hash.split("?")[1] || "")
 
         const uri = searchParams.get("uri") || searchParams.get("list") || searchParams.get("feed")
-        const account = searchParams.get("account");
+        const account = searchParams.get("account")
 
-        return { type, uri, account };
+        return { type, uri, account }
     }
 }

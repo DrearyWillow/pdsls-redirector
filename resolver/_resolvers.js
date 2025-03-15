@@ -1,57 +1,60 @@
-import { Bluesky } from './bluesky.js'
-import { Pinboards } from './pinboards.js'
-import { WhiteWind } from './whitewind.js'
-import { Frontpage } from './frontpage.js'
-import { Skylights } from './skylights.js'
-import { Pinksea } from './pinksea.js'
-import { SmokeSignal } from './smokesignal.js'
+import { ATProfile } from './atprofile.js'
 import { BlueBadge } from './bluebadge.js'
 import { BluePlace } from './blueplace.js'
-import { LinkAT } from './linkat.js'
-import { RecipeExchange } from './recipeexchange.js'
-import { Plonk } from './plonk.js'
-import { PasteSphere } from './pastesphere.js'
+import { Bluesky } from './bluesky.js'
 import { BookHive } from './bookhive.js'
 import { Flushes } from './flushes.js'
-import { XRPC } from './xrpc.js'
-import { Psky } from './psky.js'
+import { Frontpage } from './frontpage.js'
+import { LinkAT } from './linkat.js'
+import { PasteSphere } from './pastesphere.js'
+import { Pinboards } from './pinboards.js'
+import { Pinksea } from './pinksea.js'
+import { Pinksky } from './pinksky.js'
+import { Plonk } from './plonk.js'
 import { Popsky } from './popsky.js'
-import { Skyblur } from './skyblur.js'
+import { Psky } from './psky.js'
+import { RecipeExchange } from './recipeexchange.js'
 import { RutHub } from './ruthub.js'
-import { Woosh } from './woosh.js'
+import { Skyblur } from './skyblur.js'
+import { Skylights } from './skylights.js'
 import { Skywatched } from './skywatched.js'
-import { ATProfile } from './atprofile.js'
+import { SmokeSignal } from './smokesignal.js'
 import { Tangled } from './tangled.js'
+import { WhiteWind } from './whitewind.js'
+import { Woosh } from './woosh.js'
+import { XRPC } from './xrpc.js'
 
 const resolvers = [
-    Bluesky,
-    Pinboards,
-    WhiteWind,
-    Frontpage,
-    Skylights,
-    Pinksea,
-    SmokeSignal,
+    ATProfile,
     BlueBadge,
     BluePlace,
-    LinkAT,
-    RecipeExchange,
-    Plonk,
-    PasteSphere,
+    Bluesky,
     BookHive,
     Flushes,
-    Skywatched,
-    Skyblur,
+    Frontpage,
+    LinkAT,
+    PasteSphere,
+    Pinboards,
+    Pinksea,
+    Pinksky,
+    Plonk,
     Popsky,
-    RutHub,
-    ATProfile,
     Psky,
-    Woosh,
+    RecipeExchange,
+    RutHub,
+    Skyblur,
+    Skylights,
+    Skywatched,
+    SmokeSignal,
     Tangled,
-];
+    WhiteWind,
+    Woosh,
+]
 
-const resolverMap = {};
+const resolverMap = {}
 for (const Resolver of resolvers) {
-    resolverMap[Resolver.NSID_AUTH] = Resolver;
+    resolverMap[Resolver.NSID_AUTH] = Resolver
 }
 
-export { resolverMap, XRPC as XRPCResolver, resolvers };
+export { resolverMap, resolvers, XRPC as XRPCResolver }
+

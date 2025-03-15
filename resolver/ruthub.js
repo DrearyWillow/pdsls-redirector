@@ -9,7 +9,7 @@ export class RutHub {
     }]
 
     static async processURI({ did, nsid, rkey }) {
-        console.log(`RutHub resolver received: ` + did, nsid, rkey)
+        console.log(`RutHub resolver received: `, { did, nsid, rkey })
 
         let baseUrl = `https://ruthub.com`
         if (!did) return settings.alwaysOpen ? baseUrl : null

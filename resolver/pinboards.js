@@ -6,7 +6,7 @@ export class Pinboards {
   }]
 
   static async processURI({ did, nsid, rkey }, settings) {
-    console.log(`Pinboards resolver received: ` + did, nsid, rkey)
+    console.log(`Pinboards resolver received: `, { did, nsid, rkey })
     if (!did) return settings.alwaysOpen ? `https://pinboards.jeroba.xyz` : null
     if (!rkey) return settings.alwaysOpen ? `https://pinboards.jeroba.xyz` : null // no profile page for now
     if (nsid === `xyz.jeroba.tags.tag`) {

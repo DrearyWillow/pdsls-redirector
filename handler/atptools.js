@@ -10,7 +10,7 @@ export class ATPTools {
 
     static async processURL(url, settings, uriMode) {
         const { handle, nsid, rkey } = this.parseURL(url)
-        console.log(`ATPTools handler recieved: ` + handle, nsid, rkey)
+        console.log(`ATPTools handler recieved: `, { handle, nsid, rkey })
         const did = await getDid(decodeURIComponent(handle))
         if (!did) return null
         return composeUri({ did, nsid, rkey })

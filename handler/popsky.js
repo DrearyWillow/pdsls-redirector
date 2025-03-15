@@ -12,7 +12,7 @@ export class Popsky {
 
     static async processURL(url, settings, uriMode) {
         const { prefix, value } = this.parseURL(url)
-        console.log(`Popsky handler received: ` + prefix, value)
+        console.log(`Popsky handler received: `, { prefix, value })
 
         switch (prefix) {
             case 'review':

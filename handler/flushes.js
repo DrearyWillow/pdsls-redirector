@@ -9,7 +9,7 @@ export class Flushes {
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)
-        console.log(`Flushes handler received: ` + handle)
+        console.log(`Flushes handler received: `, { handle })
         // temporary until dame implements DID profile links
         const did = await getDid(handle)
         return did ? `at://${did}` : null

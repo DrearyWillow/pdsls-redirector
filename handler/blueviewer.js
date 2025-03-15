@@ -1,4 +1,4 @@
-import { getDid } from '../utils.js'
+import { getDid, postThreadCheck } from '../utils.js'
 
 export class BlueViewer {
     static DOMAINS = ['blueviewer.pages.dev']
@@ -9,10 +9,11 @@ export class BlueViewer {
 
     static async processURL(url, settings, uriMode) {
         const { handle, rkey } = this.parseURL(url)
-        console.log(`blueViewer handler recieved: ` + handle, rkey)
+        console.log(`BlueViewer handler recieved: `, { handle, rkey })
         const did = await getDid(handle)
         if (!did || !rkey) return null
-        return `at://${did}/app.bsky.feed.post/${rkey}`
+        const uri = `at://${did}/app.bsky.feed.post/${rkey}`
+        return postThreadCheck(uri, settings, uriMode) || uri
     }
 
     static parseURL(url) {

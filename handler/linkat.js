@@ -9,7 +9,7 @@ export class LinkAT {
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)
-        console.log(`linkAt handler recieved: ` + handle)
+        console.log(`LinkAt handler recieved: `, { handle })
         const did = await getDid(handle)
         return did ? `at://${did}/blue.linkat.board/self` : null
     }

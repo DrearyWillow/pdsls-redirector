@@ -12,9 +12,9 @@ export class Pinksea {
 
     static async processURL(url, settings, uriMode) {
         let { handle, type, rkey, handle2, rkey2 } = this.parseURL(url)
-        console.log(`pinksea handler recieved: ` + handle, type, rkey, handle2, rkey2)
-        handle2 = (handle2 === "undefined") ? undefined : handle2;
-        rkey2 = (rkey2 === "undefined") ? undefined : rkey2;
+        console.log(`Pinksea handler recieved: `, { handle, type, rkey, handle2, rkey2 })
+        handle2 = (handle2 === "undefined") ? undefined : handle2
+        rkey2 = (rkey2 === "undefined") ? undefined : rkey2
         const did = await getDid((handle2 && rkey2) ? handle2 : handle)
         if (!did) return null
         let baseUrl = `at://${did}/com.shinolabs.pinksea.oekaki`

@@ -14,16 +14,16 @@ export class ATBrowser {
 
     static async processURL(url, settings, uriMode) {
         const { handle, rest } = this.parseURL(url)
-        console.log(`ATBrowser handler recieved: ` + handle, rest)
+        console.log(`ATBrowser handler recieved: `, { handle, rest })
         const did = await getDid(handle)
         return did ? `at://${did}/${rest || ""}` : null
     }
 
     static parseURL(url) {
-        const parts = url.pathname.split("/").slice(2);
+        const parts = url.pathname.split("/").slice(2)
         const handle = parts[0]
-        const rest = parts.slice(1).join("/") || null;
-        return { handle, rest };
+        const rest = parts.slice(1).join("/") || null
+        return { handle, rest }
     }
 
 }

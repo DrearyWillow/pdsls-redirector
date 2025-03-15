@@ -6,7 +6,7 @@ export class SmokeSignal {
     }]
 
     static async processURI({ did, nsid, rkey }, settings) {
-        console.log(`SmokeSignal resolver received: ` + did, nsid, rkey)
+        console.log(`SmokeSignal resolver received: `, { did, nsid, rkey })
         if (!did) return settings.alwaysOpen ? `https://smokesignal.events` : null
         if (!rkey || nsid !== "events.smokesignal.calendar.event") {
             return `https://smokesignal.events/${did}`

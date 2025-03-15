@@ -9,7 +9,7 @@ export class PasteSphere {
 
     static async processURL(url, settings, uriMode) {
         const { handle, type, rkey } = this.parseURL(url)
-        console.log(`pastesphere handler recieved: ` + handle, type, rkey)
+        console.log(`PasteSphere handler recieved: `, { handle, type, rkey })
         const did = await getDid(handle)
         return did ? `at://${did}/link.pastesphere.snippet/${rkey || ""}` : null
     }

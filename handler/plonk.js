@@ -11,7 +11,7 @@ export class Plonk {
 
     static async processURL(url, settings, uriMode) {
         const { prefix, did } = this.parseURL(url)
-        console.log(`plonk handler recieved: ` + prefix, did)
+        console.log(`Plonk handler recieved: `, { prefix, did })
         return (did && prefix === 'u') ? `at://${decodeURIComponent(did)}` : null
     }
 

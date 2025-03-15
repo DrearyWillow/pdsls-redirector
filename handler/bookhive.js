@@ -9,7 +9,7 @@ export class BookHive {
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)
-        console.log(`pastesphere handler recieved: ` + handle)
+        console.log(`BookHive handler recieved: `, { handle })
         const did = await getDid(handle)
         return did ? `at://${did}/buzz.bookhive.book` : null
     }
