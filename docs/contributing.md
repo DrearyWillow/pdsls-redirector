@@ -2,13 +2,18 @@
 
 ## Adding support for a new site (handler)
 
-1. Start with the templates in `handler/_template.js`, replacing all relevant values, and save it to `handler/<yourhandlername>.js`
+1. Start with the templates in `handler/_template.js`, replacing all relevant values, and save it to `handler/<yourhandlername>.js`. Include at least one test example.
 
 ```js
 import { getDid } from '../utils.js'
 
 export class Bluesky {
     static DOMAINS = ['bsky.app']
+    static TESTS = [{
+        url: '',
+        returned: '',
+        output: ''
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, suffix, rkey } = this.parseURL(url)
@@ -32,13 +37,18 @@ export class Bluesky {
 
 ## Adding support for a new lexicon (resolver)
 
-1. Start with the template in `resolver/_template.js`, replacing all relevant values, and save it to `resolver/<yourresolvername>.js`
+1. Start with the template in `resolver/_template.js`, replacing all relevant values, and save it to `resolver/<yourresolvername>.js`. Include at least one test example.
 
 ```js
 export class Bluesky {
     // assumed to be first 2 or 3 segments of applicable NSID
     // https://atproto.com/specs/nsid
     static NSID_AUTH = 'app.bsky'
+    static TESTS = [{
+        url: '',
+        returned: '',
+        output: ''
+    }]
 
     static async processURI({did, nsid, rkey}) {
         console.log(`Bluesky resolver received: ` + did, nsid, rkey)

@@ -1,10 +1,11 @@
-// static pastesphere = /^https:\/\/pastesphere\.link\/user(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<type>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?/
-// PasteSphere: https://pastesphere.link/user/dreary.dev/snippet/3liv2xijzm22b
-
 import { getDid } from '../utils.js'
 
 export class PasteSphere {
     static DOMAINS = ['pastesphere.link']
+    static TESTS = [{
+        url: 'https://pastesphere.link/user/dreary.dev/snippet/3liv2xijzm22b',
+        output: 'https://pdsls.dev/at://did:plc:hx53snho72xoj7zqt5uice4u/link.pastesphere.snippet/3liv2xijzm22b'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle, type, rkey } = this.parseURL(url)

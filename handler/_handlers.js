@@ -85,5 +85,5 @@ for (const Handler of handlers) {
     }
 }
 
-export { handlerMap, handlers, XRPC as XRPCHandler, PDSls as PDSlsHandler };
+export { handlerMap, handlers, XRPC as XRPCHandler };
 

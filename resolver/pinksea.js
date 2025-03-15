@@ -2,6 +2,10 @@ import { getServiceEndpoint, getRecord, decomposeUri } from '../utils.js'
 
 export class Pinksea {
     static NSID_AUTH = 'com.shinolabs'
+    static TESTS = [{
+        uri: 'at://did:plc:bj3xr7ytf2mpglcsvcst7ogt/com.shinolabs.pinksea.oekaki/3lbaugujgac2n',
+        output: 'https://pinksea.art/did:plc:bj3xr7ytf2mpglcsvcst7ogt/oekaki/3lbaugujgac2n'
+    }]
 
     static async processURI({did, nsid, rkey, parentDid, parentRkey}, settings) {
         console.log(`Pinksea resolver received: ` + did, nsid, rkey, parentDid, parentRkey)

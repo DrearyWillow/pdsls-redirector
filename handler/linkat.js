@@ -1,11 +1,11 @@
-
-// static linkAt = /^https:\/\/linkat\.blue\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/
-// LinkAt: https://linkat.blue/yukouduki.bsky.social
-
 import { getDid } from '../utils.js'
 
 export class LinkAT {
     static DOMAINS = ['linkat.blue']
+    static TESTS = [{
+        url: 'https://linkat.blue/yukouduki.bsky.social',
+        output: 'https://pdsls.dev/at://did:plc:jmnjdqnpy2wexcpqz5earmec/blue.linkat.board/self'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)

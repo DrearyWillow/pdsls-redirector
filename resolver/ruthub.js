@@ -1,5 +1,12 @@
 export class RutHub {
     static NSID_AUTH = 'com.ruthub'
+    static TESTS = [{
+        uri: 'at://did:plc:vd3bvirbooxanq7rc4myzxym/com.ruthub.entry/17401621912133120',
+        output: 'https://ruthub.com/p/did:plc:vd3bvirbooxanq7rc4myzxym/17401621912133120'
+    }, {
+        uri: 'at://did:plc:vd3bvirbooxanq7rc4myzxym/com.ruthub.kanban/default',
+        output: 'https://ruthub.com/kb/did:plc:vd3bvirbooxanq7rc4myzxym'
+    }]
 
     static async processURI({did, nsid, rkey}) {
         console.log(`RutHub resolver received: ` + did, nsid, rkey)

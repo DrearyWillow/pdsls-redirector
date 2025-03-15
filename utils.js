@@ -1,3 +1,6 @@
+import { handlerMap, XRPCHandler } from './handler/_handlers.js'
+import { resolverMap, XRPCResolver } from './resolver/_resolvers.js'
+
 export async function getHandle(did) {
     if (!did.startsWith("did:")) return null
     return (await getDidDoc(did))?.alsoKnownAs?.[0]?.replace(/^at:\/\//, "");
@@ -82,7 +85,7 @@ export async function getServiceEndpoint(did) {
 export async function getRecord(args) {
     let validatedInput = await validateUriInput(args)
     if (!validatedInput) return null
-    let {uri, did, nsid, rkey, service} = validatedInput
+    let { uri, did, nsid, rkey, service } = validatedInput
 
     try {
         const params = new URLSearchParams({
@@ -122,7 +125,7 @@ export async function listRecords(did, service, nsid, limit, cursor) {
     }
 }
 
-// loops over ALL records of a certain NSID for a repo. be mindful of performance.
+// loop over ALL records of a certain NSID for a repo. be mindful of performance.
 // used in contexts where the url only has a record name and not an rkey
 export async function findRecordMatch(did, service, nsid, matchObj) {
     const limit = 100
@@ -154,8 +157,7 @@ export async function findRecordMatch(did, service, nsid, matchObj) {
     return null
 }
 
-
-export async function validateUriInput({uri, did, nsid, rkey, service}) {
+export async function validateUriInput({ uri, did, nsid, rkey, service }) {
     console.log(`Received unvalidated URI input: ` + uri, did, nsid, rkey, service)
     if (!uri && (!did || !nsid || !rkey)) {
         console.error("Either `uri` or (`did`, `nsid`, `rkey`) must be provided.")
@@ -172,7 +174,7 @@ export async function validateUriInput({uri, did, nsid, rkey, service}) {
     }
 
     console.log(`Returning validated URI input: ` + uri, did, nsid, rkey, service)
-    return {uri: uri, did: did, nsid: nsid, rkey: rkey, service: service}
+    return { uri: uri, did: did, nsid: nsid, rkey: rkey, service: service }
 }
 
 // TODO: support nested objects
@@ -185,7 +187,7 @@ export function decomposeUri(uri) {
     return { did, nsid, rkey }
 }
 
-export function composeUri({did, nsid, rkey}) {
+export function composeUri({ did, nsid, rkey }) {
     if (did) {
         if (nsid) {
             if (rkey) {
@@ -196,4 +198,232 @@ export function composeUri({did, nsid, rkey}) {
         return `at://${did}`
     }
     return null
+}
+
+// EXTENSION UTILS //
+
+export async function buildMenus(settings = {}) {
+    await browser.contextMenus.removeAll()
+    await browser.contextMenus.create({
+        id: "PDSls",
+        title: "PDSls",
+        contexts: ["page", "selection", "bookmark", "link"]
+    })
+    if (settings.copyUriEnabled) {
+        await browser.contextMenus.create({
+            id: "copyATUri",
+            title: "Copy AT-URI",
+            contexts: ["page", "selection", "bookmark", "link"]
+        })
+    }
+    if (settings.jetstreamEnabled) {
+        await browser.contextMenus.create({
+            id: "Jetstream",
+            title: "Jetstream",
+            contexts: ["page", "selection", "bookmark", "link"]
+        })
+    }
+}
+
+export function updateKeybindings(settings = {}) {
+    const defaults = loadDefaultSettings()
+    const keybinding = settings.keybinding || defaults.keybinding
+    console.log(`Keybinding for "pdsls-tab" is now`, keybinding)
+    browser.commands.update({
+        name: "pdsls-tab",
+        shortcut: keybinding
+    })
+    const copyUriKeybind = (settings.copyUriEnabled || defaults.copyUriEnabled)
+        ? (settings.copyUriKeybind || defaults.copyUriKeybind)
+        : ""
+    console.log(`Keybinding for "at-uri-copy" is now`, copyUriKeybind)
+    browser.commands.update({
+        name: "at-uri-copy",
+        shortcut: copyUriKeybind
+    })
+}
+
+export async function loadDefaultSettings() {
+    return {
+        alwaysOpen: true,
+        openInNewTab: true,
+        pdsFallback: true,
+        pdslsOpensApi: false,
+        alwaysApi: false,
+        getPostThread: false,
+        keybinding: "Ctrl+Shift+1",
+        copyUriEnabled: false,
+        copyUriKeybind: "Ctrl+Shift+2",
+        jetstreamEnabled: false,
+        replyCount: 0,
+        parentCount: 0
+    }
+}
+
+// Construct and return the settings array
+export async function loadSettings(silent = false) {
+    let settings = {}
+    const defaults = await loadDefaultSettings()
+    try {
+        let data = {}
+        if (typeof browser != 'undefined') {
+            data = await browser.storage.sync.get()
+            console.log('Data retrieved from storage:', data)
+            settings = { ...defaults, ...data }
+            if (!silent) console.log('Loaded settings:', settings)
+            updateKeybindings(settings)
+        } else {
+            settings = { ...defaults, ...data }
+        }
+        return settings
+    } catch (error) {
+        console.error('Error retrieving settings:', error)
+        return {}
+    }
+}
+
+// CORE FUNCTIONS //
+
+// Attempt to find a matching resolver nsid domain authority and return processed URI
+export async function checkResolvers(args, settings) {
+    console.log(`Checking applicable resolvers with: `, args)
+
+    if (!args.did) return settings.alwaysOpen ? `https://pdsls.dev` : null
+    if (!args.nsid) {
+        console.log(`No lexicon specified. Defaulting to Bluesky profile for DID.`)
+        return `https://bsky.app/profile/${args.did}`
+    }
+
+    const nsidSeg2 = args.nsid.split('.').slice(0, 2).join('.')
+    const nsidSeg3 = args.nsid.split('.').slice(0, 3).join('.')
+    const Resolver = resolverMap[nsidSeg2] || resolverMap[nsidSeg3]
+
+    if (Resolver) {
+        return (await Resolver.processURI(args, settings)) || (settings.alwaysOpen ? `https://pdsls.dev` : null)
+    }
+
+    console.error(`No matching resolver found: Invalid lexicon '${args.nsid}'`)
+    return settings.alwaysOpen ? `https://pdsls.dev` : null
+}
+
+// Attempt to find a matching handler pattern and return processed URL
+export async function checkHandlers(url, settings, uriMode = false) {
+    if (!url) return null
+    try {
+        url = new URL(url)
+    } catch (error) {
+        console.error("No match found: Invalid website", error)
+        return null
+    }
+    const Handler = handlerMap[url.hostname]
+    if (Handler) {
+        console.log(`Match: ${Handler.name}`)
+        let result = await Handler.processURL(url, settings, uriMode);
+        if (result && result.startsWith("at://")) {
+            if (settings.alwaysApi) {
+                return (await XRPCResolver.processURI(decomposeUri({ result })))
+            } else if (!uriMode) {
+                return `https://pdsls.dev/${result}`
+            }
+        }
+        return result
+    } else if (url.pathname.split('/')[1] === 'xrpc') {
+        let result = await XRPCHandler.processURL(url, settings, uriMode)
+        if (result && result.startsWith("at://") && !uriMode) {
+            return `https://pdsls.dev/${result}`
+        }
+        return result
+    } else if (settings.pdsFallback) {
+        console.log("PDS handler received: " + url)
+        return settings.alwaysApi
+            ? (await XRPCResolver.processURI({ pds: url.hostname }))
+            : `https://pdsls.dev/${url.hostname}`
+    } else {
+        console.warn("PDS fallback matching is set to false. No match found.")
+        return null
+    }
+}
+
+// Validate a returned handler pattern
+export async function validateUrl(url, settings) {
+    console.log(`Validate URL received: ${url}`)
+    if (!url) {
+        if (!settings.alwaysOpen) {
+            console.warn(`Unsupported input. Not redirecting due to user preferences.`)
+        } else {
+            console.log(`Unsupported input. Defaulting to pdsls.dev`)
+            url = `https://pdsls.dev`
+        }
+    }
+    return url
+}
+
+// Open a provided URL or the current page URL, after processing
+export async function openNewTab(url, settings) {
+    if (!url) {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true })
+        url = tabs[0]?.url
+    }
+    if (!url) { console.error("Error: No URL"); return }
+
+    let newUrl = await validateUrl(await checkHandlers(url, settings), settings)
+
+    console.log(`openNewTab settings object: `, settings)
+    if (newUrl) {
+        await settings.openInNewTab
+            ? browser.tabs.create({ url: newUrl })
+            : browser.tabs.update({ url: newUrl })
+        console.log(`URL opened: ${newUrl}`)
+    }
+}
+
+// Copy the AT-URI corresponding to a provided URL
+export async function copyATUri(url, settings) {
+    if (!url) {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true })
+        url = tabs[0]?.url
+    }
+    if (!url) { console.error("Error: No URL"); return }
+
+    let atUri = await checkHandlers(url, settings, true)
+
+    if (atUri) {
+        console.log(`Copying AT-URI to clipboard: ${atUri}`)
+    } else {
+        console.warn(`Unsupported input. Writing pdsls.dev to clipboard.`)
+        atUri = "https://pdsls.dev"
+    }
+
+    try {
+        await navigator.clipboard.writeText(atUri);
+    } catch (err) {
+        console.error("Clipboard write failed: ", err);
+    }
+}
+
+// Open the PDSls Jetstream link for the relevant DID and collection
+export async function openJetstream(url, settings) {
+    if (!url) {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true })
+        url = tabs[0]?.url
+    }
+    if (!url) { console.error("Error: No URL"); return }
+
+    let atUri = await checkHandlers(url, settings, true)
+
+    let newUrl = "https://pdsls.dev/jetstream"
+    if (!atUri) {
+        console.warn(`Unsupported input. Opening PDSls Jetstream page without parameters.`)
+    } else {
+        newUrl += `?instance=wss%3A%2F%2Fjetstream1.us-east.bsky.network%2Fsubscribe`
+        let { did: did, nsid: nsid, rkey: rkey } = decomposeUri(atUri)
+        newUrl += `&dids=${encodeURIComponent(did)}`
+        if (nsid) newUrl += `&collections=${encodeURIComponent(nsid)}`
+        newUrl += `&allEvents=on`
+    }
+
+    await settings.openInNewTab
+        ? browser.tabs.create({ url: newUrl })
+        : browser.tabs.update({ url: newUrl })
+    console.log(`URL opened: ${newUrl}`)
 }

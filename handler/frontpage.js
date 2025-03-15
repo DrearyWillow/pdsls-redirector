@@ -1,11 +1,14 @@
-// static frontpage = /^https:\/\/frontpage\.fyi\/(?<prefix>profile|post)\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:\/(?<handle2>[\w.:%-]+))?(?:\/(?<rkey2>[\w.:%-]+))?(?:[?#].*)?$/
-// FrontPage: https://frontpage.fyi/post/did:plc:iwpxnj7rzdynjkkr7rxaa5is/3lcb56fba6d2k
-// FrontPage: https://frontpage.fyi/post/did:plc:ngokl2gnmpbvuvrfckja3g7p/3l7tegzuuim2x/fei.chicory.blue/3l7tusoznm22n
-
 import { getDid } from '../utils.js'
 
 export class Frontpage {
     static DOMAINS = ['frontpage.fyi']
+    static TESTS = [{
+        url: 'https://frontpage.fyi/post/did:plc:iwpxnj7rzdynjkkr7rxaa5is/3lcb56fba6d2k',
+        output: 'https://pdsls.dev/at://did:plc:iwpxnj7rzdynjkkr7rxaa5is/fyi.unravel.frontpage.post/3lcb56fba6d2k'
+    }, {
+        url: 'https://frontpage.fyi/post/did:plc:ngokl2gnmpbvuvrfckja3g7p/3l7tegzuuim2x/fei.chicory.blue/3l7tusoznm22n',
+        output: 'https://pdsls.dev/at://did:plc:xz3euvkhf44iadavovbsmqoo/fyi.unravel.frontpage.comment/3l7tusoznm22n'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, rkey, handle2, rkey2 } = this.parseURL(url)

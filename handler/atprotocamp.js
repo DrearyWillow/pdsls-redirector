@@ -1,10 +1,12 @@
-// static camp = /^https:\/\/atproto\.camp\/(?<handle>[\w.:%-]+)(?:\/(?<rkey>[\w.:%-]+))?(?:[?#].*)?$/
-// https://atproto.camp/did:plc:5ugrbulluc7sqlj6owblmvcf/3ljzflfou5224
-
 import { getDid } from '../utils.js'
 
 export class ATProtoCamp {
     static DOMAINS = ['atproto.camp']
+    static TESTS = [{
+        url: 'https://atproto.camp/did:plc:5ugrbulluc7sqlj6owblmvcf/3ljzflfou5224',
+        returned: 'at://did:plc:5ugrbulluc7sqlj6owblmvcf/blue.badge.collection/3ljzflfou5224',
+        output: 'https://pdsls.dev/at://did:plc:5ugrbulluc7sqlj6owblmvcf/blue.badge.collection/3ljzflfou5224'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle, rkey } = this.parseURL(url)

@@ -1,8 +1,22 @@
-import { composeUri, getDid } from '../utils.js'
-import { checkResolvers, XRPCResolver } from '../resolver/_resolvers.js'
+import { composeUri, getDid, checkResolvers } from '../utils.js'
+import { XRPCResolver } from '../resolver/_resolvers.js'
 
 export class PDSls {
     static DOMAINS = ['pdsls.dev']
+    static TESTS = [{
+        url: 'https://pdsls.dev/at://did:plc:ia76kvnndjutgedggx2ibrem',
+        settings: { pdslsOpensApi: true },
+        output: 'https://porcini.us-east.host.bsky.network/xrpc/com.atproto.repo.describeRepo?repo=did:plc:ia76kvnndjutgedggx2ibrem'
+    }, {
+        url: 'https://pdsls.dev/at://did:plc:ia76kvnndjutgedggx2ibrem/app.bsky.feed.post',
+        output: 'https://bsky.app/profile/did:plc:ia76kvnndjutgedggx2ibrem'
+    }, {
+        url: 'https://pdsls.dev/at://did:plc:ia76kvnndjutgedggx2ibrem/sh.tangled.repo/3lk3eqnvxjv22',
+        output: 'https://tangled.sh/did:plc:ia76kvnndjutgedggx2ibrem/atcute'
+    }, {
+        url: 'https://pdsls.dev/at://did:plc:ia76kvnndjutgedggx2ibrem/com.whtwnd.blog.entry/3lhgp74vrri2c',
+        output: 'https://whtwnd.com/did:plc:ia76kvnndjutgedggx2ibrem/3lhgp74vrri2c'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { pds, handle, nsid, rkey } = this.parseURL(url)
@@ -32,5 +46,3 @@ export class PDSls {
         return { pds, handle, nsid, rkey }
     }
 }
-
-// static pdsls = /^https:\/\/pdsls\.dev\/(?<pds>[\w.%-]+)(?:\:\/)?(?:\/(?<handle>[\w.:%-]+))?(?:\/(?<nsid>[\w.:%-]+))?(?:\/(?<rkey>[\w.:%-]+))?(?:\/)?(?:[?#].*)?$/

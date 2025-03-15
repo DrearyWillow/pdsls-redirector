@@ -1,19 +1,22 @@
-// static plonk = /^https:\/\/plonk.li\/u\/(?<did>[\w.:%-]+)/
-// Plonk: https://plonk.li/u/did:plc:hx53snho72xoj7zqt5uice4u
-
-// import { getDid } from '../utils.js'
-
 export class Plonk {
     static DOMAINS = ['plonk.li']
+    static TESTS = [{
+        url: 'https://plonk.li/u/did:plc:hx53snho72xoj7zqt5uice4u',
+        output: 'https://pdsls.dev/at://did:plc:hx53snho72xoj7zqt5uice4u'
+    }, {
+        url: 'https://plonk.li/p/1b',
+        returned: null,
+        output: 'https://pdsls.dev'
+    }]
 
     static async processURL(url, settings, uriMode) {
-        const { prefix, handle, suffix, rkey } = this.parseURL(url)
-        console.log(`plonk handler recieved: ` + did)
-        return did ? `at://${decodeURIComponent(did)}` : null
+        const { prefix, did } = this.parseURL(url)
+        console.log(`plonk handler recieved: ` + prefix, did)
+        return (did && prefix === 'u') ? `at://${decodeURIComponent(did)}` : null
     }
 
     static parseURL(url) {
-        let [did] = url.pathname.split("/").slice(2)
-        return {did}
+        let [prefix, did] = url.pathname.split("/").slice(1)
+        return {prefix, did}
     }
 }

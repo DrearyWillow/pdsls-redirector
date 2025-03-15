@@ -2,6 +2,13 @@ import { getDid, findRecordMatch, getServiceEndpoint } from '../utils.js'
 
 export class Tangled {
     static DOMAINS = ['tangled.sh']
+    static TESTS = [{
+        url: 'https://tangled.sh/@mary.my.id',
+        output: 'https://pdsls.dev/at://did:plc:ia76kvnndjutgedggx2ibrem'
+    }, {
+        url: 'https://tangled.sh/@mary.my.id/boat',
+        output: 'https://pdsls.dev/at://did:plc:ia76kvnndjutgedggx2ibrem/sh.tangled.repo/3lk3ewpvur622'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle, projectName, suffix, issueId } = this.parseURL(url)

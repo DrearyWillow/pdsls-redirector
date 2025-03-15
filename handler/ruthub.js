@@ -2,6 +2,16 @@ import { getDid } from '../utils.js'
 
 export class RutHub {
     static DOMAINS = ['ruthub.com']
+    static TESTS = [{
+        url: 'https://ruthub.com/kb/ruthub.com',
+        output: 'https://pdsls.dev/at://did:plc:vd3bvirbooxanq7rc4myzxym/com.ruthub.kanban/default'
+    }, {
+        url: 'https://ruthub.com/p/did:plc:vd3bvirbooxanq7rc4myzxym/17401621912133120',
+        output: 'https://pdsls.dev/at://did:plc:vd3bvirbooxanq7rc4myzxym'
+    }, {
+        url: 'https://ruthub.com/rut/did:plc:vd3bvirbooxanq7rc4myzxym',
+        output: 'https://pdsls.dev/at://did:plc:vd3bvirbooxanq7rc4myzxym'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, rkey } = this.parseURL(url)
@@ -31,5 +41,3 @@ export class RutHub {
         return {prefix, handle, rkey}
     }
 }
-
-// https://ruthub.com/kb/ruthub.com

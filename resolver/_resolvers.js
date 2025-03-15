@@ -55,24 +55,3 @@ for (const Resolver of resolvers) {
 }
 
 export { resolverMap, XRPC as XRPCResolver, resolvers };
-
-export async function checkResolvers(args, settings) {
-    console.log(`Checking applicable resolvers with: `, args)
-
-    if (!args.did) return settings.alwaysOpen ? `https://pdsls.dev` : null
-    if (!args.nsid) {
-        console.log(`No lexicon specified. Defaulting to Bluesky profile for DID.`)
-        return `https://bsky.app/profile/${args.did}`
-    }
-
-    const nsidSeg2 = args.nsid.split('.').slice(0, 2).join('.')
-    const nsidSeg3 = args.nsid.split('.').slice(0, 3).join('.')
-    const Resolver = resolverMap[nsidSeg2] || resolverMap[nsidSeg3]
-
-    if (Resolver) {
-        return (await Resolver.processURI(args, settings)) || (settings.alwaysOpen ? `https://pdsls.dev` : null)
-    }
-
-    console.error(`No matching resolver found: Invalid lexicon '${args.nsid}'`)
-    return settings.alwaysOpen ? `https://pdsls.dev` : null
-}

@@ -1,10 +1,15 @@
-// static recipeExchange = /^https:\/\/recipe\.exchange(?:\/(?<type>[\w.:%-]+))(?:\/(?<value>[\w.:%-]+))?$/
-// Recipe Exchange: https://recipe.exchange/recipes/01JF0B0ANBDG75R8Z5WZJDMMBX
-
 import { getDid } from '../utils.js'
 
 export class RecipeExchange {
     static DOMAINS = ['recipe.exchange']
+    static TESTS = [{
+        url: 'https://recipe.exchange/recipes/01JF0B0ANBDG75R8Z5WZJDMMBX',
+        returned: null,
+        output: 'https://pdsls.dev'
+    }, {
+        url: 'https://recipe.exchange/profiles/ngerakines.me',
+        output: 'https://pdsls.dev/at://did:plc:cbkjy5n7bk3ax2wplmtjofq2'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { type, value } = this.parseURL(url)

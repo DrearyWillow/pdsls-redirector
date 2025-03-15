@@ -44,11 +44,6 @@
     <td>arbitrary uri</td>
 </tr>
 <tr>
-    <td>Syu</td>
-    <td>https://at.syu.is</td>
-    <td>arbitrary uri</td>
-</tr>
-<tr>
     <td>ATProfile</td>
     <td>https://atprofile.com</td>
     <td>com.atprofile.beta.profile</td>

@@ -2,6 +2,10 @@ import { getDid } from '../utils.js'
 
 export class Woosh {
     static DOMAINS = ['woosh.link']
+    static TESTS = [{
+        url: 'https://woosh.link/woosh.link',
+        output: 'https://pdsls.dev/at://did:plc:id5dikobjnpksmozcdb6uybm'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)

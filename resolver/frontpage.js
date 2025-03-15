@@ -2,6 +2,16 @@ import { getServiceEndpoint, getRecord, decomposeUri } from '../utils.js'
 
 export class Frontpage {
     static NSID_AUTH = 'fyi.unravel'
+    static TESTS = [{
+        uri: 'at://did:plc:2xau7wbgdq4phuou2ypwuen7/fyi.unravel.frontpage.comment/3ljivixecy42a',
+        output: 'https://frontpage.fyi/post/did:plc:tas6hj2xjrqben5653v5kohk/3ljiv4fprds2s/did:plc:2xau7wbgdq4phuou2ypwuen7/3ljivixecy42a'
+    }, {
+        uri: 'at://did:plc:2xau7wbgdq4phuou2ypwuen7/fyi.unravel.frontpage.post/3lk4ec25tzp2c',
+        output: 'https://frontpage.fyi/post/did:plc:2xau7wbgdq4phuou2ypwuen7/3lk4ec25tzp2c'
+    }, {
+        uri: 'at://did:plc:2xau7wbgdq4phuou2ypwuen7/fyi.unravel.frontpage.post.vote/3kv4vnvnodr2y',
+        output: 'https://frontpage.fyi/profile/did:plc:2xau7wbgdq4phuou2ypwuen7'
+    }]
 
     static async processURI({did, nsid, rkey, parentDid, parentRkey}, settings) {
         console.log(`Frontpage resolver received: ` + did, nsid, rkey, parentDid, parentRkey)

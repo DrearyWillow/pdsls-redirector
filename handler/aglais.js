@@ -2,6 +2,15 @@ import { getDid } from '../utils.js'
 
 export class Aglais {
     static DOMAINS = ['aglais.pages.dev']
+    static TESTS = [{
+        url: 'https://aglais.pages.dev/did:plc:hx53snho72xoj7zqt5uice4u/moderation-lists/3ldc5ohwfsu2n',
+        returned: 'at://did:plc:hx53snho72xoj7zqt5uice4u/app.bsky.graph.list/3ldc5ohwfsu2n',
+        output: 'https://pdsls.dev/at://did:plc:hx53snho72xoj7zqt5uice4u/app.bsky.graph.list/3ldc5ohwfsu2n'
+    }, {
+        url: 'https://aglais.pages.dev/did:plc:by3jhwdqgbtrcc7q4tkkv3cf/3lj2cbts4522j',
+        returned: 'at://did:plc:by3jhwdqgbtrcc7q4tkkv3cf/app.bsky.feed.post/3lj2cbts4522j',
+        output: 'https://pdsls.dev/at://did:plc:by3jhwdqgbtrcc7q4tkkv3cf/app.bsky.feed.post/3lj2cbts4522j'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle, seg2, seg3 } = this.parseURL(url)

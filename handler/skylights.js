@@ -2,6 +2,10 @@ import { getDid } from '../utils.js'
 
 export class Skylights {
     static DOMAINS = ['skylights.my']
+    static TESTS = [{
+        url: 'https://skylights.my/profile/watwa.re',
+        output: 'https://pdsls.dev/at://did:plc:c764uyv2vgzswy5gpc4jgknf/my.skylights.rel'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle } = this.parseURL(url)
@@ -15,6 +19,3 @@ export class Skylights {
         return {handle}
     }
 }
-
-// static skylights = /^https:\/\/skylights\.my\/profile\/(?<handle>[\w.:%-]+)(?:[?#].*)?$/
-// https://skylights.my/profile/watwa.re

@@ -2,6 +2,10 @@ import { getDid } from '../utils.js'
 
 export class BlueViewer {
     static DOMAINS = ['blueviewer.pages.dev']
+    static TESTS = [{
+        url: 'https://blueviewer.pages.dev/view?actor=soap.kawaii.social&rkey=3l5slo3bria2o',
+        output: 'https://pdsls.dev/at://did:plc:lghfd7elj6cjjwlhecp2utao/app.bsky.feed.post/3l5slo3bria2o'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle, rkey } = this.parseURL(url)
@@ -18,6 +22,3 @@ export class BlueViewer {
         return {handle, rkey}
     }
 }
-
-// Blueviewer: https://blueviewer.pages.dev/view?actor=soap.kawaii.social&rkey=3l5slo3bria2o
-//   static blueViewer = /^https:\/\/blueviewer\.pages\.dev\/view\?actor=(?<handle>[\w.:%-]+)&rkey=(?<rkey>[\w.:%-]+)$/

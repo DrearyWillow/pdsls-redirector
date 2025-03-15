@@ -1,10 +1,11 @@
-// static skythread = /^https:\/\/blue\.mackuba\.eu\/skythread\/\?author=(?<handle>[\w.:%-]+)&post=(?<rkey>[\w.:%-]+)$/
-// Skythread: https://blue.mackuba.eu/skythread/?author=danabra.mov&post=3l6zrmascbq2c
-
 import { getDid } from '../utils.js'
 
 export class Skythread {
     static DOMAINS = ['blue.mackuba.eu']
+    static TESTS = [{
+        url: 'https://blue.mackuba.eu/skythread/?author=danabra.mov&post=3l6zrmascbq2c',
+        output: 'https://pdsls.dev/at://did:plc:fpruhuo22xkm5o7ttr2ktxdo/app.bsky.feed.post/3l6zrmascbq2c'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle, rkey } = this.parseURL(url)

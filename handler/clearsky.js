@@ -1,9 +1,14 @@
-// https://clearsky.app/souris.moe/blocking
-
 import { getDid } from '../utils.js'
 
 export class Clearsky {
     static DOMAINS = ['clearsky.app']
+    static TESTS = [{
+        url: 'https://clearsky.app/souris.moe/blocking',
+        output: 'https://pdsls.dev/at://did:plc:tj7g244gl5v6ai6cm4f4wlqp/app.bsky.graph.block'
+    }, {
+        url: 'https://clearsky.app/souris.moe/history',
+        output: 'https://pdsls.dev/at://did:plc:tj7g244gl5v6ai6cm4f4wlqp/app.bsky.feed.post'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle, type } = this.parseURL(url)

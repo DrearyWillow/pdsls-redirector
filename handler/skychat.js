@@ -2,6 +2,13 @@ import { getDid } from '../utils.js'
 
 export class Skychat {
     static DOMAINS = ['skychat.social']
+    static TESTS = [{
+        url: 'https://skychat.social/#thread/did:plc:veryepic2bagxnblv63a2hac/3l7t55u6srs2x',
+        output: 'https://pdsls.dev/at://did:plc:veryepic2bagxnblv63a2hac'
+    }, {
+        url: 'https://skychat.social/#profile/did:plc:vwzwgnygau7ed7b7wt5ux7y2',
+        output: 'https://pdsls.dev/at://did:plc:vwzwgnygau7ed7b7wt5ux7y2'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { type, handle, rkey } = this.parseURL(url)
@@ -28,7 +35,7 @@ export class Skychat {
     }
 
     static parseURL(url) {
-        let [type, handle, rkey] = url.pathname.split("/").slice(1)
+        let [type, handle, rkey] = url.hash.split("/")
         type = type.slice(1)
         return {type, handle, rkey}
     }

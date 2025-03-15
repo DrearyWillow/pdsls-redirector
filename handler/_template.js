@@ -2,6 +2,15 @@ import { getDid } from '../utils.js'
 
 export class Bluesky {
     static DOMAINS = ['']
+    static TESTS = [{
+        url: '',
+        returned: '',
+        output: ''
+    }, {
+        url: '',
+        returned: '',
+        output: ''
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { prefix, handle, suffix, rkey } = this.parseURL(url)

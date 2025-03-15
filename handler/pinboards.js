@@ -1,9 +1,11 @@
-// https://pinboards.jeroba.xyz/profile/did:plc:hx53snho72xoj7zqt5uice4u/board/3linhxrqxtn2s
-
 import { getDid } from '../utils.js'
 
 export class Pinboards {
     static DOMAINS = ['pinboards.jeroba.xyz']
+    static TESTS = [{
+        url: 'https://pinboards.jeroba.xyz/profile/did:plc:hx53snho72xoj7zqt5uice4u/board/3linhxrqxtn2s',
+        output: 'https://pdsls.dev/at://did:plc:hx53snho72xoj7zqt5uice4u/xyz.jeroba.tags.tag/3linhxrqxtn2s'
+    }]
 
     static async processURL(url, settings, uriMode) {
         const { handle, type, rkey } = this.parseURL(url)
