@@ -14,21 +14,6 @@
 </thead>
 <tbody valign="top">
 <tr>
-    <td>Bluesky</td>
-    <td>https://bsky.app</td>
-    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-</tr>
-<tr>
-    <td>Langit</td>
-    <td>https://bsky.app</td>
-    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-</tr>
-<tr>
-    <td>TOKEMI</td>
-    <td>https://tokimekibluesky.vercel.app</td>
-    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-</tr>
-<tr>
     <td>Aglais</td>
     <td>https://aglais.pages.dev</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list</td>
@@ -49,7 +34,7 @@
     <td>com.atprofile.beta.profile</td>
 </tr>
 <tr>
-    <td>AtProtoCamp</td>
+    <td>ATProtoCamp</td>
     <td>https://atproto.camp</td>
     <td>blue.badge.collection</td>
 </tr>
@@ -62,6 +47,11 @@
     <td>BlueBadge</td>
     <td>https://badge.blue</td>
     <td>blue.badge.collection</td>
+</tr>
+<tr>
+    <td>Bluesky</td>
+    <td>https://bsky.app</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
 </tr>
 <tr>
     <td>BlueViewer</td>
@@ -94,19 +84,29 @@
     <td>fyi.unravel.frontpage.post<br>fyi.unravel.frontpage.comment</td>
 </tr>
 <tr>
-    <td>Klearsky</td>
-    <td>https://klearsky.pages.dev</td>
-    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
-</tr>
-<tr>
     <td>Internect</td>
     <td>https://internect.info</td>
     <td>did</td>
 </tr>
 <tr>
+    <td>Klearsky</td>
+    <td>https://klearsky.pages.dev</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+</tr>
+<tr>
+    <td>Langit</td>
+    <td>https://bsky.app</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+</tr>
+<tr>
     <td>LinkAT</td>
     <td>https://linkat.blue</td>
     <td>did<br>blue.linkat.board</td>
+</tr>
+<tr>
+    <td>MyB</td>
+    <td>https://myb.zeu.dev</td>
+    <td>did<br>app.bsky.feed.post</td>
 </tr>
 <tr>
     <td>Ouranos</td>
@@ -117,6 +117,11 @@
     <td>PasteSphere</td>
     <td>https://pastesphere.link</td>
     <td>link.pastesphere.snippet</td>
+</tr>
+<tr>
+    <td>PDS</td>
+    <td>[List of known PDS](https://github.com/mary-ext/atproto-scraping)</td>
+    <td>pds</td>
 </tr>
 <tr>
     <td>PDSls</td>
@@ -132,6 +137,11 @@
     <td>PinkSea</td>
     <td>https://pinksea.art</td>
     <td>com.shinolabs.pinksea.oekaki</td>
+</tr>
+<tr>
+    <td>Pinksky</td>
+    <td>https://pinksky.app</td>
+    <td>did<br>app.bsky.feed.post</td>
 </tr>
 <tr>
     <td>Plonk</td>
@@ -204,6 +214,16 @@
     <td>did<br>sh.tangled.repo</td>
 </tr>
 <tr>
+    <td>TOKEMI</td>
+    <td>https://tokimekibluesky.vercel.app</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+</tr>
+<tr>
+    <td>WhiteWind</td>
+    <td>https://whtwnd.com</td>
+    <td>com.whtwnd.blog.entry</td>
+</tr>
+<tr>
     <td>WhiteWind</td>
     <td>https://whtwnd.com</td>
     <td>com.whtwnd.blog.entry</td>
@@ -212,11 +232,6 @@
     <td>Woosh</td>
     <td>https://woosh.link</td>
     <td>did</td>
-</tr>
-<tr>
-    <td>WhiteWind</td>
-    <td>https://whtwnd.com</td>
-    <td>com.whtwnd.blog.entry</td>
 </tr>
 <tr>
     <td>XRPC</td>
@@ -228,28 +243,26 @@
 
 ## Supported Resolvers
 
-`Lexicons` column includes only lexicons with special resolution. For example, `app.bsky.feed.post` resolves to `https://bsky.app/profile/did/post/rkey`, rather than merely `https://bsky.app/profile/did`.
-
-I should really change `Lexicons` to `Capabilities` and have the human-friendly functionality. Ex. profile, post, etc.
+The `Capabilities` column includes only functionality with special resolution (i.e. not simply the base URL). For example, `app.bsky.feed.post` resolves to `https://bsky.app/profile/did/post/rkey`, rather than merely `https://bsky.app`.
 
 <table>
 <thead valign="bottom">
 <tr>
     <th>Domain Authority</th>
     <th>URL Resolution</th>
-    <th>Lexicons</th>
+    <th>Capabilities</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr>
     <td>com.atprofile</td>
     <td>https://atprofile.com</td>
-    <td>did</td>
+    <td>profile</td>
 </tr>
 <tr>
     <td>blue.badge</td>
     <td>https://atproto.camp</td>
-    <td>did<br>badge.blue.collection</td>
+    <td>profile<br>badge</td>
 </tr>
 <tr>
     <td>blue.place</td>
@@ -259,12 +272,12 @@ I should really change `Lexicons` to `Capabilities` and have the human-friendly 
 <tr>
     <td>app.bsky</td>
     <td>https://bsky.app</td>
-    <td>app.bsky.actor.profile<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+    <td>profile<br>post<br>list<br>feed<br>starter packs</td>
 </tr>
 <tr>
     <td>buzz.bookhive</td>
     <td>https://bookhive.buzz</td>
-    <td>did</td>
+    <td>profile</td>
 </tr>
 <tr>
     <td>im.flushing</td>
@@ -272,39 +285,44 @@ I should really change `Lexicons` to `Capabilities` and have the human-friendly 
     <td></td>
 </tr>
 <tr>
-    <td>fyi.unravel</td>
+    <td>fyi.unravel.frontpage</td>
     <td>https://frontpage.fyi</td>
-    <td>did<br>fyi.unravel.frontpage.post<br>fyi.unravel.frontpage.comment</td>
+    <td>profile<br>post<br>comment</td>
 </tr>
 <tr>
     <td>blue.linkat</td>
     <td>https://linkat.blue</td>
-    <td>did</td>
+    <td>profile</td>
 </tr>
 <tr>
     <td>link.pastesphere</td>
     <td>https://pastesphere.link</td>
-    <td>pastesphere.link.snippet</td>
+    <td>snippet</td>
 </tr>
 <tr>
     <td>xyz.jeroba</td>
     <td>https://pinboards.jeroba.xyz</td>
-    <td>xyz.jeroba.tags.tag</td>
+    <td>pinboard (tag)</td>
 </tr>
 <tr>
     <td>com.shinolabs</td>
     <td>https://pinnksea.art</td>
-    <td>com.shinolabs.pinksea.oekaki</td>
+    <td>oekaki</td>
+</tr>
+<tr>
+    <td>social.pinksky</td>
+    <td>https://pinksky.app</td>
+    <td>profile</td>
 </tr>
 <tr>
     <td>li.plonk</td>
     <td>https://plonk.li</td>
-    <td></td>
+    <td>profile</td>
 </tr>
 <tr>
     <td>app.popsky</td>
     <td>https://popsky.app</td>
-    <td>did<br>app.popsky.review<br>app.popsky.comment<br>app.popsky.list<br>app.popsky.listItem<br>app.popsky.like</td>
+    <td>profile<br>review<br>comment<br>list</td>
 </tr>
 <tr>
     <td>social.psky</td>
@@ -314,12 +332,12 @@ I should really change `Lexicons` to `Capabilities` and have the human-friendly 
 <tr>
     <td>exchange.recipe</td>
     <td>https://recipe.exchange</td>
-    <td>did<br>exchange.recipe.recipe<br>exchange.recipe.collection</td>
+    <td>profile<br>recipe<br>comment</td>
 </tr>
 <tr>
     <td>com.ruthub</td>
     <td>https://ruthub.com</td>
-    <td>did<br>com.ruthub.entry<br>com.ruthub.kanban<br>com.ruthub.kanbans<br>com.ruthub.item<br>com.ruthub.track</td>
+    <td>profile<br>kanban<br>rut<br>blog</td>
 </tr>
 <tr>
     <td>uk.skyblur</td>
@@ -329,32 +347,32 @@ I should really change `Lexicons` to `Capabilities` and have the human-friendly 
 <tr>
     <td>my.skylights</td>
     <td>https://skylights.my<br>https://skywatched.app</td>
-    <td></td>
+    <td>profile<br>review</td>
 </tr>
 <tr>
     <td>app.skywatched</td>
     <td>https://skywatched.app</td>
-    <td></td>
+    <td>profile</td>
 </tr>
 <tr>
     <td>events.smokesignal</td>
     <td>https://smokesignal.events</td>
-    <td>events.smokesignal.calendar.event</td>
+    <td>event</td>
 </tr>
 <tr>
     <td>sh.tangled</td>
     <td>https://tangled.sh</td>
-    <td>did<br>sh.tangled.repo<br>sh.tangled.repo.issue<br>sh.tangled.repo.issue.comment<br>sh.tangled.repo.issue.state<br>sh.tangled.repo.pull<br>sh.tangled.feed.star<br>sh.tangled.feed.follow</td>
+    <td>profile<br>repo<br>issue<br>issue comment<br>issue state<br>pull<br>star<br>follow</td>
 </tr>
 <tr>
     <td>com.whtwnd</td>
     <td>https://whtwnd.com</td>
-    <td>did<br>com.whtwnd.blog.entry</td>
+    <td>profile<br>blog entry</td>
 </tr>
 <tr>
     <td>link.woosh</td>
     <td>https://woosh.link</td>
-    <td></td>
+    <td>profile</td>
 </tr>
 <tr>
     <td>XRPC</td>

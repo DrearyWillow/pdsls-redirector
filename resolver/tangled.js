@@ -1,4 +1,4 @@
-import { validateUriInput, getRecord, getServiceEndpoint, decomposeUri } from "../utils.js"
+import { decomposeUri, getRecord, getServiceEndpoint, validateUriInput } from "../utils.js"
 
 export class Tangled {
     static NSID_AUTH = 'sh.tangled'

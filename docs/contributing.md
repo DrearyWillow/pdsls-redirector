@@ -1,4 +1,4 @@
-# Contributing to ATProto-Redirector
+# Contributing to PDSls-Redirector
 
 ## Adding support for a new site (handler)
 

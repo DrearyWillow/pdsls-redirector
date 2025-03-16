@@ -1,4 +1,4 @@
-import { buildMenus, updateKeybindings, loadSettings, openNewTab, copyATUri, openJetstream } from './utils.js'
+import { buildMenus, copyATUri, loadSettings, openJetstream, openNewTab, updateKeybindings } from './utils.js'
 
 // Settings
 // browser.storage.sync.clear()

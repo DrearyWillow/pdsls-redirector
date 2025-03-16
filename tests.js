@@ -1,8 +1,8 @@
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import readline from "readline";
-import { checkHandlers, validateUrl, loadDefaultSettings, checkResolvers, decomposeUri } from './utils.js'
+import fs from "fs"
+import path from "path"
+import readline from "readline"
+import { fileURLToPath } from "url"
+import { checkHandlers, checkResolvers, decomposeUri, loadDefaultSettings, validateUrl } from './utils.js'
 
 function log(text) { console.log(`\x1b[1;38;5;5m${text}\x1b[0m`) }
 function log2(text) { console.log(`\x1b[1;38;5;10m${text}\x1b[0m`) }

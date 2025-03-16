@@ -1,7 +1,7 @@
 import { getServiceEndpoint, getRecord, decomposeUri } from '../utils.js'
 
 export class Frontpage {
-    static NSID_AUTH = 'fyi.unravel'
+    static NSID_AUTH = 'fyi.unravel.frontpage'
     static TESTS = [{
         uri: 'at://did:plc:2xau7wbgdq4phuou2ypwuen7/fyi.unravel.frontpage.comment/3ljivixecy42a',
         output: 'https://frontpage.fyi/post/did:plc:tas6hj2xjrqben5653v5kohk/3ljiv4fprds2s/did:plc:2xau7wbgdq4phuou2ypwuen7/3ljivixecy42a'
