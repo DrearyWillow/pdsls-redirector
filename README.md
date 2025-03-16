@@ -6,37 +6,7 @@ The Firefox version of [PDSls Redirector](https://github.com/DrearyWillow/pdsls-
 * Configurable keybinding (defaults to Ctrl+Shift+1)
 
 ### Supports:
-* [Bluesky](https://bsky.app/) (profiles, posts, starter packs, lists, and feeds)
-* [Aglais](https://aglais.pages.dev)
-* [TOKIMEKI](https://tokimekibluesky.vercel.app)
-* [Langit](https://langit.pages.dev)
-* [Klearsky](https://klearsky.pages.dev)
-* [SkyChat](https://skychat.social)
-* [Pinboards](https://pinboards.jeroba.xyz)
-* [WhiteWind](https://whtwnd.com/)
-* [FrontPage](https://frontpage.fyi)
-* [Skylights](https://skylights.my)
-* [Pinksea](https://pinksea.art)
-* [AT Browser](https://atproto-browser.vercel.app/)
-* [@tools](https://atp.tools)
-* [ClearSky](https://clearsky.app)
-* [BlueViewer](https://blueviewer.pages.dev/)
-* [Skythread](https://blue.mackuba.eu/skythread/)
-* [Skyview](https://skyview.social/)
-* [Smoke Signal](https://docs.smokesignal.events/)
-* [AtProto Camp](https://atproto.camp/)
-* [Blue Badge](https://badge.blue/)
-* [Link AT](https://linkat.blue/?lng=en)
-* [Internect](https://internect.info/)
-* [Recipe Exchange](https://recipe.exchange)
-* [Plonk](https://plonk.li)
-* [PasteSphere](https://pastesphere.link)
-* [BookHive](https://bookhive.buzz)
-* [Bsky CDN](https://cdn.bsky.app)
-* [Bsky Video CDN](https://video.bsky.app)
-* [Raw API URLs](https://public.api.bsky.app/xrpc/com.atproto.repo.getRecord?repo=did:plc:hx53snho72xoj7zqt5uice4u&collection=app.bsky.actor.profile&rkey=self)
-* [PDSls](https://pdsls.dev/) (opens the API response directly)
-* If the above fail, attempt to load the link as a PDS
+See [supported sites and lexicons](docs/supportedsites.md)
 
 ### Configure settings in about:addons
 * Always open PDSls, even if no valid URL found
