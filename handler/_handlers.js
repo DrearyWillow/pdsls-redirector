@@ -27,6 +27,7 @@ import { RecipeExchange } from './recipeexchange.js'
 import { RutHub } from './ruthub.js'
 import { Skyblur } from './skyblur.js'
 import { Skychat } from './skychat.js'
+import { Skylight } from './skylight.js'
 import { Skylights } from './skylights.js'
 import { Skythread } from './skythread.js'
 import { Skyview } from './skyview.js'
@@ -69,6 +70,7 @@ const handlers = [
     RutHub,
     Skyblur,
     Skychat,
+    Skylight,
     Skylights,
     Skythread,
     Skyview,

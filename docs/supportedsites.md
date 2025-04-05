@@ -120,7 +120,7 @@
 </tr>
 <tr>
     <td>PDS</td>
-    <td>[List of known PDS](https://github.com/mary-ext/atproto-scraping)</td>
+    <td><a href="https://github.com/mary-ext/atproto-scraping">List of known PDS</a></td>
     <td>pds</td>
 </tr>
 <tr>
@@ -172,6 +172,11 @@
     <td>SkyChat</td>
     <td>https://skychat.social</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+</tr>
+<tr>
+    <td>Skylight</td>
+    <td>https://skylight.social</td>
+    <td>app.bsky.feed.post</td>
 </tr>
 <tr>
     <td>Skylights</td>
