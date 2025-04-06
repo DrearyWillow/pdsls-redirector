@@ -5,6 +5,7 @@ import { Bluesky } from './bluesky.js'
 import { BookHive } from './bookhive.js'
 import { Flushes } from './flushes.js'
 import { Frontpage } from './frontpage.js'
+import { Grayhaze } from './grayhaze.js'
 import { LinkAT } from './linkat.js'
 import { PasteSphere } from './pastesphere.js'
 import { Pinboards } from './pinboards.js'
@@ -19,6 +20,7 @@ import { Skyblur } from './skyblur.js'
 import { Skylights } from './skylights.js'
 import { Skywatched } from './skywatched.js'
 import { SmokeSignal } from './smokesignal.js'
+import { Streamplace } from './streamplace.js'
 import { Tangled } from './tangled.js'
 import { WhiteWind } from './whitewind.js'
 import { Woosh } from './woosh.js'
@@ -32,6 +34,7 @@ const resolvers = [
     BookHive,
     Flushes,
     Frontpage,
+    Grayhaze,
     LinkAT,
     PasteSphere,
     Pinboards,
@@ -46,6 +49,7 @@ const resolvers = [
     Skylights,
     Skywatched,
     SmokeSignal,
+    Streamplace,
     Tangled,
     WhiteWind,
     Woosh,

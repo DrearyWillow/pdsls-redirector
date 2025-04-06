@@ -119,7 +119,7 @@ async function testOneHandler(Handler, test, index) {
     // console.log(`${testName} inputs:`, {url, settings, uriMode})
 
     // could add optional intermediary result by testing the handler manually
-    if (test.returned) {
+    if (test.returned !== undefined) {
         log(`Handler 'returned' value defined for test. Validating...`)
         let returned = await Handler.processURL((new URL(url)), settings, uriMode)
         log(`${testName} handler returned: ${returned}`)

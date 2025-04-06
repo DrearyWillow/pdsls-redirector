@@ -1,13 +1,16 @@
 import { getDid } from '../utils.js'
 
 export class Pinksea {
-    static DOMAINS = ['pinksea.art']
+    static DOMAINS = ['pinksea.art', 'sea.ata.moe']
     static TESTS = [{
         url: 'https://pinksea.art/did:plc:bj3xr7ytf2mpglcsvcst7ogt/oekaki/3lbaugujgac2n',
         output: 'https://pdsls.dev/at://did:plc:bj3xr7ytf2mpglcsvcst7ogt/com.shinolabs.pinksea.oekaki/3lbaugujgac2n'
     }, {
         url: 'https://pinksea.art/did:plc:y33bag2x6rndakrseukqrtf3/oekaki/3lcfr7x37ckcj#did:plc:y33bag2x6rndakrseukqrtf3-3ldidgfrgak67',
         output: 'https://pdsls.dev/at://did:plc:y33bag2x6rndakrseukqrtf3/com.shinolabs.pinksea.oekaki/3ldidgfrgak67'
+    }, {
+        url: 'https://sea.ata.moe/did:plc:vniq7totaxpl7bzlzt7rlhwu/oekaki/3lm2w6pjx6srx',
+        output: 'https://pdsls.dev/at://did:plc:vniq7totaxpl7bzlzt7rlhwu/com.shinolabs.pinksea.oekaki/3lm2w6pjx6srx'
     }]
 
     static async processURL(url, settings, uriMode) {

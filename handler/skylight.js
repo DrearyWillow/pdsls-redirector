@@ -15,8 +15,7 @@ export class Skylight {
         const did = await getDid(handle)
         if (!did) return null
 
-        if (rkey) return `at://${did}/app.bsky.feed.post/${rkey}`
-        return `at://${did}`
+        return rkey ? `at://${did}/app.bsky.feed.post/${rkey}` : `at://${did}`
     }
 
     static parseURL(url) {

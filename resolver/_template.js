@@ -1,7 +1,7 @@
 export class Bluesky {
     static NSID_AUTH = 'app.bsky'
     static TESTS = [{
-        url: '',
+        uri: '',
         output: ''
     }]
 

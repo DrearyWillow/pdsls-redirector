@@ -1,4 +1,5 @@
 import { Aglais } from './aglais.js'
+import { Anartia } from './anartia.js'
 import { ATBrowser } from './atbrowser.js'
 import { ATProfile } from './atprofile.js'
 import { ATProtoCamp } from './atprotocamp.js'
@@ -11,6 +12,7 @@ import { BskyCDN } from './bskycdn.js'
 import { Clearsky } from './clearsky.js'
 import { Flushes } from './flushes.js'
 import { Frontpage } from './frontpage.js'
+import { Grayhaze } from './grayhaze.js'
 import { Internect } from './internect.js'
 import { Klearsky } from './klearsky.js'
 import { LinkAT } from './linkat.js'
@@ -33,6 +35,7 @@ import { Skythread } from './skythread.js'
 import { Skyview } from './skyview.js'
 import { Skywatched } from './skywatched.js'
 import { SmokeSignal } from './smokesignal.js'
+import { Streamplace } from './streamplace.js'
 import { SuperCoolClient } from './supercoolclient.js'
 import { Swablu } from './swablu.js'
 import { Tangled } from './tangled.js'
@@ -42,6 +45,7 @@ import { XRPC } from './xrpc.js'
 
 const handlers = [
     Aglais,
+    Anartia,
     ATBrowser,
     ATProfile,
     ATProtoCamp,
@@ -54,6 +58,7 @@ const handlers = [
     Clearsky,
     Flushes,
     Frontpage,
+    Grayhaze,
     Internect,
     Klearsky,
     LinkAT,
@@ -76,6 +81,7 @@ const handlers = [
     Skyview,
     Skywatched,
     SmokeSignal,
+    Streamplace,
     SuperCoolClient,
     Swablu,
     Tangled,

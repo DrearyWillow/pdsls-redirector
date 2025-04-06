@@ -127,7 +127,7 @@ export async function listRecords(did, service, nsid, limit, cursor) {
 
 // loop over ALL records of a certain NSID for a repo. be mindful of performance.
 // used in contexts where the url only has a record name and not an rkey
-export async function findRecordMatch(did, service, nsid, matchObj) {
+export async function findRecordMatch(did, service, nsid, matchObj, stringContains = false) {
     const limit = 100
     let cursor = undefined
 
@@ -139,7 +139,7 @@ export async function findRecordMatch(did, service, nsid, matchObj) {
 
         if (records && records.length > 0) {
             for (let record of records) {
-                if (record['value'] && isMatch(record['value'], matchObj)) {
+                if (record['value'] && isMatch(record['value'], matchObj, stringContains)) {
                     return record.uri
                 }
             }
@@ -177,9 +177,18 @@ export async function validateUriInput({ uri, did, nsid, rkey, service }) {
     return { uri: uri, did: did, nsid: nsid, rkey: rkey, service: service }
 }
 
-// TODO: support nested objects
-export function isMatch(recordValue, matchObj) {
-    return Object.entries(matchObj).every(([key, value]) => recordValue[key] === value);
+export function isMatch(recordValue, matchObj, stringContains) {
+    return Object.entries(matchObj).every(([key, value]) => {
+        const recordSubValue = recordValue[key]
+        if (typeof value === 'object' && value !== null) {
+            return isMatch(recordSubValue, value) // recursive match
+        }
+        if (stringContains && typeof recordSubValue === "string") {
+            return recordSubValue.includes(value)
+        } else {
+            return recordSubValue === value
+        }
+    })
 }
 
 export function decomposeUri(uri) {

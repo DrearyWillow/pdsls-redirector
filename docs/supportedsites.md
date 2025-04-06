@@ -19,6 +19,11 @@
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list</td>
 </tr>
 <tr>
+    <td>Anartia</td>
+    <td>https://anartia.kelinci.net</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+</tr>
+<tr>
     <td>Akami</td>
     <td>https://akami.blue</td>
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator</td>
@@ -84,6 +89,11 @@
     <td>fyi.unravel.frontpage.post<br>fyi.unravel.frontpage.comment</td>
 </tr>
 <tr>
+    <td>Grayhaze</td>
+    <td>https://grayhaze.live</td>
+    <td>did<br>live.grayhaze.content.stream<br>live.grayhaze.actor.channel</td>
+</tr>
+<tr>
     <td>Internect</td>
     <td>https://internect.info</td>
     <td>did</td>
@@ -135,7 +145,7 @@
 </tr>
 <tr>
     <td>PinkSea</td>
-    <td>https://pinksea.art</td>
+    <td>https://pinksea.art<br>https://sea.ata.moe</td>
     <td>com.shinolabs.pinksea.oekaki</td>
 </tr>
 <tr>
@@ -202,6 +212,11 @@
     <td>SmokeSignal</td>
     <td>https://smokesignal.events</td>
     <td>events.smokesignal.calendar.event<br>events.smokesignal.app.profile</td>
+</tr>
+<tr>
+    <td>Streamplace</td>
+    <td>https://stream.place</td>
+    <td>did<br>place.stream.livestream</td>
 </tr>
 <tr>
     <td>SuperCoolClient</td>
@@ -295,6 +310,11 @@ The `Capabilities` column includes only functionality with special resolution (i
     <td>profile<br>post<br>comment</td>
 </tr>
 <tr>
+    <td>live.grayhaze</td>
+    <td>https://grayhaze.live</td>
+    <td>profile<br>stream</td>
+</tr>
+<tr>
     <td>blue.linkat</td>
     <td>https://linkat.blue</td>
     <td>profile</td>
@@ -363,6 +383,11 @@ The `Capabilities` column includes only functionality with special resolution (i
     <td>events.smokesignal</td>
     <td>https://smokesignal.events</td>
     <td>event</td>
+</tr>
+<tr>
+    <td>place.stream</td>
+    <td>https://stream.place</td>
+    <td>profile</td>
 </tr>
 <tr>
     <td>sh.tangled</td>
