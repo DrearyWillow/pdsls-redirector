@@ -1,7 +1,7 @@
 import { getDid, postThreadCheck } from '../utils.js'
 
 export class Bluesky {
-    static DOMAINS = ['bsky.app', 'main.bsky.dev', 'langit.pages.dev', 'tokimekibluesky.vercel.app', 'akari.blue']
+    static DOMAINS = ['bsky.app', 'main.bsky.dev', 'langit.pages.dev', 'tokimekibluesky.vercel.app', 'akari.blue', 'deer.social']
     static TESTS = [{
         url: 'https://bsky.app/profile/danabra.mov',
         output: 'https://pdsls.dev/at://did:plc:fpruhuo22xkm5o7ttr2ktxdo'
@@ -12,7 +12,7 @@ export class Bluesky {
         url: 'https://main.bsky.dev/profile/samuel.bsky.team/feed/aaaatt5lbsrbq',
         output: 'https://pdsls.dev/at://did:plc:p2cp5gopk7mgjegy6wadk3ep/app.bsky.feed.generator/aaaatt5lbsrbq'
     }, {
-        url: 'https://bsky.app/starter-pack/samuel.bsky.team/3kztso5fnic24',
+        url: 'https://deer.social/starter-pack/samuel.bsky.team/3kztso5fnic24',
         output: 'https://pdsls.dev/at://did:plc:p2cp5gopk7mgjegy6wadk3ep/app.bsky.graph.starterpack/3kztso5fnic24'
     }, {
         url: 'https://bsky.app/profile/did:plc:hx53snho72xoj7zqt5uice4u/post/3lbpz2lyeic2g/liked-by',

@@ -79,6 +79,11 @@
     <td>did<br>app.bsky.feed.post<br>app.bsky.graph.block</td>
 </tr>
 <tr>
+    <td>deer.social</td>
+    <td>https://deer.social</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+</tr>
+<tr>
     <td>Flushes</td>
     <td>https://flushes.app</td>
     <td>did</td>
