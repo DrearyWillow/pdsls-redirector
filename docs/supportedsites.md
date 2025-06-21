@@ -219,6 +219,11 @@
     <td>events.smokesignal.calendar.event<br>events.smokesignal.app.profile</td>
 </tr>
 <tr>
+    <td>smol life</td>
+    <td>https://smol.life</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
+</tr>
+<tr>
     <td>Streamplace</td>
     <td>https://stream.place</td>
     <td>did<br>place.stream.livestream</td>
@@ -262,6 +267,11 @@
     <td>XRPC</td>
     <td>https://public.api.bsky.app<br>pds service endpoints</td>
     <td>arbitrary uri</td>
+</tr>
+<tr>
+    <td>Zeppelin</td>
+    <td>https://zeppelin.social</td>
+    <td>did<br>app.bsky.feed.post<br>app.bsky.graph.list<br>app.bsky.feed.generator<br>app.bsky.graph.starterpack</td>
 </tr>
 </tbody>
 </table>

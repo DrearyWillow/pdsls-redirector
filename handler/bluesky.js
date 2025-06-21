@@ -1,7 +1,16 @@
 import { getDid, postThreadCheck } from '../utils.js'
 
 export class Bluesky {
-    static DOMAINS = ['bsky.app', 'main.bsky.dev', 'langit.pages.dev', 'tokimekibluesky.vercel.app', 'akari.blue', 'deer.social']
+    static DOMAINS = [
+        'bsky.app',
+        'main.bsky.dev',
+        'langit.pages.dev',
+        'tokimekibluesky.vercel.app',
+        'akari.blue',
+        'deer.social',
+        'zeppelin.social',
+        'smol.life'
+    ]
     static TESTS = [{
         url: 'https://bsky.app/profile/danabra.mov',
         output: 'https://pdsls.dev/at://did:plc:fpruhuo22xkm5o7ttr2ktxdo'
